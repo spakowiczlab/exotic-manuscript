@@ -34,3 +34,9 @@ vignettes/*.pdf
 
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
+
+# pbs submission scripts
+*.pbs
+
+# text files containing download urls
+*.txt
