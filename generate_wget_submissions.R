@@ -26,7 +26,7 @@ for (l in 1:length(urls.list)) {
                "#PBS -l nodes=1:ppn=1",
                "#PBS -j oe",
                "",
-               "cd /fs/scratch/PAS1460/tcc_data/THO-LungCancer"
+               "cd /fs/scratch/PAS1460/tcc_data/THO-LungCancer",
                paste(urls.list[[l]], sep = "\n"),
                ""),
              fileConn)
