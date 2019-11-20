@@ -40,3 +40,6 @@ rsconnect/
 
 # text files containing download urls
 *.txt
+
+# csv outputs
+*.csv
