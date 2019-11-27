@@ -1,0 +1,63 @@
+---
+title: "Aggregate cufflinks output and prepare for CIBERSORT"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(tibble)
+```
+
+```{r}
+getsampnames <- read.csv("exotcc_deidentified-ids.csv") %>%
+  mutate(samppath = paste("/fs/scratch/PAS1460/tcc_data/cufflinks/",
+                          cancer,"/", id,
+                          "/cufflinks/genes.fpkm_tracking", sep = ""))
+
+splittab <- lapply(getsampnames$samppath, function(x) read.table(x, header = TRUE))
+```
+
+```{r}
+names(splittab) <- getsampnames$id
+
+aggtab <- lapply(names(splittab), function(x) splittab[[x]] %>% 
+                   mutate(sample = x) %>%
+                   select(sample, FPKM, gene_id )) %>%
+  bind_rows() %>%
+  group_by(sample, gene_id) %>%
+  summarise(FPKM = max(FPKM)) %>%
+  spread(key = 'sample', value = 'FPKM')
+  # summarise(FPKM = max(FPKM) - min(FPKM)) %>%
+  # spread(key = 'gene_id', value = 'FPKM')
+
+```
+
+```{r take out na rows}
+donetab <- aggtab %>%
+  drop_na()
+
+# donetab <- donetab[-c(1074, 1148, 1545, 8712, 10540), ]
+```
+
+```{r}
+write.table(donetab, "aggregates/aggcuff_all.txt", row.names = FALSE, sep = "\t", quote = FALSE)
+```
+
+# Try splitting cancers
+
+```{r}
+canc <- unique(getsampnames$cancer)
+
+splitcanc <- list()
+
+for(c in canc){
+  chosesamples <- getsampnames %>%
+    filter(cancer == c)
+  chosesamples <- as.character(chosesamples$id)
+  splitcanc[[c]] <- splittab[[chosesamples]]
+}
+```
