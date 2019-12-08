@@ -42,5 +42,5 @@ rsconnect/
 *.txt
 
 # large CIBERSORT csvs
-*.csv
+CIB*.csv
 
