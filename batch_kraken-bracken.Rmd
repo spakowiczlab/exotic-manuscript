@@ -1,0 +1,273 @@
+---
+title: "00_preprocessing"
+author: "Dan Spakowicz"
+date: "11/12/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(magrittr)
+library(dplyr)
+library(stringr)
+```
+
+
+# THO-LungCancer
+
+```{r identify samples to process}
+files <- list.files("../tcc_data/THO-LungCancer/")
+
+getnames <- as.data.frame(cbind(files, sampname = NA)) %>%
+  filter(!grepl("download", files)) %>%
+  mutate(sampname = gsub("(*.)_.*", "\\1", files))
+
+samps = unique(getnames$sampname)
+```
+
+```{r, kraken jobs}
+
+# For loop over all samples
+for (s in samps) {
+  
+  # Write pbs submission file
+  fileOut<-file(paste("/fs/scratch/PAS1460/exoTCC/batch/THO-LungCancer/", s, ".pbs", sep=""))
+  
+  writeLines(c(paste("#PBS -N tcc-kraken2-bracken_", s, sep = "_"),
+               "#PBS -l walltime=2:00:00",
+               "#PBS -l nodes=1:ppn=10",
+               "#PBS -j oe",
+               "#PBS -m abe",
+               "#PBS -A PAS1460",
+               "",
+               "module load python/3.6-conda5.2",
+               "source activate kraken2",
+               "",
+               "cd /fs/scratch/PAS1460/exoTCC/kreports/THO-LungCancer",
+               paste("kraken2 --db /fs/scratch/PAS1479/kraken2-db --threads 10 --minimum-base-quality 20 --report ", s, ".txt --confidence 0.02 --paired /fs/scratch/PAS1460/tcc_data/THO-LungCancer/", s, "_1.fastq.gz /fs/scratch/PAS1460/tcc_data/THO-LungCancer/", s, "_2.fastq.gz", sep = ""),
+             paste("bracken -d /fs/scratch/PAS1479/kraken2-db -l S -i ", s, ".txt -o ../../brackout/THO-LungCancer/", s, ".txt", sep = ""),
+             ""),
+               
+             fileOut
+  )
+  
+}
+
+```
+
+# CUT-Melanoma
+
+```{r identify samples to process}
+files <- list.files("../tcc_data/CUT-Melanoma/")
+
+getnames <- as.data.frame(cbind(files, sampname = NA)) %>%
+  filter(!grepl("download", files)) %>%
+  mutate(sampname = gsub("(*.)_.*", "\\1", files))
+
+samps = unique(getnames$sampname)
+```
+
+```{r, kraken jobs}
+
+# For loop over all samples
+for (s in samps) {
+  
+  # Write pbs submission file
+  fileOut<-file(paste("/fs/scratch/PAS1460/exoTCC/batch/CUT-Melanoma/", s, ".pbs", sep=""))
+  
+  writeLines(c(paste("#PBS -N tcc-kraken2-bracken_", s, sep = "_"),
+               "#PBS -l walltime=4:00:00",
+               "#PBS -l nodes=1:ppn=10",
+               "#PBS -j oe",
+               "#PBS -m abe",
+               "#PBS -A PAS1460",
+               "",
+               "module load python/3.6-conda5.2",
+               "source activate kraken2",
+               "",
+               "cd /fs/scratch/PAS1460/exoTCC/kreports/CUT-Melanoma",
+               paste("kraken2 --db /fs/scratch/PAS1479/kraken2-db --threads 10 --minimum-base-quality 20 --report ", s, ".txt --confidence 0.02 --paired /fs/scratch/PAS1460/tcc_data/CUT-Melanoma/", s, "_1.fastq.gz /fs/scratch/PAS1460/tcc_data/CUT-Melanoma/", s, "_2.fastq.gz", sep = ""),
+             paste("bracken -d /fs/scratch/PAS1479/kraken2-db -l S -i ", s, ".txt -o ../../brackout/CUT-Melanoma/", s, ".txt", sep = ""),
+             ""),
+               
+             fileOut
+  )
+  
+}
+
+```
+
+# GI-ColorectalCancer
+
+```{r identify samples to process}
+files <- list.files("../tcc_data/GI-ColorectalCancer/")
+
+getnames <- as.data.frame(cbind(files, sampname = NA)) %>%
+  filter(!grepl("download", files)) %>%
+  mutate(sampname = gsub("(*.)_.*", "\\1", files))
+
+samps = unique(getnames$sampname)
+```
+
+```{r, kraken jobs}
+
+# For loop over all samples
+for (s in samps) {
+  
+  # Write pbs submission file
+  fileOut<-file(paste("/fs/scratch/PAS1460/exoTCC/batch/GI-ColorectalCancer/", s, ".pbs", sep=""))
+  
+  writeLines(c(paste("#PBS -N tcc-kraken2-bracken_", s, sep = "_"),
+               "#PBS -l walltime=4:00:00",
+               "#PBS -l nodes=1:ppn=10",
+               "#PBS -j oe",
+               "#PBS -m abe",
+               "#PBS -A PAS1460",
+               "",
+               "module load python/3.6-conda5.2",
+               "source activate kraken2",
+               "",
+               "cd /fs/scratch/PAS1460/exoTCC/kreports/GI-ColorectalCancer",
+               paste("kraken2 --db /fs/scratch/PAS1479/kraken2-db --threads 10 --minimum-base-quality 20 --report ", s, ".txt --confidence 0.02 --paired /fs/scratch/PAS1460/tcc_data/GI-ColorectalCancer/", s, "_1.fastq.gz /fs/scratch/PAS1460/tcc_data/GI-ColorectalCancer/", s, "_2.fastq.gz", sep = ""),
+             paste("bracken -d /fs/scratch/PAS1479/kraken2-db -l S -i ", s, ".txt -o ../../brackout/GI-ColorectalCancer/", s, ".txt", sep = ""),
+             ""),
+               
+             fileOut
+  )
+  
+}
+
+```
+# GU-BladderCancer
+
+```{r identify samples to process}
+files <- list.files("../tcc_data/GU-BladderCancer/")
+
+getnames <- as.data.frame(cbind(files, sampname = NA)) %>%
+  filter(!grepl("download", files)) %>%
+  mutate(sampname = gsub("(*.)_.*", "\\1", files))
+
+samps = unique(getnames$sampname)
+```
+
+```{r, kraken jobs}
+
+# For loop over all samples
+for (s in samps) {
+  
+  # Write pbs submission file
+  fileOut<-file(paste("/fs/scratch/PAS1460/exoTCC/batch/GU-BladderCancer/", s, ".pbs", sep=""))
+  
+  writeLines(c(paste("#PBS -N tcc-kraken2-bracken_", s, sep = "_"),
+               "#PBS -l walltime=4:00:00",
+               "#PBS -l nodes=1:ppn=10",
+               "#PBS -j oe",
+               "#PBS -m abe",
+               "#PBS -A PAS1460",
+               "",
+               "module load python/3.6-conda5.2",
+               "source activate kraken2",
+               "",
+               "cd /fs/scratch/PAS1460/exoTCC/kreports/GU-BladderCancer",
+               paste("kraken2 --db /fs/scratch/PAS1479/kraken2-db --threads 10 --minimum-base-quality 20 --report ", s, ".txt --confidence 0.02 --paired /fs/scratch/PAS1460/tcc_data/GU-BladderCancer/", s, "_1.fastq.gz /fs/scratch/PAS1460/tcc_data/GU-BladderCancer/", s, "_2.fastq.gz", sep = ""),
+             paste("bracken -d /fs/scratch/PAS1479/kraken2-db -l S -i ", s, ".txt -o ../../brackout/GU-BladderCancer/", s, ".txt", sep = ""),
+             ""),
+               
+             fileOut
+  )
+  
+}
+
+```
+# RenalCellCarcinoma
+
+```{r identify samples to process}
+files <- list.files("../tcc_data/RenalCellCarcinoma/")
+
+getnames <- as.data.frame(cbind(files, sampname = NA)) %>%
+  filter(!grepl("download", files)) %>%
+  mutate(sampname = gsub("(*.)_.*", "\\1", files))
+
+samps = unique(getnames$sampname)
+```
+
+```{r, kraken jobs}
+
+# For loop over all samples
+for (s in samps) {
+  
+  # Write pbs submission file
+  fileOut<-file(paste("/fs/scratch/PAS1460/exoTCC/batch/RenalCellCarcinoma/", s, ".pbs", sep=""))
+  
+  writeLines(c(paste("#PBS -N tcc-kraken2-bracken_", s, sep = "_"),
+               "#PBS -l walltime=4:00:00",
+               "#PBS -l nodes=1:ppn=10",
+               "#PBS -j oe",
+               "#PBS -m abe",
+               "#PBS -A PAS1460",
+               "",
+               "module load python/3.6-conda5.2",
+               "source activate kraken2",
+               "",
+               "cd /fs/scratch/PAS1460/exoTCC/kreports/RenalCellCarcinoma",
+               paste("kraken2 --db /fs/scratch/PAS1479/kraken2-db --threads 10 --minimum-base-quality 20 --report ", s, ".txt --confidence 0.02 --paired /fs/scratch/PAS1460/tcc_data/RenalCellCarcinoma/", s, "_1.fastq.gz /fs/scratch/PAS1460/tcc_data/RenalCellCarcinoma/", s, "_2.fastq.gz", sep = ""),
+             paste("bracken -d /fs/scratch/PAS1479/kraken2-db -l S -i ", s, ".txt -o ../../brackout/RenalCellCarcinoma/", s, ".txt", sep = ""),
+             ""),
+               
+             fileOut
+  )
+  
+}
+
+```
+
+# SAR-Sarcoma
+
+```{r identify samples to process}
+files <- list.files("../tcc_data/SAR-Sarcoma/")
+
+getnames <- as.data.frame(cbind(files, sampname = NA)) %>%
+  filter(!grepl("download", files)) %>%
+  mutate(sampname = gsub("(*.)_.*", "\\1", files))
+
+samps = unique(getnames$sampname)
+```
+
+```{r, kraken jobs}
+
+# For loop over all samples
+for (s in samps) {
+  
+  # Write pbs submission file
+  fileOut<-file(paste("/fs/scratch/PAS1460/exoTCC/batch/SAR-Sarcoma/", s, ".pbs", sep=""))
+  
+  writeLines(c(paste("#PBS -N tcc-kraken2-bracken_", s, sep = "_"),
+               "#PBS -l walltime=2:00:00",
+               "#PBS -l nodes=1:ppn=10",
+               "#PBS -j oe",
+               "#PBS -m abe",
+               "#PBS -A PAS1460",
+               "",
+               "module load python/3.6-conda5.2",
+               "source activate kraken2",
+               "",
+               "cd /fs/scratch/PAS1460/exoTCC/kreports/SAR-Sarcoma",
+               paste("kraken2 --db /fs/scratch/PAS1479/kraken2-db --threads 10 --minimum-base-quality 20 --report ", s, ".txt --confidence 0.02 --paired /fs/scratch/PAS1460/tcc_data/SAR-Sarcoma/", s, "_1.fastq.gz /fs/scratch/PAS1460/tcc_data/SAR-Sarcoma/", s, "_2.fastq.gz", sep = ""),
+             paste("bracken -d /fs/scratch/PAS1479/kraken2-db -l S -i ", s, ".txt -o ../../brackout/SAR-Sarcoma/", s, ".txt", sep = ""),
+             ""),
+               
+             fileOut
+  )
+  
+}
+
+```
+1) first submit 1 to make sure it doesn't error out
+
+2) submit the rest. 
+
+To submit in bash:
+
+for f in *.tsv ; do qsub $f; done
+

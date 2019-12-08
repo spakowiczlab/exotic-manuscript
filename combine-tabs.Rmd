@@ -1,0 +1,181 @@
+---
+title: "Combine tables"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(tibble)
+```
+
+# THO-LungCancer
+```{r}
+septabs.files <- list.files("brackout/THO-LungCancer")
+septabs <- lapply(septabs.files, function(x) read.table(paste("brackout/THO-LungCancer", x, sep = "/"),
+                                                        header = TRUE, sep = "\t", stringsAsFactors = FALSE))
+names(septabs) <- gsub("(*).txt", "\\1", septabs.files)
+```
+
+```{r}
+agglung <- lapply(names(septabs), function(x) septabs[[x]] %>% mutate(sample=x) %>% select(sample, name, new_est_reads)) %>%
+  bind_rows() %>%
+  mutate(name = make.names(name)) 
+  
+specnames <- unique(agglung$name)
+speclen <- str_count(specnames)
+
+hist(speclen)
+
+agglung <- agglung %>%
+  mutate(name = str_trunc(name, 9999, "right")) %>%
+  spread(key = "name", value = "new_est_reads") %>%
+  gather(-sample, key = "name", value = "new_est_reads") %>%
+  mutate(new_est_reads = ifelse(is.na(new_est_reads), 0, new_est_reads)) %>%
+  spread(key = "name", value = "new_est_reads")
+```
+
+
+```{r}
+write.table(agglung, "aggregates/aggcounts_THO-LungCancer.txt", row.names = FALSE, quote=FALSE, sep = "\t")
+```
+
+# GI-ColorectalCancer
+```{r}
+septabs.files <- list.files("brackout/GI-ColorectalCancer")
+septabs <- lapply(septabs.files, function(x) read.table(paste("brackout/GI-ColorectalCancer", x, sep = "/"),
+                                                        header = TRUE, sep = "\t", stringsAsFactors = FALSE))
+names(septabs) <- gsub("(*).txt", "\\1", septabs.files)
+```
+
+```{r}
+aggcol <- lapply(names(septabs), function(x) septabs[[x]] %>% mutate(sample=x) %>% select(sample, name, new_est_reads)) %>%
+  bind_rows() %>%
+  mutate(name = make.names(name)) 
+  
+
+aggcol <- aggcol %>%
+  mutate(name = str_trunc(name, 9999, "right")) %>%
+  spread(key = "name", value = "new_est_reads") %>%
+  gather(-sample, key = "name", value = "new_est_reads") %>%
+  mutate(new_est_reads = ifelse(is.na(new_est_reads), 0, new_est_reads)) %>%
+  spread(key = "name", value = "new_est_reads")
+```
+
+
+```{r}
+write.table(aggcol, "aggregates/aggcounts_GI-ColorectalCancer.txt", row.names = FALSE, quote=FALSE, sep = "\t")
+```
+
+
+# GU-BladderCancer
+```{r}
+septabs.files <- list.files("brackout/GU-BladderCancer")
+septabs <- lapply(septabs.files, function(x) read.table(paste("brackout/GU-BladderCancer", x, sep = "/"),
+                                                        header = TRUE, sep = "\t", stringsAsFactors = FALSE))
+names(septabs) <- gsub("(*).txt", "\\1", septabs.files)
+```
+
+```{r}
+aggblad <- lapply(names(septabs), function(x) septabs[[x]] %>% mutate(sample=x) %>% select(sample, name, new_est_reads)) %>%
+  bind_rows() %>%
+  mutate(name = make.names(name)) 
+  
+
+aggblad <- aggblad %>%
+  mutate(name = str_trunc(name, 9999, "right")) %>%
+  spread(key = "name", value = "new_est_reads") %>%
+  gather(-sample, key = "name", value = "new_est_reads") %>%
+  mutate(new_est_reads = ifelse(is.na(new_est_reads), 0, new_est_reads)) %>%
+  spread(key = "name", value = "new_est_reads")
+```
+
+
+```{r}
+write.table(aggblad, "aggregates/aggcounts_GU-BladderCancer.txt", row.names = FALSE, quote=FALSE, sep = "\t")
+```
+
+# CUT-Melanoma
+```{r}
+septabs.files <- list.files("brackout/CUT-Melanoma")
+septabs <- lapply(septabs.files, function(x) read.table(paste("brackout/CUT-Melanoma", x, sep = "/"),
+                                                        header = TRUE, sep = "\t", stringsAsFactors = FALSE))
+names(septabs) <- gsub("(*).txt", "\\1", septabs.files)
+```
+
+```{r}
+aggmel <- lapply(names(septabs), function(x) septabs[[x]] %>% mutate(sample=x) %>% select(sample, name, new_est_reads)) %>%
+  bind_rows() %>%
+  mutate(name = make.names(name)) 
+  
+
+aggmel <- aggmel %>%
+  mutate(name = str_trunc(name, 9999, "right")) %>%
+  spread(key = "name", value = "new_est_reads") %>%
+  gather(-sample, key = "name", value = "new_est_reads") %>%
+  mutate(new_est_reads = ifelse(is.na(new_est_reads), 0, new_est_reads)) %>%
+  spread(key = "name", value = "new_est_reads")
+```
+
+
+```{r}
+write.table(aggmel, "aggregates/aggcounts_CUT-Melanoma.txt", row.names = FALSE, quote=FALSE, sep = "\t")
+```
+
+
+# RenalCellCarcinoma
+```{r}
+septabs.files <- list.files("brackout/RenalCellCarcinoma")
+septabs <- lapply(septabs.files, function(x) read.table(paste("brackout/RenalCellCarcinoma", x, sep = "/"),
+                                                        header = TRUE, sep = "\t", stringsAsFactors = FALSE))
+names(septabs) <- gsub("(*).txt", "\\1", septabs.files)
+```
+
+```{r}
+aggren <- lapply(names(septabs), function(x) septabs[[x]] %>% mutate(sample=x) %>% select(sample, name, new_est_reads)) %>%
+  bind_rows() %>%
+  mutate(name = make.names(name)) 
+  
+
+aggren <- aggren %>%
+  mutate(name = str_trunc(name, 9999, "right")) %>%
+  spread(key = "name", value = "new_est_reads") %>%
+  gather(-sample, key = "name", value = "new_est_reads") %>%
+  mutate(new_est_reads = ifelse(is.na(new_est_reads), 0, new_est_reads)) %>%
+  spread(key = "name", value = "new_est_reads")
+```
+
+
+```{r}
+write.table(aggren, "aggregates/aggcounts_RenalCellCarcinoma.txt", row.names = FALSE, quote=FALSE, sep = "\t")
+```
+
+# SAR-Sarcoma
+```{r}
+septabs.files <- list.files("brackout/SAR-Sarcoma")
+septabs <- lapply(septabs.files, function(x) read.table(paste("brackout/SAR-Sarcoma", x, sep = "/"),
+                                                        header = TRUE, sep = "\t", stringsAsFactors = FALSE))
+names(septabs) <- gsub("(*).txt", "\\1", septabs.files)
+```
+
+```{r}
+aggsar <- lapply(names(septabs), function(x) septabs[[x]] %>% mutate(sample=x) %>% select(sample, name, new_est_reads)) %>%
+  bind_rows() %>%
+  mutate(name = make.names(name)) 
+  
+
+aggsar <- aggsar %>%
+  mutate(name = str_trunc(name, 9999, "right")) %>%
+  spread(key = "name", value = "new_est_reads") %>%
+  gather(-sample, key = "name", value = "new_est_reads") %>%
+  mutate(new_est_reads = ifelse(is.na(new_est_reads), 0, new_est_reads)) %>%
+  spread(key = "name", value = "new_est_reads")
+```
+
+
+```{r}
+write.table(aggsar, "aggregates/aggcounts_SAR-Sarcoma.txt", row.names = FALSE, quote=FALSE, sep = "\t")
+```
