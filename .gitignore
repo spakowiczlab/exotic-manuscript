@@ -40,3 +40,7 @@ rsconnect/
 
 # text files containing download urls
 *.txt
+
+# large CIBERSORT csvs
+*.csv
+

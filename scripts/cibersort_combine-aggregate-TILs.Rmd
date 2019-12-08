@@ -1,0 +1,86 @@
+---
+title: "cibersort_combine-aggregate-TILs"
+author: "Daniel Spakowicz"
+date: "12/7/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+
+library(tidyverse)
+```
+
+# Project exoTCC
+## Estimating tumor infiltrating lymphocytes from RNAseq data
+
+This script reads in CIBERSORT estimates of absolute immune cell counts and aggregates to TIL fractions.
+
+```{r combine}
+# Identify all cibersort output files
+files <- list.files("../data/split-deconvolved-aggcuff_absolute/",
+                    full.names = TRUE)
+
+# Read in all files
+x <- lapply(files, read_csv)
+
+# Combine to a single dataframe
+cib <- bind_rows(x)
+
+colnames(cib)
+
+# Remove p-value, Pearson Correlation and Absolute score
+cib.c <-
+  cib %>%
+  select(-"P-value", -"Pearson Correlation", -"Absolute score")
+```
+
+Are these normalized relative abundances? If so, the rows should sum to 1.
+
+```{r sanity check}
+# All should be false, and therefore sum to 0
+sum(
+  rowSums(
+  cib.c[, -1 ]) == 1
+  )
+
+```
+
+This result suggests that these are the absolute estimations from CIBERSORT, from which I'll estimate the TIL fraction.
+
+From Wikipedia:
+
+>Tumor-infiltrating lymphocytes are white blood cells that have left the bloodstream and migrated towards a tumor. They include T cells and B cells and are part of the larger category of ‘tumor-infiltrating immune cells’ which consist of both mononuclear and polymorphonuclear immune cells, (i.e., T cells, B cells, natural killer cells, macrophages, neutrophils, dendritic cells, mast cells, eosinophils, basophils, etc.) in variable proportions. Their abundance varies with tumor type and stage and in some cases relates to disease prognosis.
+
+```{r}
+tils <- 
+  cib.c %>%
+  select(matches("T |B |NK |Macro|Neut|Dend|Mast|Eosin|Basoph"))  %>%
+  mutate(TILs = rowSums(.[,-1]))
+```
+
+```{r}
+cancer.key <- read_csv("../exotcc_deidentified-ids.csv")
+  
+
+cib.tils <- 
+  tils %>%
+  full_join(cancer.key, by = c("Input Sample" = "id"))
+
+# Do all of the samples have estimated TILs?
+nrow(cancer.key) == nrow(cib.tils)
+```
+
+Plot TILs by cancer
+
+```{r}
+cib.tils %>%
+  ggplot(aes(x = cancer, y = TILs)) +
+  geom_violin() +
+  geom_boxplot(width = 0.2) +
+  geom_jitter(width = 0.2, alpha = 0.5) +
+  theme_bw()
+```
+
