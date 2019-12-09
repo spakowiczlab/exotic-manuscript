@@ -20,7 +20,8 @@ This script reads in CIBERSORT estimates of absolute immune cell counts and aggr
 
 ```{r combine}
 # Identify all cibersort output files
-files <- list.files("../data/split-deconvolved-aggcuff_absolute/",
+files <- list.files(path = "../data/split-deconvolved-aggcuff_absolute/",
+                    pattern = "^CIBER*",
                     full.names = TRUE)
 
 # Read in all files
@@ -78,9 +79,17 @@ Plot TILs by cancer
 ```{r}
 cib.tils %>%
   ggplot(aes(x = cancer, y = TILs)) +
-  geom_violin() +
+  geom_violin(aes(fill = cancer), show.legend = FALSE) +
   geom_boxplot(width = 0.2) +
   geom_jitter(width = 0.2, alpha = 0.5) +
   theme_bw()
+```
+
+```{r}
+write.csv(x = cib.tils,
+          file = paste0("../data/split-deconvolved-aggcuff_absolute/",
+                        format(Sys.Date(), "%F"), 
+                        "_cibersort_absolute_aggregated+TILS.csv")
+          )
 ```
 
