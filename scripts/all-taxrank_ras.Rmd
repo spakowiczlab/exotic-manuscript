@@ -11,28 +11,53 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r read in species names}
+exo <- read_csv("../data/aggcounts_all.csv")
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-x <- read_csv("../data/aggcounts_all.csv")
-
-
-x %>%
+exo %>%
   colnames %>%
   head
-
 ```
 
 Now need to find the taxonomy information from the kraken or bracken outputs.
 
 ```{r taxonomy}
+tax <- read.table("../../../ncbi-taxonomy/fullnamelineage.dmp", sep = "\t",
+                fill = TRUE,
+                stringsAsFactors = FALSE)
+
+tax$V1 <- as.numeric(tax$V1)
+
+head(tax)
+
+files <- list.files(path = "../data/",
+                    pattern = "SL\\d*.txt",
+                    full.names = TRUE,
+                    recursive = TRUE)
+
+ReadAndFilter <- function(file) {
+    read.table(file, sep = "\t") %>%
+    filter(V4 == "S") %>%
+    select(V5)
+}
+
+all.ids <- lapply(files, ReadAndFilter)
+
+species.ids <- bind_rows(all.ids) %>%
+  unique %>%
+  rename("taxid" = "V5")
+
+species.names <- 
+  species.ids %>%
+  left_join(tax, by = c("taxid" = "V1"))
+
+tax[grep("160808", tax$V1),]
+
+
 
 
 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+This is missing so many ids! Why!?

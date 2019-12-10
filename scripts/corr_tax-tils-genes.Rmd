@@ -1,0 +1,132 @@
+---
+title: "Correlations with taxa, TILs and gene expression"
+author: "Daniel Spakowicz"
+date: "12/9/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+```{r exogenous sequences relative abundances}
+exo <- read.table("../data/agg_exo-ra.txt",
+                  header = TRUE,
+                  sep = "\t")
+head(colnames(exo))
+```
+
+```{r}
+genes <- read.table("../data/aggcuff_all.txt",
+                    header = TRUE,
+                    sep = "\t") %>%
+   gather(sample, value, -gene_id) %>% 
+   spread(gene_id, value)
+
+# DDX58 = RIG-I, MB21D1 = cGAS
+genes.sub <- 
+  genes %>%
+  select(sample, DDX58, MB21D1)
+```
+
+```{r}
+tils <- read.csv("../data/split-deconvolved-aggcuff_absolute/2019-12-09_cibersort_absolute_aggregated+TILS.csv")
+```
+
+```{r cancer key}
+key <- read.csv("../data/exotcc_deidentified-ids.csv") %>%
+  rename("sample" = "id")
+```
+
+Are TILs enriched in any cancer?
+
+```{r}
+tils.sub <- 
+  tils %>%
+  select(Input.Sample, TILs) %>%
+  rename("sample" = "Input.Sample") %>%
+  full_join(key)
+
+kruskal.test(TILs ~ cancer, data = tils.sub)
+summary(glm(TILs ~ cancer, data = tils.sub))
+
+
+tils.sub %>%
+  ggplot(aes(x = cancer, y = TILs)) +
+  geom_violin() +
+  geom_jitter() +
+  theme_bw()
+```
+
+```{r}
+tils.sub %>%
+  group_by(cancer) %>%
+  summarize(median = median(TILs))
+```
+
+```{r}
+genes.sub %>%
+  left_join(key)
+
+genes.sub.c <- 
+  genes.sub %>%
+  spread(cancer, DDX58)
+```
+
+```{r}
+t.g.exo <- 
+  tils.sub %>%
+  left_join(genes.sub) %>%
+  left_join(exo) %>%
+  select(-cancer)
+```
+
+```{r}
+cor.test(t.g.exo$TILs, t.g.exo$DDX58, method = "spearman")
+cor.test(t.g.exo$TILs, t.g.exo$MB21D1, method = "spearman")
+```
+
+```{r}
+cor.mat <- 
+  t.g.exo %>%
+  select(-sample) %>%
+  as.matrix
+
+all.corr <- Hmisc::rcorr(cor.mat, type = "spearman")
+
+cor.p.df <- all.corr$P %>%
+  as.data.frame() %>%
+  rownames_to_column("Var1") %>%
+  gather(Var2, pval, -Var1) %>%
+  drop_na
+
+cor.df <- 
+  all.corr$r %>%
+  as.data.frame %>%
+  rownames_to_column("Var1") %>%
+  gather(Var2, r, -Var1) %>%
+  drop_na %>%
+  full_join(cor.p.df) %>%
+  mutate(fdr = p.adjust(pval, method = "fdr")) %>%
+  arrange(-r)
+
+intersting <- 
+  cor.df %>%
+  filter(Var1 == c("TILs", "DDX58", "MB21D1"))
+  
+intersting[grep("Acinetobacter.", intersting$Var2),]
+intersting[grep("Acidipropionibacterium", intersting$Var2),]
+```
+
+```{r}
+cor.test(t.g.exo$TILs, t.g.exo[,5:ncol(t.g.exo)])
+
+tils.cor <- c()
+for i in 1:ncol(t.g.exo[,-c(1:4)]) {
+  tils.cor[i] <- cor.test(t.g.exo$TILs, )
+}
+```
+
+

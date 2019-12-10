@@ -43,3 +43,10 @@ rsconnect/
 
 # large CIBERSORT csvs
 CIB*.csv
+
+# zipped files (typically downloaded from OSC)
+*.zip
+
+# other csv files
+*.csv
+
