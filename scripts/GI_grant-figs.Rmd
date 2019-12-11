@@ -12,6 +12,7 @@ library(dplyr)
 library(RColorBrewer)
 library(ggplot2)
 library(forcats)
+library(broom)
 ```
 
 ```{r exogenous sequences relative abundances}
@@ -59,7 +60,39 @@ This graph is getting messed up by a few species that
 
 # Heatmap of phyla correlations to TIL's
 
+## Calculate correlations
 
+```{r}
+int.cells <- c("T.cells.CD8", "NK.cells.resting", "NK.cells.activated", "T.cells.regulatory..Tregs.", "Neutrophils")
+phyls <- ifelse(is.na(phyls), "<NA>", phyls)
+imcells.gi <- imcells %>%
+  filter(cancer == "GI") %>%
+  select(Input.Sample, int.cells)
+
+exo.gi.imphyl <- exo.gi.phyl %>%
+  spread(key = "phylum", value = "phylum.ra") %>%
+  rename("Input.Sample" = "sample") %>%
+  left_join(imcells.gi)
+```
+
+```{r}
+cor.res <- list()
+cor.res.cell <- list()
+for(p in phyls){
+  for(i in int.cells){
+    cor.res.cell[[i]] <- cor.test(as.numeric(exo.gi.imphyl[[p]]), as.numeric(exo.gi.imphyl[[i]]), 
+                                  method = "spearman") %>%
+      tidy() %>%
+      select(estimate, p.value) %>%
+      mutate(cell = i, phylum = p)
+  }
+  cor.res[[p]] <- cor.res.cell
+}
+```
+
+```{r}
+cor.df <- bind_rows(lapply(cor.res, function(x) bind_rows(x)))
+```
 
 
 
