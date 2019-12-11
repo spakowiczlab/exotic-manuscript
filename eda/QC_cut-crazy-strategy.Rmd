@@ -1,0 +1,184 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+In this document, we will be performing QC to remove those species with dubious presence in the exoTCC data. We will be doing this by utilizing information on lung cancer contaminants to find a prevalence and/or relative abundance cutoff that will remove likely contaminants, and then applying these thresholds to the data for the other cancers. This is why this document is called the "cut crazy strategy" - our goal is to remove things we know are crazy. In this spirit, we will also be making sure our friend the scaly snail endosymbiote, and other oddities, are removed from the species pool.
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(magrittr)
+library(ggplot2)
+# library(tidyverse)
+```
+
+```{r}
+tho <- read.table("../data/aggcounts_THO-LungCancer.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+```
+
+
+# Visualizing distributions of prevalence and average relative abundance
+
+```{r}
+tho.tidy.prev <- tho %>%
+  gather(-sample, key = "microbe", value = "count") %>%
+  mutate(prev = ifelse(count > 0, 1, 0)) %>%
+  group_by(microbe) %>%
+  summarise(prev.fraction = sum(prev)/nrow(tho))
+```
+
+```{r}
+tho.tidy.ra <- tho %>%
+  gather(-sample, key = "microbe", value = "count") %>%
+  group_by(sample) %>%
+  summarise(total = sum(count))
+  # group_by(microbe) %>%
+  # summarise(prev.fraction = sum(prev)/nrow(tho))
+
+tho.tidy.ra <- tho %>%
+  gather(-sample, key = "microbe", value = "count") %>%
+  left_join(tho.tidy.ra) %>%
+  mutate(ra = count/total) %>%
+  group_by(microbe) %>%
+  summarise(ave.ra = mean(ra))
+```
+
+## Visualize prevalence
+The plot below displays the prevalence of species in the THO samples. I think it is interesting the a similar spike in the bin just above 0 is visible in the GI samples. 
+
+```{r}
+tho.tidy.prev %>%
+  ggplot(aes(x = prev.fraction)) +
+  geom_histogram() +
+  theme_bw()
+```
+
+```{r}
+summary(tho.tidy.prev$prev.fraction)
+```
+
+
+
+## Visualizing distribution of RA
+
+```{r}
+tho.tidy.ra %>%
+  ggplot(aes(x = ave.ra)) +
+  geom_histogram() +
+  theme_bw()
+```
+
+This is not a very helpful plot, and mostly shows that Homo sapiens are taking up most of the space. Let's see if this are more informative without humans in it.
+
+```{r}
+tho.tidy.ra %>%
+  filter(microbe != "Homo.sapiens") %>%
+  ggplot(aes(x = ave.ra)) +
+  geom_histogram() +
+  theme_bw()
+```
+
+It seems that humand just blow everything out of the water, to the point that the calculated abundances for everything else are zero. It's time to try calculating without the humans. But first, let us show that humans have an average relative abundance in these samples of 99.86%. 
+
+```{r}
+tho.tidy.ra %>%
+  filter(microbe == "Homo.sapiens")
+
+summary(tho.tidy.ra$ave.ra)
+```
+
+## RA: exogenous only
+```{r}
+tho.tidy.ra.exo <- tho %>%
+  select(-Homo.sapiens) %>%
+  gather(-sample, key = "microbe", value = "count") %>%
+  group_by(sample) %>%
+  summarise(total = sum(count))
+  # group_by(microbe) %>%
+  # summarise(prev.fraction = sum(prev)/nrow(tho))
+
+tho.tidy.ra.exo <- tho %>%
+  select(-Homo.sapiens) %>%
+  gather(-sample, key = "microbe", value = "count") %>%
+  left_join(tho.tidy.ra.exo) %>%
+  mutate(ra = count/total) %>%
+  group_by(microbe) %>%
+  summarise(ave.ra = mean(ra))
+```
+
+```{r}
+tho.tidy.ra.exo %>%
+  ggplot(aes(x = ave.ra)) +
+  geom_histogram() +
+  theme_bw()
+```
+
+The plot is not improved, but a glance at the quartiles suggests that we at least have sensical numbers that can be used for filtering now. I am curious about which species are taking up so much of the exogenous abundance.
+```{r}
+summary(tho.tidy.ra.exo$ave.ra)
+```
+
+```{r}
+tho.tidy.ra.exo %>%
+  filter(ave.ra > 0.01)
+```
+
+
+# Combine measures and display contaminants
+
+```{r}
+tho.tidy <- tho.tidy.ra.exo %>%
+  left_join(tho.tidy.prev)
+```
+
+
+## Dubious species: endosymbionts
+
+Now, we will be looking for the prevalences of those items we consider crazy. The first category is things labelled "endosymbiont." As you can see, most of these are very low abundance and nearly all would be removed be a filter of .20 prevalence. However, there are some items here with surprisingly high prevalence.
+```{r}
+tho.tidy %>%
+  filter(grepl("endosymbiont", microbe)) 
+```
+
+
+## Dubious species: Contaminants Identified by "Interaction between the microbiome and TP53 in human lung cancer"
+
+```{r}
+tho.tidy %>%
+  filter(grepl("Herbaspirillum", microbe)) 
+```
+
+```{r}
+tho.tidy %>%
+  filter(grepl("Halomonas", microbe)) 
+```
+
+```{r}
+tho.tidy %>%
+  filter(grepl("Shewanella", microbe)) 
+```
+
+```{r}
+tho.tidy %>%
+  filter(grepl("Propionibacterium", microbe)) 
+```
+
+```{r}
+tho.tidy %>%
+  filter(grepl("Variovorax", microbe)) 
+```
+
+Most of these contaminants can be removed by a combination of a prevalence filter of .2 and a RA filter of 1e-6.
+
+```{r}
+tho.tidy %>%
+  filter(grepl("endosymbiont|Herbaspirillum|Halomonas|Shewanella|Propionibacterium|Variovorax", microbe)) %>%
+  filter(ave.ra > 0.000001 & prev.fraction > 0.2)
+
+```
+
+
+

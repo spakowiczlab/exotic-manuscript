@@ -1,0 +1,169 @@
+---
+title: "QC_filter-all-cancers"
+output: html_document
+---
+
+
+This document will be used to filter our kraken2/bracken pipeling outputs to remove likely contaminants, and report a few numbers on how many species were removed in this process and on what percentage of the sample was found to be human.
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(magrittr)
+library(ggplot2)
+```
+
+```{r define functions}
+# Create a data frame with both the fraction prevalence and average ra for a given cancer
+calcPrevandRA <- function(data){
+  tmp.ra.ex <- calc.RA.ave(data)
+  tmp.prev <- calc.prev(data)
+  
+  tmp.tidy <- tmp.ra.ex %>%
+    left_join(tmp.prev)
+  
+  return(tmp.tidy)
+}
+
+# Calculate the average relative abundance for each microbe, excluding humans
+calc.RA.ave <- function(counts){
+  tmp.totals <- calc.total.nosapiens(counts)
+  
+  tmp.ra.nosapien <- counts %>%
+    select(-Homo.sapiens) %>%
+    gather(-sample, key = "microbe", value = "count") %>%
+    left_join(tmp.totals) %>%
+    mutate(ra = count/total) %>%
+    group_by(microbe) %>%
+    summarise(ave.ra = mean(ra))
+    
+  return(tmp.ra.nosapien)
+    
+}
+
+# Calculate the relative abundance for each microbe for each sample, excluding humans
+calc.RA.exo <- function(counts){
+  tmp.totals <- calc.total.nosapiens(counts)
+  
+  tmp.ra.nosapien <- counts %>%
+    select(-Homo.sapiens) %>%
+    gather(-sample, key = "microbe", value = "count") %>%
+    left_join(tmp.totals) %>%
+    mutate(ra = count/total) %>%
+    select(sample, microbe, ra) %>%
+    spread(key = "microbe", value = "ra")
+    
+  return(tmp.ra.nosapien)
+    
+}
+
+# Calculate the fraction prevalence for each microbe
+calc.prev <- function(counts){
+  tmp.n <- nrow(counts)
+  
+  tmp.tidy.prev <- counts %>%
+    gather(-sample, key = "microbe", value = "count") %>%
+    mutate(prev = ifelse(count > 0, 1, 0)) %>%
+    group_by(microbe) %>%
+    summarise(prev.fraction = sum(prev)/tmp.n)
+  
+  return(tmp.tidy.prev)
+}
+
+# Get total number of microbes in each sample, excluding humans
+calc.total.nosapiens <- function(tmp){
+  tmp.totals <- tmp %>%
+    select(-Homo.sapiens) %>%
+    gather(-sample, key = "microbe", value = "count") %>%
+    group_by(sample) %>%
+    summarise(total = sum(count))
+  
+  return(tmp.totals)
+}
+```
+
+```{r read in cancer counts}
+tho <- read.table("../data/aggcounts_THO-LungCancer.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+gi <- read.table("../data/aggcounts_GI-ColorectalCancer.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+gu <- read.table("../data/aggcounts_GU-BladderCancer.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+renal <- read.table("../data/aggcounts_RenalCellCarcinoma.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+sar <- read.table("../data/aggcounts_SAR-Sarcoma.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+cut <- read.table("../data/aggcounts_CUT-Melanoma.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+
+cancerkeys <- read.csv("../data/exotcc_deidentified-ids.csv") %>%
+  mutate(sample = id) %>%
+  select(sample, cancer)
+```
+
+```{r convenient list}
+allcancers <- list(tho, gi, gu, renal, sar, cut)
+cancer.names <- c('tho', 'gi', 'gu', 'renal', 'sar', 'cut')
+names(allcancers) <- cancer.names
+```
+
+# QC and exogenous RA calculation
+
+```{r find bad microbes}
+allcancers.stats <- lapply(allcancers, function(x) calcPrevandRA(x))
+bad.microbes <- lapply(allcancers.stats, function(x) x %>% filter(prev.fraction <= 0.2|ave.ra <= 0.000001))
+bad.microbes.names <- lapply(bad.microbes, function(x) x[["microbe"]])
+```
+
+```{r remove bad microbes and calculate exo ra}
+allcancers.filtered <- lapply(cancer.names, function(x) allcancers[[x]] %>% dplyr::select(-c(bad.microbes.names[[x]])))
+
+allcancer.filtered.exora <- lapply(allcancers.filtered, function(x) calc.RA.exo(x))
+```
+
+```{r combine and save tables}
+test <- bind_rows(allcancer.filtered.exora)
+test <- cancerkeys %>%
+  left_join(test)
+
+
+write.table(test, "../data/agg_exo-ra.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+```
+
+# Reporting
+
+## What percentage of reads are human?
+```{r}
+alltotals.nosap <- lapply(allcancers, function(x) calc.total.nosapiens(x))
+allsapiens <- lapply(allcancers, function(x) x %>% select(sample, "Homo.sapiens"))
+
+allcalc <- left_join(bind_rows(alltotals.nosap), bind_rows(allsapiens)) %>%
+  left_join(cancerkeys) %>%
+  mutate(RA = Homo.sapiens/(total + Homo.sapiens))
+```
+
+```{r}
+allcalc %>%
+  group_by(cancer) %>%
+  summarise(Homo.sapiens.RA = as.character(mean(RA)))
+
+mean(allcalc$RA)
+```
+
+## How many species did we have? How many species were removed by filtering?
+
+```{r}
+spec.counts <- bind_rows(lapply(allcancers, function(x) ncol(x)-1))
+
+spec.lost <- bind_rows(lapply(bad.microbes, function(x) nrow(x)))
+```
+
+```{r}
+frac.lost <- as.data.frame(bind_rows(spec.counts, spec.lost))
+rownames(frac.lost) <- c("original", "lost")
+frac.lost <- frac.lost %>%
+  t() %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "cancer") %>%
+  mutate(fraction.removed = lost/original,
+         remaining = original-lost)
+
+frac.lost
+```
+
