@@ -36,12 +36,17 @@ exo.gi.phyl <- exo.tax %>%
 
 phyls <- unique(exo.gi.phyl$phylum)
 phyl.count <- length(phyls)
-getPal <- colorRampPalette(brewer.pal(9, "Set1"))
+getPal <- colorRampPalette(brewer.pal(8, "Dark2"))
+
+getord <- exo.gi.phyl %>%
+  group_by(phylum) %>%
+  summarise(Mean = mean(phylum.ra, na.rm = TRUE)) %>%
+  arrange(Mean)
 ```
 
 ```{r}
 exo.gi.phyl %>%
-  ggplot(aes(x = sample, y = phylum.ra, fill = phylum)) +
+  ggplot(aes(x = sample, y = phylum.ra, fill = fct_relevel(phylum, rev(getord$phylum)))) +
   geom_col() +
   scale_fill_manual(breaks = phyls, values = getPal(phyl.count), na.value = "grey", name = "Phylum") +
   labs(x = "", y = "Relative Abundance") +
