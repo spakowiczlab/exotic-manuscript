@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(RColorBrewer)
 library(ggplot2)
+library(forcats)
 ```
 
 ```{r exogenous sequences relative abundances}
@@ -29,6 +30,7 @@ imcells <- read.csv("../data/split-deconvolved-aggcuff_absolute/2019-12-09_ciber
 exo.gi.phyl <- exo.tax %>%
   left_join(key) %>%
   filter(cancer == "GI") %>%
+  mutate(phylum = ifelse(spec.join == "Proteus.phage.VB_PmiS.Isfahan", "Proteus phage", phylum)) %>%
   group_by(sample, phylum) %>%
   summarise(phylum.ra = sum(ra, na.rm = TRUE))
 
@@ -41,7 +43,8 @@ getPal <- colorRampPalette(brewer.pal(9, "Set1"))
 exo.gi.phyl %>%
   ggplot(aes(x = sample, y = phylum.ra, fill = phylum)) +
   geom_col() +
-  scale_fill_manual(breaks = phyls, values = getPal(phyl.count), na.value = "grey") +
+  scale_fill_manual(breaks = phyls, values = getPal(phyl.count), na.value = "grey", name = "Phylum") +
+  labs(x = "", y = "Relative Abundance") +
   theme_bw() +
   theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
   ggsave("../figures/gi_stacked-bar.png")
