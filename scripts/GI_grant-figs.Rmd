@@ -1,0 +1,57 @@
+---
+title: "Correlations with taxa, TILs and gene expression"
+author: "Daniel Spakowicz"
+date: "12/9/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(RColorBrewer)
+library(ggplot2)
+```
+
+```{r exogenous sequences relative abundances}
+exo.tax <- read.csv("../data/agg_exo-ra_taxonomy.csv", stringsAsFactors = FALSE)
+key <- read.csv("../data/exotcc_deidentified-ids.csv", stringsAsFactors = FALSE) %>%
+  rename("sample" = "id")
+imcells <- read.csv("../data/split-deconvolved-aggcuff_absolute/2019-12-09_cibersort_absolute_aggregated+TILS.csv",
+                    stringsAsFactors = FALSE)
+```
+
+
+# Stacked bar at Phylum level
+
+## All data
+```{r}
+exo.gi.phyl <- exo.tax %>%
+  left_join(key) %>%
+  filter(cancer == "GI") %>%
+  group_by(sample, phylum) %>%
+  summarise(phylum.ra = sum(ra, na.rm = TRUE))
+
+phyls <- unique(exo.gi.phyl$phylum)
+phyl.count <- length(phyls)
+getPal <- colorRampPalette(brewer.pal(9, "Set1"))
+```
+
+```{r}
+exo.gi.phyl %>%
+  ggplot(aes(x = sample, y = phylum.ra, fill = phylum)) +
+  geom_col() +
+  scale_fill_manual(breaks = phyls, values = getPal(phyl.count), na.value = "grey") +
+  theme_bw() +
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
+  ggsave("../figures/gi_stacked-bar.png")
+```
+This graph is getting messed up by a few species that 
+
+
+# Heatmap of phyla correlations to TIL's
+
+
+
+
+
