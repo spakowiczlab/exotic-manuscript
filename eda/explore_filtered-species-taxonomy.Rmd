@@ -1,0 +1,112 @@
+---
+title: "Taxonomy of retained species"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(magrittr)
+library(tidyr)
+library(stringr)
+```
+
+```{r}
+spec.key <- read.table("../data/knames.txt", sep = "\t")
+colnames(spec.key) <- c("taxonomy", "reads")
+
+exo.ra <- read.table("../data/agg_exo-ra.txt", sep = "\t", header = TRUE)
+```
+
+# Formatting taxonomy
+
+```{r}
+spec.key <- spec.key %>%
+  filter(grepl("s__", taxonomy)) %>%
+  mutate(domain = gsub("(d__\\w+).*", "\\1", taxonomy),
+         kingdom = gsub(".*(k__\\w+).*", "\\1", taxonomy),
+         phylum = gsub(".*(p__\\w+).*", "\\1", taxonomy),
+         class = gsub(".*(c__\\w+).*", "\\1", taxonomy),
+         order = gsub(".*(o__\\w+).*", "\\1", taxonomy),
+         family = gsub(".*(f__\\w+).*", "\\1", taxonomy),
+         genus = gsub(".*(g__\\w+).*", "\\1", taxonomy),
+         species = gsub(".*(s__.*)", "\\1", taxonomy)
+  ) %>%
+  mutate(kingdom = ifelse(grepl("k__", kingdom), kingdom, NA),
+         phylum = ifelse(grepl("p__", phylum), phylum, NA),
+         class = ifelse(grepl("c__", class), class, NA),
+         order = ifelse(grepl("o__", order), order, NA),
+         family = ifelse(grepl("f__", family), family, NA),
+         genus = ifelse(grepl("g__", genus), genus, NA),
+         species = ifelse(grepl("s__", species), species, NA)
+  ) %>%
+  mutate(domain = gsub("^\\w__", "", domain),
+         kingdom = gsub("^\\w__", "", kingdom),
+         phylum = gsub("^\\w__", "", phylum),
+         class = gsub("^\\w__", "", class),
+         order = gsub("^\\w__", "", order),
+         family = gsub("^\\w__", "", family),
+         genus = gsub("^\\w__", "", genus),
+         species = gsub("^\\w__", "", species)
+  ) %>%
+  mutate(spec.join = str_trunc(make.names(species), 9999, "right"))
+
+```
+
+# Attaching to our species
+```{r}
+ourspecs <- colnames(exo.ra[, -c(1,2)])
+
+ourtax <- spec.key %>%
+  filter(spec.join %in% ourspecs) 
+```
+
+```{r}
+ourtax %>%
+  group_by(kingdom) %>%
+  tally()
+
+ourtax %>%
+  group_by(phylum) %>%
+  tally()
+
+ourtax %>%
+  group_by(class) %>%
+  tally()
+
+
+```
+
+```{r}
+ourtax %>%
+  group_by(domain) %>%
+  tally()
+```
+
+# Calculating relative abundances for phylla
+```{r}
+phylum.ra <- exo.ra %>%
+  column_to_rownames(var = "sample") %>%
+  dplyr::select(-cancer) %>%
+  t() %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "spec.join") %>%
+  gather(-spec.join, key = "sample", value = "ra") %>%
+  left_join(spec.key)
+```
+
+```{r}
+ave.phyl.ra <- phylum.ra %>%
+  filter(!is.na(taxonomy)) %>%
+  mutate(ra = ifelse(is.na(ra), 0, ra)) %>%
+  group_by(sample, phylum) %>%
+  summarise(pyl.ra = sum(ra)) %>%
+  group_by(phylum) %>%
+  summarise(ave.ra = mean(pyl.ra)) %>%
+  arrange(desc(ave.ra))
+```
+
+```{r}
+ave.phyl.ra
+```
