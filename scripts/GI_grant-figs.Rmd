@@ -33,6 +33,15 @@ exo.gi <- exo.tax %>%
   left_join(key) %>%
   filter(cancer == "GI")
 
+# badspecs <- exo.gi %>%
+#   filter(is.na(taxonomy)) %>%
+#   mutate(domain = ifelse(grepl("phage|virus", spec.join, ignore.case = TRUE), "Viruses", domain),
+#          domain = ifelse(grepl("calothrix", spec.join, ignore.case = TRUE), "Bacteria", domain),
+#          domain = ifelse(grepl("anabaena", spec.join, ignore.case = TRUE), "Bacteria", domain),
+#          domain = ifelse(grepl("chondrocystis", spec.join, ignore.case = TRUE), "Bacteria", domain),
+#          domain = ifelse(grepl("cyanobacterium", spec.join, ignore.case = TRUE), "Bacteria", domain)
+#          )
+
 exo.gi.dom <- exo.gi %>%
   mutate(domain = ifelse(spec.join == "Proteus.phage.VB_PmiS.Isfahan", "Viruses", domain)) %>%
   group_by(sample, domain) %>%
@@ -88,7 +97,7 @@ phyls.abun <- getord$phylum[1:15]
 ```
 
 ```{r}
-int.cells <- c("T.cells.CD8", "NK.cells.resting", "NK.cells.activated", "T.cells.regulatory..Tregs.", "Neutrophils")
+int.cells <- c("T.cells.CD8", "NK.cells.resting", "NK.cells.activated", "T.cells.regulatory..Tregs.", "Neutrophils", "TILs")
 phyls.abun <- ifelse(is.na(phyls.abun), "<NA>", phyls.abun)
 imcells.gi <- imcells %>%
   filter(cancer == "GI") %>%
@@ -135,7 +144,7 @@ cor.df %>%
   scale_shape_manual(breaks = c("neg", "pos"), labels = c("Negative", "Positive"), values = c("-", "+"),
                      name = "Correlation direction") +
   scale_x_discrete(breaks = int.cells, labels = c("CD8 T-cells", "Resting NK cells", "Activated NK cells",
-                                                  "Regulatory T cells", "Neutrophils")) +
+                                                  "Regulatory T cells", "Neutrophils", "TIL")) +
   labs(x = "", y = "") +
   theme_bw() +
   theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
