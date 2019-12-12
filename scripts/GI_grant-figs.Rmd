@@ -33,22 +33,44 @@ exo.gi <- exo.tax %>%
   left_join(key) %>%
   filter(cancer == "GI")
 
-# badspecs <- exo.gi %>%
-#   filter(is.na(taxonomy)) %>%
-#   mutate(domain = ifelse(grepl("phage|virus", spec.join, ignore.case = TRUE), "Viruses", domain),
-#          domain = ifelse(grepl("calothrix", spec.join, ignore.case = TRUE), "Bacteria", domain),
-#          domain = ifelse(grepl("anabaena", spec.join, ignore.case = TRUE), "Bacteria", domain),
-#          domain = ifelse(grepl("chondrocystis", spec.join, ignore.case = TRUE), "Bacteria", domain),
-#          domain = ifelse(grepl("cyanobacterium", spec.join, ignore.case = TRUE), "Bacteria", domain)
-#          )
+badspecs <- exo.gi %>%
+  filter(is.na(taxonomy)) %>%
+  mutate(domain = ifelse(grepl("phage|virus", spec.join, ignore.case = TRUE), "Viruses", domain),
+         domain = ifelse(grepl("calothrix", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("anabaena", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("chondrocystis", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("cyanobacterium", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("dolichospermum", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("euhalothece", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("fischerella", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("geitlerinema", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("geminocystis", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("gloeobacter", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("gloeothece", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("limnospira", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("microcoleus", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("moorea", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("nostoc", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("oscillatoria", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("prochlorococcus", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("rivularia", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("synechococcus", spec.join, ignore.case = TRUE) & !grepl("phage|virus", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("tenericutes", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("trichodesmium", spec.join, ignore.case = TRUE), "Bacteria", domain)
+         )
 
+exo.gi <- exo.gi %>%
+  filter(!(spec.join %in% badspecs$spec.join))
+
+exo.gi <- bind_rows(exo.gi, badspecs)
+```
+
+```{r}
 exo.gi.dom <- exo.gi %>%
   mutate(domain = ifelse(spec.join == "Proteus.phage.VB_PmiS.Isfahan", "Viruses", domain)) %>%
   group_by(sample, domain) %>%
   summarise(domain.ra = sum(ra, na.rm = TRUE))
-```
 
-```{r}
 doms <- unique(exo.gi.dom$domain)
 dom.count <- length(doms)
 getPal <- colorRampPalette(brewer.pal(8, "Dark2"))
