@@ -13,6 +13,7 @@ library(RColorBrewer)
 library(ggplot2)
 library(forcats)
 library(broom)
+library(tidyr)
 ```
 
 ```{r exogenous sequences relative abundances}
@@ -28,9 +29,48 @@ imcells <- read.csv("../data/split-deconvolved-aggcuff_absolute/2019-12-09_ciber
 
 ## All data
 ```{r}
-exo.gi.phyl <- exo.tax %>%
+exo.gi <- exo.tax %>%
   left_join(key) %>%
-  filter(cancer == "GI") %>%
+  filter(cancer == "GI")
+
+exo.gi.dom <- exo.gi %>%
+  mutate(domain = ifelse(spec.join == "Proteus.phage.VB_PmiS.Isfahan", "Viruses", domain)) %>%
+  group_by(sample, domain) %>%
+  summarise(domain.ra = sum(ra, na.rm = TRUE))
+```
+
+```{r}
+doms <- unique(exo.gi.dom$domain)
+dom.count <- length(doms)
+getPal <- colorRampPalette(brewer.pal(8, "Dark2"))
+
+getord <- exo.gi.dom %>%
+  group_by(domain) %>%
+  summarise(Mean = mean(domain.ra, na.rm = TRUE)) %>%
+  arrange(Mean)
+```
+
+
+
+```{r}
+exo.gi.dom %>%
+  ggplot(aes(x = sample, y = domain.ra, fill = fct_relevel(domain, rev(getord$domain)))) +
+  geom_col() +
+  scale_fill_manual(breaks = doms, values = getPal(dom.count), na.value = "grey", name = "Domain") +
+  labs(x = "", y = "Relative Abundance") +
+  theme_bw() +
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
+  ggsave("../figures/gi_stacked-bar.png")
+```
+
+
+
+# Heatmap of phyla correlations to TIL's
+
+## Calculate correlations
+
+```{r}
+exo.gi.phyl <- exo.gi %>%
   mutate(phylum = ifelse(spec.join == "Proteus.phage.VB_PmiS.Isfahan", "Proteus phage", phylum)) %>%
   group_by(sample, phylum) %>%
   summarise(phylum.ra = sum(ra, na.rm = TRUE))
@@ -42,29 +82,14 @@ getPal <- colorRampPalette(brewer.pal(8, "Dark2"))
 getord <- exo.gi.phyl %>%
   group_by(phylum) %>%
   summarise(Mean = mean(phylum.ra, na.rm = TRUE)) %>%
-  arrange(Mean)
+  arrange(desc(Mean))
+
+phyls.abun <- getord$phylum[1:15]
 ```
-
-```{r}
-exo.gi.phyl %>%
-  ggplot(aes(x = sample, y = phylum.ra, fill = fct_relevel(phylum, rev(getord$phylum)))) +
-  geom_col() +
-  scale_fill_manual(breaks = phyls, values = getPal(phyl.count), na.value = "grey", name = "Phylum") +
-  labs(x = "", y = "Relative Abundance") +
-  theme_bw() +
-  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
-  ggsave("../figures/gi_stacked-bar.png")
-```
-This graph is getting messed up by a few species that 
-
-
-# Heatmap of phyla correlations to TIL's
-
-## Calculate correlations
 
 ```{r}
 int.cells <- c("T.cells.CD8", "NK.cells.resting", "NK.cells.activated", "T.cells.regulatory..Tregs.", "Neutrophils")
-phyls <- ifelse(is.na(phyls), "<NA>", phyls)
+phyls.abun <- ifelse(is.na(phyls.abun), "<NA>", phyls.abun)
 imcells.gi <- imcells %>%
   filter(cancer == "GI") %>%
   select(Input.Sample, int.cells)
@@ -78,7 +103,7 @@ exo.gi.imphyl <- exo.gi.phyl %>%
 ```{r}
 cor.res <- list()
 cor.res.cell <- list()
-for(p in phyls){
+for(p in phyls.abun){
   for(i in int.cells){
     cor.res.cell[[i]] <- cor.test(as.numeric(exo.gi.imphyl[[p]]), as.numeric(exo.gi.imphyl[[i]]), 
                                   method = "spearman") %>%
@@ -99,7 +124,7 @@ cor.df <- bind_rows(lapply(cor.res, function(x) bind_rows(x)))
 ```{r}
 cor.df %>%
   mutate(dir = ifelse(estimate < 0, "neg", "pos")) %>%
-  ggplot(aes(x = cell, y = phylum, fill = p.value, shape = dir)) +
+  ggplot(aes(x = cell, y = fct_relevel(phylum, rev(phyls.abun)), fill = p.value, shape = dir)) +
   geom_tile() +
   geom_point(size = 3) +
   scale_fill_distiller(guide = "legend", breaks = c(0.00001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), 
@@ -109,10 +134,12 @@ cor.df %>%
                        name = "P.value") +
   scale_shape_manual(breaks = c("neg", "pos"), labels = c("Negative", "Positive"), values = c("-", "+"),
                      name = "Correlation direction") +
+  scale_x_discrete(breaks = int.cells, labels = c("CD8 T-cells", "Resting NK cells", "Activated NK cells",
+                                                  "Regulatory T cells", "Neutrophils")) +
   labs(x = "", y = "") +
   theme_bw() +
   theme(axis.text.x = element_text(hjust = 1, angle = 45)) +
-  ggsave("../figures/gi_corr-pvalue-heatmap.png", width = 5, height = 8)
+  ggsave("../figures/gi_corr-pvalue-heatmap.png", width = 5, height = 7)
 ```
 
 
