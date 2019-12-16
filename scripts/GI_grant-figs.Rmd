@@ -103,6 +103,7 @@ exo.gi.dom %>%
 ```{r}
 exo.gi.phyl <- exo.gi %>%
   mutate(phylum = ifelse(spec.join == "Proteus.phage.VB_PmiS.Isfahan", "Proteus phage", phylum)) %>%
+  filter(!is.na(phylum)) %>%
   group_by(sample, phylum) %>%
   summarise(phylum.ra = sum(ra, na.rm = TRUE))
 
@@ -120,7 +121,7 @@ phyls.abun <- getord$phylum[1:15]
 
 ```{r}
 int.cells <- c("T.cells.CD8", "NK.cells.resting", "NK.cells.activated", "T.cells.regulatory..Tregs.", "Neutrophils", "TILs")
-phyls.abun <- ifelse(is.na(phyls.abun), "<NA>", phyls.abun)
+# phyls.abun <- ifelse(is.na(phyls.abun), "<NA>", phyls.abun)
 imcells.gi <- imcells %>%
   filter(cancer == "GI") %>%
   select(Input.Sample, int.cells)
