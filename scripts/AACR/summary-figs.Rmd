@@ -7,12 +7,16 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 ```
 
 # Load data
 
 ```{r}
-exo.ra <- read.table("../data/agg_exo-ra.txt", header = TRUE)
+exo.ra <- read.table("../../data/agg_exo-ra.txt", header = TRUE)
 ```
 
 
@@ -32,8 +36,9 @@ exo.ra.l <- exo.ra %>%
 
 exo.ra.l %>%
   ggplot(aes(x = id, y = percent, fill = micro))+
+  facet_wrap(vars(cancer)) +
   geom_bar(position="fill", stat = "identity") +
-  theme(legend.position = "none") +
-  ggsave("lesters-stacked-bar_samples.pdf", height = 10, width = 10)
+  theme(legend.position = "none", axis.text.x = element_blank()) +
+  ggsave("../../figures/AACR/stacked-bar_microbes.pdf", height = 10, width = 10)
 
 ```
