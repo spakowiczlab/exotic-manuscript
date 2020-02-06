@@ -11,12 +11,13 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(forcats)
 ```
 
 # Load data
 
 ```{r}
-exo.ra <- read.table("../../data/agg_exo-ra.txt", header = TRUE)
+exo.ra <- read.table("../../data/agg_exo-ra.txt", header = TRUE, stringsAsFactors = F)
 ```
 
 
@@ -33,12 +34,24 @@ exo.ra[is.na(exo.ra)] <- 0
 exo.ra.l <- exo.ra %>%
   gather(-sample, -cancer, key = "micro", value = "percent")
 
+get.mic.ord <- exo.ra.l %>%
+  group_by(micro) %>%
+  summarise(mean.pr = mean(percent)) %>%
+  arrange(mean.pr)
 
 exo.ra.l %>%
-  ggplot(aes(x = id, y = percent, fill = micro))+
-  facet_wrap(vars(cancer)) +
+  ggplot(aes(x = sample,
+             y = percent, 
+             # fill = fct_relevel(micro, get.mic.ord$micro)
+             fill = micro
+             ))+
+  facet_wrap(vars(cancer), scales = "free_x", nrow = 1) +
   geom_bar(position="fill", stat = "identity") +
-  theme(legend.position = "none", axis.text.x = element_blank()) +
-  ggsave("../../figures/AACR/stacked-bar_microbes.pdf", height = 10, width = 10)
+  labs(x = "", y = "") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(), 
+        panel.grid.major = element_blank()) +
+  ggsave("../../figures/AACR/stacked-bar_microbes.png", height = 10, width = 10)
 
 ```
