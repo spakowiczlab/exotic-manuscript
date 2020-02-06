@@ -16,11 +16,40 @@ library(readxl)
 
 # Load data
 ```{r}
+# I'm storing these in my T drive as I suspect the may have identifiable information
 clinfiles <- list.files("T:/Labs/Spakowicz/data/exoTCC/", full.names = F)
 clinfiles <- paste0("T:/Labs/Spakowicz/data/exoTCC/", clinfiles)
 
 clindat <- lapply(clinfiles, function(x) read_excel(x))
 ```
+
+
+# Coercing the clinical data into a tidier object
+```{r}
+
+for(i in 1:length(clindat)){
+  # First, I don't want to have to deal with names poorly formatted for R. 
+  colnames(clindat[[i]]) <- make.names(colnames(clindat[[i]]))
+}
+
+# Now, let's display the new column names and find the information needed for the table
+
+lapply(clindat, function(x) colnames(x))
+```
+While the first two objects have similar naming schemes and information available, the second object may need to be handled separately.
+
+```{r}
+clindat.form1 <- bind_rows(clindat[[1]], clindat[[3]]) %>%
+  select(-contains("Days")) # I'm excluding this here because we're not doing any calculations with it and the                                      objects don't want to join if I include it
+
+clindat.form2 <- clindat[[2]] %>%
+  rename( "Cancer.Stage.at.Collection" = "Stage") %>%
+  select(colnames(clindat.form1))
+
+clindat.form <- bind_rows(clindat.form1, clindat.form2)
+
+```
+
 
 # Format  for the table
 ```{r}
