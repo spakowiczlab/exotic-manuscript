@@ -1,7 +1,7 @@
 ---
 title: "Summary figures"
 author: "Rebecca Hoyd"
-date: "February 6, 2020"
+agg_exo.rae: "February 6, 2020"
 output: html_document
 ---
 
@@ -12,47 +12,25 @@ knitr::opts_chunk$set(echo = TRUE)
 # Load data
 
 ```{r}
-agg_exo.ra <- read.table("../data/agg_exo-ra.txt", header = TRUE)
+exo.ra <- read.table("../data/agg_exo-ra.txt", header = TRUE)
 ```
 
 
 # Microbe stacked bar
 
 ```{r}
-# dat <- agg_exo.ra[,2:447]
-dat <- agg_exo.ra
-
 # are there any NAs in the df
-check <- is.na(dat)
-
-sum(is.na(dat))
-mean(is.na(dat))
+any(is.na(exo.ra))
 
 # Fill any NAs with a 0
-dat[is.na(dat)] <- 0
-
-# Create id column 
-# dat$id <- formatC(1:nrow(dat), width=3, flag="0")
-
-names(dat)[1] <- "id"
-names(dat)[grep("sample", names(dat))] <- "id"
-
-grep("^id$", colnames(dat))
-
-summary(dat$id)
-head(dat$id)
-
-bardat <- dat %>%
-  gather(-id, -cancer, key = "micro", value = "percent")
+exo.ra[is.na(exo.ra)] <- 0
 
 
-bardat %>%
-  ggplot(aes(x = cancer, y = percent, fill = micro))+
-  geom_bar(position="fill", stat = "identity") +
-  # theme(legend.position = "none") +
-  ggsave("lesters-stacked-bar.pdf")
+exo.ra.l <- exo.ra %>%
+  gather(-sample, -cancer, key = "micro", value = "percent")
 
-bardat %>%
+
+exo.ra.l %>%
   ggplot(aes(x = id, y = percent, fill = micro))+
   geom_bar(position="fill", stat = "identity") +
   theme(legend.position = "none") +
