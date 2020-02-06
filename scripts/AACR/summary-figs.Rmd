@@ -1,7 +1,7 @@
 ---
 title: "Summary figures"
 author: "Rebecca Hoyd"
-agg_exo.rae: "February 6, 2020"
+date: "February 6, 2020"
 output: html_document
 ---
 
@@ -18,6 +18,7 @@ library(forcats)
 
 ```{r}
 exo.ra <- read.table("../../data/agg_exo-ra.txt", header = TRUE, stringsAsFactors = F)
+immunecells <- read.csv("../../data/split-deconvolved-aggcuff_absolute/2019-12-09_cibersort_absolute_aggregated+TILS.csv")
 ```
 
 
@@ -54,4 +55,32 @@ exo.ra.l %>%
         panel.grid.major = element_blank()) +
   ggsave("../../figures/AACR/stacked-bar_microbes.png", height = 10, width = 10)
 
+```
+
+# Cell type stacked bar
+
+```{r}
+immunecells.l <- immunecells %>%
+  select(-X) %>%
+  gather(-Input.Sample, -cancer, key = "celltype", value = "percent")
+
+get.cell.ord <- immunecells.l %>%
+  group_by(celltype) %>%
+  summarise(mean.pr = mean(percent)) %>%
+  arrange(mean.pr)
+
+immunecells.l %>%
+  ggplot(aes(x = Input.Sample,
+             y = percent,
+             # fill = fct_relevel(celltype, get.cell.ord$celltype)
+             fill = celltype
+             ))+
+  facet_wrap(vars(cancer), scales = "free_x", nrow = 1) +
+  geom_bar(position="fill", stat = "identity") +
+  labs(x = "", y = "") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(), 
+        panel.grid.major = element_blank()) +
+  ggsave("../../figures/AACR/stacked-bar_immune-cells.png", height = 10, width = 10)
 ```
