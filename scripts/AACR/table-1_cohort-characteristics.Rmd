@@ -1,0 +1,81 @@
+---
+title: "Make Table 1: Cohort characteristics"
+author: "Rebecca Hoyd"
+date: "February 6, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tableone)
+library(forcats)
+library(glue)
+library(readxl)
+```
+
+# Load data
+```{r}
+clinfiles <- list.files("T:/Labs/Spakowicz/data/exoTCC/", full.names = F)
+clinfiles <- paste0("T:/Labs/Spakowicz/data/exoTCC/", clinfiles)
+
+clindat <- lapply(clinfiles, function(x) read_excel(x))
+```
+
+# Format  for the table
+```{r}
+# Create key for naming immunotherapy codes
+ionames <- data.frame(immunotherapy = c(1,2,3,4,5,6,7,8,9,10), 
+                      Immunotherapy = c("Nivolumab", "Pembrolizumab", 
+                                        "Atezolizumab", "Ipilimumab", 
+                                        "Nivolumab + Ipilimumab", 
+                                        "Durvalumab + Tremelimumab", 
+                                        "Tremelimumab", "Nivolumab + Chemotherapy",
+                                        "Durvalumab", "Other"),
+                      stringsAsFactors = FALSE)
+# Select and adjust dataframe for Table 1
+coxdf <- 
+  db %>%
+  select(vitalstatus, age, bmi.calc, ecog, sex, cancer.name, statin, ppi, 
+         nsaid_iostart, h2b_iostart, immunotherapy, other_io, staging, abx.28.28,
+         steroid.28.28) %>%
+  left_join(ionames) %>%
+  mutate(`ECOG PS` = fct_relevel(ifelse(ecog > 2, ">2", ecog), "0","1","2",">2"),
+         Staging  = ifelse(staging == 5, "Unknown", staging),
+         BMI = bmi.calc,
+         Age = age,
+         Cancer = cancer.name, 
+         CCI = ifelse(comorb.score <= 1, "0-1", ">2"),
+         Sex = sex,
+         `ABx within 28 days of ICI` = abx.28.28,
+         `CS within 28 days of ICI` = steroid.28.28,
+          Immunotherapy = ifelse(Immunotherapy == "Nivolumab + Chemotherapy",
+                                "Other", Immunotherapy),
+         Immunotherapy = as.factor(Immunotherapy),
+         Immunotherapy = fct_relevel(Immunotherapy, "Atezolizumab", "Durvalumab",
+                                     "Durvalumab + Tremelimumab", "Ipilimumab", 
+                                     "Nivolumab", "Nivolumab + Ipilimumab", 
+                                     "Pembrolizumab", "Tremelimumab", "Other"),
+         Cancer = fct_relevel(Cancer, "Bladder Cancer", "Head and Neck Carcinoma",
+                              "Melanoma", "Non-Small Cell Lung Cancer", 
+                              "Renal Cell Carcinoma", "Sarcoma", "Other")
+  )
+```
+
+# Creating table 1
+
+```{r}
+listVars <- c("BMI", "Age", "Sex", "ECOG PS", "CCI", "Cancer", "Staging", "Immunotherapy",
+              "ABx within 28 days of ICI", "CS within 28 days of ICI")
+catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "CCI", "Staging", 
+             "ABx within 28 days of ICI", "CS within 28 days of ICI")
+```
+
+```{r table 1}
+table1 <- CreateTableOne(vars = listVars,
+                         data = coxdf,
+                         factorVars = catVars)
+table1
+```
+
+
