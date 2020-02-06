@@ -1,0 +1,45 @@
+---
+title: "figures_correlations"
+author: "Rebecca Hoyd"
+date: "February 6, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(dplyr)
+```
+
+# Load data
+```{r}
+exo.ra <- read.table("../../data/agg_exo-ra.txt", header = TRUE, stringsAsFactors = F)
+immunecells <- read.csv("../../data/split-deconvolved-aggcuff_absolute/2019-12-09_cibersort_absolute_aggregated+TILS.csv") %>%
+  select(cancer, everything()) %>%
+  rename("sample" = "Input.Sample")
+
+exo.ra[is.na(exo.ra)] <- 0
+```
+
+# Test correlations
+```{r}
+microbes <- colnames(exo.ra)[-c(1:2)]
+imcells <- colnames(immunecells)[-c(1:3)]
+
+micim <- exo.ra %>%
+  left_join(immunecells)
+```
+
+
+```{r}
+corm <- list()
+cori <- list()
+for(m in microbes){
+  for(i in imcells){
+    cori[[i]] <- cor.test(micim[,m], micim[,i], method = "spearman")
+  }
+  corm[[m]] <- cori
+  cori <- list()
+}
+```
