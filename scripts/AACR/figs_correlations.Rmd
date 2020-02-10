@@ -41,30 +41,25 @@ cancers <- unique(immunecells$cancer)
 micim <- exo.ra.gen %>%
   left_join(immunecells)
 ```
-
-
 ```{r}
-cor.can <- list()
-corm <- list()
-cori <- list()
+# cor.can <- list()
+# for(c in cancers){
+#   micim.tmp <- micim %>%
+#     filter(cancer == c)
+#   
+#   cor.can[[c]] <- lapply(microbes, function(m) lapply(imcells, function(i) cor.test(micim.tmp[[m]], micim.tmp[[i]],
+#                                                                     method = "spearman") %>%
+#                                         tidy() %>%
+#                                         mutate(im.cell = i, microbe = m, cancer = c))) 
+#   
+#   
+# }
+# 
+# test <- lapply(cor.can, function(x) lapply(x, function (y) bind_rows(y)))
+# test <- lapply(test, function(x) bind_rows(x))
+# cor.can <- bind_rows(test)
+# 
+# write.csv(cor.can, "../../data/AACR_correlations.csv", row.names = F)
 
-for(c in cancers){
-  micim.tmp <- micim %>%
-    filter(cancer == c)
-  for(m in microbes){
-    for(i in imcells){
-      cori[[i]] <- cor.test(micim.tmp[[m]], micim.tmp[[i]], method = "spearman") %>%
-        tidy() %>%
-        mutate(im.cell = i, microbe = m, cancer = c)
-    }
-    corm[[m]] <- bind_rows(cori)
-    cori <- list()
-  }
-  
-  cor.can[[c]] <- bind_rows(corm)
-  corm <- list()
-  
-}
-
-cor.can <- bind_rows(cor.can)
+cor.can <- read.csv("../../data/AACR_correlations.csv")
 ```
