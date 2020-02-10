@@ -77,7 +77,8 @@ clindat.form %>%
 
 # Select and adjust dataframe for Table 1
 clindat.tabnames <- clindat.form %>%
-  mutate(Stage  = Cancer.Stage.at.Collection,
+  mutate(Stage  = ifelse(Cancer.Stage.at.Collection %in% c("88", "99", "undeterm.") , 
+                         "Unknown", Cancer.Stage.at.Collection),
          BMI = BMI.at.Collection,
          Age = Age.at.Collection,
          Sex = Gender,
