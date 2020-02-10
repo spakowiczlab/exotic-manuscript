@@ -60,14 +60,14 @@ write.csv(clindat.form, "T:/Labs/Spakowicz/data/exoTCC/clinical_aggregated.csv",
 ```{r learn about condensing variables}
 clindat.form %>%
   mutate(Chemo.Drug.Name = tolower(Chemo.Drug.Name)) %>%
-  separate(Chemo.Drug.Name, into = c('testChem'), sep = " ") %>%
+  separate(Chemo.Drug.Name, into = c('testChem')) %>%
   group_by(testChem) %>%
   tally() %>%
   arrange(desc(n))
 
 clindat.form %>%
   mutate(I.O.Drug.Name = tolower(I.O.Drug.Name)) %>%
-  separate(I.O.Drug.Name, into = c('testIO'), sep = " ") %>%
+  separate(I.O.Drug.Name, into = c('testIO')) %>%
   group_by(testIO) %>%
   tally() %>%
   arrange(desc(n))
@@ -82,8 +82,27 @@ clindat.tabnames <- clindat.form %>%
          Age = Age.at.Collection,
          Sex = Gender,
          `Vital Status` = Vital.Status,
-         IO = ifelse(is.na(I.O.Drug.Name), "none", I.O.Drug.Name),
-         Chemotherapy = ifelse(is.na(Chemo.Drug.Name), "none", tolower(Chemo.Drug.Name)),
+         IO = ifelse(I.O.Drug.Name == "N/A", "None", 
+                     ifelse(grepl("pembro", I.O.Drug.Name, ignore.case = T), "Pembrolizumab", 
+                            ifelse(grepl("nivo", I.O.Drug.Name, ignore.case = T), "Nivolumab",
+                                   ifelse(grepl("beva", I.O.Drug.Name, ignore.case = T), "Bevacizumab",
+                                          ifelse(grepl("folfiri", I.O.Drug.Name, ignore.case = T), "Folfiri",
+                                                 ifelse(grepl("ipili", I.O.Drug.Name, ignore.case = T),
+                                                        "Ipilimumab",ifelse(grepl("unknown", Chemo.Drug.Name,
+                                                                                  ignore.case = T), 
+                                                                            "Unknown", "Other"))))))),
+         Chemotherapy = ifelse(Chemo.Drug.Name == "N/A", "none",
+                               ifelse(grepl("cisp", Chemo.Drug.Name, ignore.case = T), "Cisplatin",
+                                      ifelse(grepl("carb", Chemo.Drug.Name, ignore.case = T), "Carboplatin",
+                                             ifelse(grepl("folfox", Chemo.Drug.Name, ignore.case = T), "Folfox",
+                                                    ifelse(grepl("doxo", Chemo.Drug.Name, ignore.case = T),
+                                                           "Doxorubicin",
+                                                           ifelse(grepl("adria", Chemo.Drug.Name, ignore.case = T),
+                                                                  "Adriamycin", 
+                                                                  ifelse(grepl("unknown", Chemo.Drug.Name,
+                                                                               ignore.case = T), "Unknown",
+                                                                         "Other"))))))
+         ),
          Radiation = ifelse(Radiation == "None", "No", "Yes"),
          Surgery = ifelse(grepl("None", Surgery), "No", "Yes"),
          Hormones = ifelse(is.na(Hormone.Therapy), "No", "Yes")
