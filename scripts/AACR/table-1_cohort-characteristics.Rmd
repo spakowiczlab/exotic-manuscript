@@ -40,16 +40,20 @@ While the first two objects have similar naming schemes and information availabl
 
 ```{r}
 clindat.form1 <- bind_rows(clindat[[1]], clindat[[3]]) %>%
-  select(-contains("Days")) # I'm excluding this here because we're not doing any calculations with it and the                                      objects don't want to join if I include it
+  mutate(Days.from.RT.Start.to.Last.Follow.Up.or.Death = as.numeric(Days.from.RT.Start.to.Last.Follow.Up.or.Death),
+         Days.from.Hormone.Start.to.Last.Follow.Up.or.Death = as.numeric(Days.from.Hormone.Start.to.Last.Follow.Up.or.Death))
 
 clindat.form2 <- clindat[[2]] %>%
-  rename( "Cancer.Stage.at.Collection" = "Stage") %>%
+  rename( "Cancer.Stage.at.Collection" = "Cancer.Stage.at.Collection..Best.CS.AJCC.") %>%
   select(colnames(clindat.form1))
 
 clindat.form <- bind_rows(clindat.form1, clindat.form2)
 
 ```
 
+```{r, eval=F}
+write.csv(clindat.form, "T:/Labs/Spakowicz/data/exoTCC/clinical_aggregated.csv", row.names = F)
+```
 
 # Format  for the table
 ```{r}
@@ -62,7 +66,7 @@ clindat.tabnames <- clindat.form %>%
          Sex = Gender,
          `Vital Status` = Vital.Status,
          IO = ifelse(is.na(I.O.Drug.Name), "none", I.O.Drug.Name),
-         Chemotherapy = ifelse(is.na(Chemo.Drug.Name), "none", Chemo.Drug.Name),
+         Chemotherapy = ifelse(is.na(Chemo.Drug.Name), "none", tolower(Chemo.Drug.Name)),
          Radiation = ifelse(Radiation == "None", "No", "Yes"),
          Surgery = ifelse(grepl("None", Surgery), "No", "Yes"),
          Hormones = ifelse(is.na(Hormone.Therapy), "No", "Yes")
