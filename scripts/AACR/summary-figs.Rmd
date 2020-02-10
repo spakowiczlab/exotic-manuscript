@@ -99,3 +99,16 @@ immunecells.l %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   ggsave("../../figures/AACR/boxplot_immune-by-cancer.png", width = 10)
 ```
+
+## Boxplots of just CD8+ Tcells and TILs by cancer
+```{r}
+immunecells.l %>%
+  filter(celltype == "T.cells.CD8" | celltype == "TILs") %>%
+  ggplot(aes(x = celltype, y = percent, fill = cancer)) +
+  geom_boxplot() +
+  labs(x = "", y = "") +
+  scale_fill_brewer(name = "Cancer", palette = "Dark2") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggsave("../../figures/AACR/boxplot_cd8-and-TILs.png", width = 10)
+```
