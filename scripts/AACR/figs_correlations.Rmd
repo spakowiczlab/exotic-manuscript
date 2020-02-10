@@ -10,36 +10,61 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(ggplot2)
 library(dplyr)
+library(tidyr)
+library(broom)
 ```
 
 # Load data
 ```{r}
-exo.ra <- read.table("../../data/agg_exo-ra.txt", header = TRUE, stringsAsFactors = F)
-immunecells <- read.csv("../../data/split-deconvolved-aggcuff_absolute/2019-12-09_cibersort_absolute_aggregated+TILS.csv") %>%
+exo.ra <- read.csv("../../data/agg_exo-ra_taxonomy.csv", stringsAsFactors = F)
+immunecells <- read.csv("../../data/split-deconvolved-aggcuff_absolute/2019-12-09_cibersort_absolute_aggregated+TILS.csv", stringsAsFactors = F) %>%
   select(cancer, everything()) %>%
   rename("sample" = "Input.Sample")
 
-exo.ra[is.na(exo.ra)] <- 0
 ```
 
+
+```{r}
+exo.ra.gen <- exo.ra %>%
+  group_by(sample, genus) %>%
+  summarise(ra = sum(ra)) %>%
+  spread(key = "genus", value = "ra")
+
+exo.ra.gen[is.na(exo.ra.gen)] <- 0
+```
 # Test correlations
 ```{r}
-microbes <- colnames(exo.ra)[-c(1:2)]
+microbes <- colnames(exo.ra.gen)[-1]
 imcells <- colnames(immunecells)[-c(1:3)]
+cancers <- unique(immunecells$cancer)
 
-micim <- exo.ra %>%
+micim <- exo.ra.gen %>%
   left_join(immunecells)
 ```
 
 
 ```{r}
+cor.can <- list()
 corm <- list()
 cori <- list()
-for(m in microbes){
-  for(i in imcells){
-    cori[[i]] <- cor.test(micim[,m], micim[,i], method = "spearman")
+
+for(c in cancers){
+  micim.tmp <- micim %>%
+    filter(cancer == c)
+  for(m in microbes){
+    for(i in imcells){
+      cori[[i]] <- cor.test(micim.tmp[[m]], micim.tmp[[i]], method = "spearman") %>%
+        tidy() %>%
+        mutate(im.cell = i, microbe = m, cancer = c)
+    }
+    corm[[m]] <- bind_rows(cori)
+    cori <- list()
   }
-  corm[[m]] <- cori
-  cori <- list()
+  
+  cor.can[[c]] <- bind_rows(corm)
+  corm <- list()
+  
 }
+
+cor.can <- bind_rows(cor.can)
 ```
