@@ -56,6 +56,23 @@ write.csv(clindat.form, "T:/Labs/Spakowicz/data/exoTCC/clinical_aggregated.csv",
 ```
 
 # Format  for the table
+
+```{r learn about condensing variables}
+clindat.form %>%
+  mutate(Chemo.Drug.Name = tolower(Chemo.Drug.Name)) %>%
+  separate(Chemo.Drug.Name, into = c('testChem'), sep = " ") %>%
+  group_by(testChem) %>%
+  tally() %>%
+  arrange(desc(n))
+
+clindat.form %>%
+  mutate(I.O.Drug.Name = tolower(I.O.Drug.Name)) %>%
+  separate(I.O.Drug.Name, into = c('testIO'), sep = " ") %>%
+  group_by(testIO) %>%
+  tally() %>%
+  arrange(desc(n))
+```
+
 ```{r}
 
 # Select and adjust dataframe for Table 1
@@ -88,4 +105,9 @@ table1 <- CreateTableOne(vars = listVars,
 table1
 ```
 
+```{r}
+tabMat <- print(table1, quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
+## Save to a CSV file
+write.csv(tabMat, file = "../../figures/table1.csv")
+```
 
