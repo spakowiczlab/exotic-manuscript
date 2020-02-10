@@ -57,7 +57,9 @@ exo.ra.l %>%
 
 ```
 
-# Cell type stacked bar
+# Immune cell figures
+
+## stacked bar
 
 ```{r}
 immunecells.l <- immunecells %>%
@@ -83,4 +85,17 @@ immunecells.l %>%
         axis.text.x = element_blank(), axis.ticks.x = element_blank(), 
         panel.grid.major = element_blank()) +
   ggsave("../../figures/AACR/stacked-bar_immune-cells.png", height = 10, width = 10)
+```
+
+## Boxplots by cancer
+
+```{r}
+immunecells.l %>%
+  ggplot(aes(x = celltype, y = percent)) +
+  geom_boxplot() +
+  facet_wrap(vars(cancer), scales = "free_y") +
+  labs(x = "", y = "") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggsave("../../figures/AACR/boxplot_immune-by-cancer.png", width = 10)
 ```
