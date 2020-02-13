@@ -69,21 +69,23 @@ cor.can <- read.csv("../../data/AACR_correlations.csv")
 ```{r triangle map}
 cor.dat <- cor.can %>%
   select("estimate", "p.value", "microbe", "im.cell", "cancer") %>%
-  group_by(cancer) %>%
-  mutate(padj = p.adjust(p.value, method = "fdr")) %>%
-  ungroup() %>%
+  # group_by(cancer) %>%
+  # mutate(padj = p.adjust(p.value, method = "fdr")) %>%
+  # ungroup() %>%
   filter(!is.na(estimate))
 # cor.dat <- cor.dat[!duplicated(cor.dat),]
 
 cor.dat %>%
+  mutate(estimate = ifelse(p.value < 0.05, estimate, -2)) %>%
   ggplot(aes(x = microbe, y = im.cell, fill = estimate)) +
-  facet_wrap(vars(cancer), scales = "free_x") +
+  facet_wrap(vars(cancer)) +
   geom_tile() +
   # geom_text(aes(label = ifelse(p.value < 0.05, "s", ""))) +
   scale_fill_distiller(guide = "legend", breaks = seq(-1,1,.2), 
                        limits = c(-1, 1), values = seq(0,1,.1),
                        type = "div", palette = "RdBu", direction = 1,
-                       name = "Correlation") +
+                       name = "Correlation",
+                       na.value = "white") +
   labs(x = "", y = "") +
   scale_x_discrete(position = "top") +
   theme_minimal() +
