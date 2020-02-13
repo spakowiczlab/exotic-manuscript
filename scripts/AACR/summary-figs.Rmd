@@ -21,6 +21,25 @@ exo.ra <- read.table("../../data/agg_exo-ra.txt", header = TRUE, stringsAsFactor
 immunecells <- read.csv("../../data/split-deconvolved-aggcuff_absolute/2019-12-09_cibersort_absolute_aggregated+TILS.csv")
 ```
 
+```{r}
+oldlabs <- c("B.cells.naive", "B.cells.memory", 
+             "Plasma.cells", "T.cells.CD8", "T.cells.CD4.naive", 
+             "T.cells.CD4.memory.resting", "T.cells.CD4.memory.activated", "T.cells.follicular.helper",
+             "T.cells.gamma.delta", "T.cells.regulatory..Tregs.", "NK.cells.resting", 
+             "NK.cells.activated", "Monocytes", "Macrophages.M0", 
+             "Macrophages.M1", "Macrophages.M2", "Dendritic.cells.resting", 
+             "Dendritic.cells.activated", "Mast.cells.resting", "Mast.cells.activated", 
+             "Eosinophils", "Neutrophils", "TILs")
+
+newlabs <- c("Naive B Cells", "Memory B Cells", 
+             "Plasma Cells", "CD8 T Cells", "Naive CD4 T Cells", 
+             "Resting Memory CD4 T Cells", "Activated Memory CD4 T Cells", "Follicular Helper T Cells",
+             "Gamma Delta T Cells", "Regulatory T Cells", "Resting NK Cells", 
+             "Activated NK Cells", "Monocytes", "M0 Macrophages",
+             "M1 Macrophages", "M2 Macrophages", "Resting Dendritic Cells", 
+             "Activated Dendritic Cells", "Resting Mast Cells", "Activated Mast Cells", 
+             "Eosonophils", "Neutrophils", "TILs")
+```
 
 # Microbe stacked bar
 
@@ -95,6 +114,7 @@ immunecells.l %>%
   geom_boxplot() +
   facet_wrap(vars(cancer), scales = "free_y") +
   labs(x = "", y = "") +
+  scale_x_discrete(breaks = oldlabs, labels = newlabs) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   ggsave("../../figures/AACR/boxplot_immune-by-cancer.png", width = 10)
@@ -107,6 +127,7 @@ immunecells.l %>%
   ggplot(aes(x = celltype, y = percent, fill = cancer)) +
   geom_boxplot() +
   labs(x = "", y = "") +
+  scale_x_discrete(breaks = oldlabs, labels = newlabs) +
   scale_fill_brewer(name = "Cancer", palette = "Dark2") +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
