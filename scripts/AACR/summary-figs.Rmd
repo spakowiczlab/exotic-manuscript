@@ -126,7 +126,7 @@ immunecells.l %>%
 ## Boxplots of just CD8+ Tcells and TILs by cancer
 ```{r}
 immunecells.l %>%
-  filter(celltype %in% c("T.cells.CD8", "TILs", "T.cells.regulatory..Tregs.", "Macrophages.M1", "Macrophages.M2",
+  filter(celltype %in% c("T.cells.CD8", "TILs", "Macrophages.M1", "Macrophages.M2",
                          "NK.cells.activated", "NK.cells.resting", "T.cells.CD4.memory.resting")) %>%
   left_join(labsjoin) %>%
   ggplot(aes(x = cancer, y = percent, fill = cancer)) +

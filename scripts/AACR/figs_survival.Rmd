@@ -25,29 +25,49 @@ clindat <- read.csv("T:/Labs/Spakowicz/data/exoTCC/clinical_aggregated.csv", str
 # Format for survival calculations
 
 ```{r}
+exoRAtowideprev <- function(data, taxlev){
+  tmp <- data
+  tmp$Taxa <- tmp[[taxlev]]
+  tmp.wide<- tmp %>%
+    filter(!is.na(Taxa)) %>%
+    mutate(Taxa = paste(taxlev, Taxa, sep = "_")) %>%
+    group_by(sample, Taxa) %>%
+    summarise(ra = sum(ra, na.rm = T)) %>%
+    spread(key = "Taxa", value = "ra")
+  
+  tmp.wide[is.na(tmp.wide)] <- 0
+  tmp.prev <- bind_rows(lapply(tmp.wide[,-1], function(x) ifelse(x > 0, 1, 0))) %>%
+    mutate(sample = tmp.wide$sample) %>%
+    select(sample, everything())
+}
+```
+
+```{r}
+taxalevels <- c("domain", "kingdom", "phylum", "class", "order", "family", "genus", "species")
+
+exo.wide.list <- lapply(taxalevels, function(x) exoRAtowideprev(exo.ra, x))
+names(exo.wide.list) <- taxalevels
+
+microbes <- unlist(lapply(exo.wide.list, function(x) colnames(x)[-1]))
+
+exo.wide <- bind_cols(exo.wide.list)
+
 clindat <- clindat %>%
   rename("sample" = "RNA.SL.ID") %>%
   mutate(days = Overall.Survival.from.Dx..days.,
          vitalstatus = ifelse(Vital.Status == "Deceased", 1, 0))
 
-exo.ra.gen <- exo.ra %>%
-  group_by(sample, genus) %>%
-  summarise(ra = sum(ra)) %>%
-  spread(key = "genus", value = "ra")
-
-microbes <- colnames(exo.ra.gen)[-1]
-
-exo.ra.gen[is.na(exo.ra.gen)] <- 0
-exo.ra.gen.prev <- bind_rows(lapply(exo.ra.gen[,-1], function(x) ifelse(x > 0, 1, 0)))
-exo.ra.gen.prev$sample <- exo.ra.gen$sample
-
-microbes <- colnames(exo.ra.gen)[-1]
 
 loop.input <-clindat %>%
-  left_join(exo.ra.gen)
+  left_join(exo.wide)
 
 ```
 
+# Run surv ~ each microbe, in each cancer, at every taxa level
+
+```{r}
+
+```
 
 
 
