@@ -27,6 +27,45 @@ clindat <- read.csv("T:/Labs/Spakowicz/data/exoTCC/clinical_aggregated.csv", str
 
 # Format for survival calculations
 
+```{r fix odd taxa assignments}
+# phyl.assign <- unique(exo.ra[, c("phylum", "kingdom")])
+# write.csv(phyl.assign, "../../data/fix-king-assign.csv", row.names = F)
+
+
+exo.taxfix.domain <- exo.ra %>%
+  filter(is.na(taxonomy)) %>%
+  mutate(domain = ifelse(grepl("phage|virus", spec.join, ignore.case = TRUE), "Viruses", domain),
+         domain = ifelse(grepl("calothrix", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("anabaena", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("chondrocystis", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("cyanobacterium", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("dolichospermum", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("euhalothece", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("fischerella", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("geitlerinema", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("geminocystis", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("gloeobacter", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("gloeothece", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("limnospira", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("microcoleus", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("moorea", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("nostoc", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("oscillatoria", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("prochlorococcus", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("rivularia", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("synechococcus", spec.join, ignore.case = TRUE) & !grepl("phage|virus", spec.join,
+                                                                                        ignore.case = TRUE),
+                         "Bacteria", domain),
+         domain = ifelse(grepl("tenericutes", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("trichodesmium", spec.join, ignore.case = TRUE), "Bacteria", domain)
+         )
+
+exo.ra <-exo.ra %>%
+  filter(!is.na(taxonomy))
+
+exo.ra <- bind_rows(exo.ra, exo.taxfix.domain)
+```
+
 ```{r}
 exoRAtowideprev <- function(data, taxlev){
   tmp <- data
@@ -68,7 +107,7 @@ loop.input <-clindat %>%
 
 # Run surv ~ each microbe, in each cancer, at every taxa level
 
-```{r}
+```{r, error=F, message=F, warning=F}
 cancers <- unique(loop.input$Cancer)
 microbes <- make.names(microbes)
 colnames(loop.input) <- make.names(colnames(loop.input))
@@ -100,14 +139,15 @@ loop.output <- bind_rows(lapply(canc.res, function(x) bind_rows(x)))
 ```{r}
 loop.output %>%
   separate(taxa, by = "_", into = c("Taxa.Level", "Taxa")) %>%
+  filter(Taxa.Level != "species") %>%
   ggplot(aes(x = Taxa, y = cancer, fill = pvalue)) +
   geom_tile() +
   facet_wrap(vars(fct_relevel(capitalize(Taxa.Level), capitalize(taxalevels))),
-             scales = "free_x", ncol = 1) +
+             scales = "free_x", nrow = 1) +
   labs(x = "", y = "") +
   theme_minimal() +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
-  ggsave("../../figures/AACR/survival-significance.png", height = 8)
+  ggsave("../../figures/AACR/survival-significance.png", width = 12)
 ```
 
 
