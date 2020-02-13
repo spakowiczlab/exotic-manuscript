@@ -1,0 +1,53 @@
+---
+title: "figures_correlations"
+author: "Rebecca Hoyd"
+date: "February 6, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(broom)
+```
+
+# Load data
+```{r}
+exo.ra <- read.csv("../../data/agg_exo-ra_taxonomy.csv", stringsAsFactors = F)
+clindat <- read.csv("T:/Labs/Spakowicz/data/exoTCC/clinical_aggregated.csv", stringsAsFactors = F)
+
+```
+
+
+# Format for survival calculations
+
+```{r}
+clindat <- clindat %>%
+  rename("sample" = "RNA.SL.ID") %>%
+  mutate(days = Overall.Survival.from.Dx..days.,
+         vitalstatus = ifelse(Vital.Status == "Deceased", 1, 0))
+
+exo.ra.gen <- exo.ra %>%
+  group_by(sample, genus) %>%
+  summarise(ra = sum(ra)) %>%
+  spread(key = "genus", value = "ra")
+
+microbes <- colnames(exo.ra.gen)[-1]
+
+exo.ra.gen[is.na(exo.ra.gen)] <- 0
+exo.ra.gen.prev <- bind_rows(lapply(exo.ra.gen[,-1], function(x) ifelse(x > 0, 1, 0)))
+exo.ra.gen.prev$sample <- exo.ra.gen$sample
+
+microbes <- colnames(exo.ra.gen)[-1]
+
+loop.input <-clindat %>%
+  left_join(exo.ra.gen)
+
+```
+
+
+
+

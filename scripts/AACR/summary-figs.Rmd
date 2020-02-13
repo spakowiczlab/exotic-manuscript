@@ -39,6 +39,8 @@ newlabs <- c("Naive B Cells", "Memory B Cells",
              "M1 Macrophages", "M2 Macrophages", "Resting Dendritic Cells", 
              "Activated Dendritic Cells", "Resting Mast Cells", "Activated Mast Cells", 
              "Eosonophils", "Neutrophils", "TILs")
+
+labsjoin <- as.data.frame(cbind(celltype = oldlabs, newlabs), stringsAsFactors = F)
 ```
 
 # Microbe stacked bar
@@ -91,6 +93,7 @@ get.cell.ord <- immunecells.l %>%
   arrange(mean.pr)
 
 immunecells.l %>%
+  filter(celltype != "TILs") %>%
   ggplot(aes(x = Input.Sample,
              y = percent,
              # fill = fct_relevel(celltype, get.cell.ord$celltype)
@@ -110,24 +113,26 @@ immunecells.l %>%
 
 ```{r}
 immunecells.l %>%
-  ggplot(aes(x = celltype, y = percent)) +
+  ggplot(aes(x = cancer, y = percent)) +
   geom_boxplot() +
-  facet_wrap(vars(cancer), scales = "free_y") +
+  facet_wrap(vars(celltype), scales = "free_y", ncol = 3) +
   labs(x = "", y = "") +
-  scale_x_discrete(breaks = oldlabs, labels = newlabs) +
+  # scale_x_discrete(breaks = oldlabs, labels = newlabs) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggsave("../../figures/AACR/boxplot_immune-by-cancer.png", width = 10)
+  ggsave("../../figures/AACR/boxplot_immune-by-cancer.png", height = 15)
 ```
 
 ## Boxplots of just CD8+ Tcells and TILs by cancer
 ```{r}
 immunecells.l %>%
-  filter(celltype == "T.cells.CD8" | celltype == "TILs") %>%
-  ggplot(aes(x = celltype, y = percent, fill = cancer)) +
-  geom_boxplot() +
+  filter(celltype %in% c("T.cells.CD8", "TILs", "T.cells.regulatory..Tregs.", "Macrophages.M1", "Macrophages.M2",
+                         "NK.cells.activated", "NK.cells.resting", "T.cells.CD4.memory.resting")) %>%
+  left_join(labsjoin) %>%
+  ggplot(aes(x = cancer, y = percent, fill = cancer)) +
+  geom_boxplot(show.legend = F) +
+  facet_wrap(vars(newlabs), scales = "free_y", nrow = 2) +
   labs(x = "", y = "") +
-  scale_x_discrete(breaks = oldlabs, labels = newlabs) +
   scale_fill_brewer(name = "Cancer", palette = "Dark2") +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
