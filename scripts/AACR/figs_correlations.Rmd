@@ -99,6 +99,7 @@ cor.dat <- cor.can %>%
 # cor.dat <- cor.dat[!duplicated(cor.dat),]
 
 cor.dat %>%
+  filter(cancer %in% c("CUT", "GU", "RCC")) %>%
   mutate(estimate = ifelse(p.value < 0.05, estimate, -2)) %>%
   ggplot(aes(x = microbe, y = im.cell, fill = estimate)) +
   facet_wrap(vars(cancer)) +
@@ -106,7 +107,7 @@ cor.dat %>%
   # geom_text(aes(label = ifelse(p.value < 0.05, "s", ""))) +
   scale_fill_distiller(guide = "legend", breaks = seq(-1,1,.2), 
                        limits = c(-1, 1), values = seq(0,1,.1),
-                       type = "div", palette = "RdBu", direction = 1,
+                       type = "div", palette = "RdBu", direction = -1,
                        name = "Correlation",
                        na.value = "white") +
   labs(x = "", y = "") +
@@ -114,5 +115,24 @@ cor.dat %>%
   scale_y_discrete(breaks = oldlabs, labels = newlabs) +
   theme_minimal() +
   theme(axis.text.x = element_blank(), panel.grid = element_blank()) +
-  ggsave("../../figures/AACR/correlation-heatmap.png", width = 8)
+  ggsave("../../figures/AACR/correlation-heatmap_toprow.png", width = 8, height = 3.5)
+
+cor.dat %>%
+  filter(!cancer %in% c("CUT", "GU", "RCC")) %>%
+  mutate(estimate = ifelse(p.value < 0.05, estimate, -2)) %>%
+  ggplot(aes(x = microbe, y = im.cell, fill = estimate)) +
+  facet_wrap(vars(cancer)) +
+  geom_tile() +
+  # geom_text(aes(label = ifelse(p.value < 0.05, "s", ""))) +
+  scale_fill_distiller(guide = "legend", breaks = seq(-.5,.5,.1), 
+                       limits = c(-.5, .5), values = seq(0,1,.1),
+                       type = "div", palette = "RdBu", direction = -1,
+                       name = "Correlation",
+                       na.value = "white") +
+  labs(x = "", y = "") +
+  scale_x_discrete(position = "top") +
+  scale_y_discrete(breaks = oldlabs, labels = newlabs) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(), panel.grid = element_blank()) +
+  ggsave("../../figures/AACR/correlation-heatmap_bottomrow.png", width = 8, height = 3.5)
 ```
