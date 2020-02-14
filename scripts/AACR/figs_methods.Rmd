@@ -1,0 +1,20 @@
+---
+dtitle: "figs_methods"
+author: "Rebecca Hoyd"
+date: "February 14, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+
+```{r}
+exo.ra <- read.csv("../../data/agg_exo-ra_taxonomy.csv", stringsAsFactors = F)
+sitekey <- read.csv("../../data/microbe-directory.csv",stringsAsFactors = F)
+```
