@@ -14,6 +14,7 @@ library(tidyr)
 library(broom)
 library(survival)
 library(survminer)
+library(forcats)
 library(Hmisc)
 ```
 
@@ -21,7 +22,7 @@ library(Hmisc)
 ```{r}
 exo.ra <- read.csv("../../data/agg_exo-ra_taxonomy.csv", stringsAsFactors = F)
 clindat <- read.csv("T:/Labs/Spakowicz/data/exoTCC/clinical_aggregated.csv", stringsAsFactors = F)
-
+kingphyl <- read.csv("../../data/fix-king-assign_manual-edits.csv", stringsAsFactors = F)
 ```
 
 
@@ -61,7 +62,9 @@ exo.taxfix.domain <- exo.ra %>%
          )
 
 exo.ra <-exo.ra %>%
-  filter(!is.na(taxonomy))
+  filter(!is.na(taxonomy)) %>%
+  select(-kingdom) %>%
+  left_join(kingphyl)
 
 exo.ra <- bind_rows(exo.ra, exo.taxfix.domain)
 ```
