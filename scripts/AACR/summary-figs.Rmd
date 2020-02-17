@@ -10,8 +10,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(dplyr)
 library(tidyr)
+library(tibble)
 library(ggplot2)
 library(forcats)
+library(ggdendro)
+library(RColorBrewer)
 ```
 
 # Load data
@@ -45,7 +48,7 @@ labsjoin <- as.data.frame(cbind(celltype = oldlabs, newlabs), stringsAsFactors =
 
 # Microbe stacked bar
 
-```{r}
+```{r format exo.ra for the figures}
 
 exo.ra.phyl <- exo.ra %>%
   group_by(sample, phylum) %>%
@@ -67,20 +70,53 @@ exo.ra.phyl %>%
 
 exo.ra.phyl.fil <- exo.ra.phyl %>%
   filter(phylum %in% choosephyl$phylum)
+
+```
+
+```{r get clustering}
+exo.ra.phyl.w <- exo.ra.phyl.fil %>%
+  spread(key = "phylum", value = "ra") %>%
+  column_to_rownames(var = "sample")
+
+exo.dend <- exo.ra.phyl.w %>%
+  dist() %>%
+  hclust() %>%
+  as.dendrogram() %>%
+  dendro_data()
+
+canc.key <- immunecells[, c("Input.Sample", "cancer")] %>%
+  rename("label" = "Input.Sample")
+
+exo.dend$labels <- exo.dend$labels %>%
+  left_join(canc.key)
+
+sampord <- exo.dend$labels$label
 ```
 
 ```{r}
+ggplot(exo.dend$segments) +
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_point(data = exo.dend$labels, aes(x, y, color = cancer), shape = "square") +
+  scale_color_brewer(palette = "Dark2", name = "Cancer") +
+  theme_void() +
+  ggsave("../../figures/AACR/clustering_samples-by-cancer.png", width = 10, height = 4)
+
+```
+
+```{r}
+getPalette <- colorRampPalette(brewer.pal(8, "Set1"))
+ncolor <- length(unique(exo.ra.phyl.fil$phylum))
 
 exo.ra.phyl.fil %>%
-  ggplot(aes(x = sample,
+  ggplot(aes(x = fct_relevel(sample, sampord),
              y = ra, 
              fill = phylum
              ))+
-  # facet_wrap(vars(cancer), scales = "free_x", nrow = 1) +
   geom_bar(position="fill", stat = "identity") +
   labs(x = "", y = "") +
-  theme_bw() +
-  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  scale_fill_manual(breaks = unique(exo.ra.phyl.fil$phylum), values = getPalette(ncolor), name = "Phylum") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), panel.grid.major = element_blank()) +
   ggsave("../../figures/AACR/stacked-bar_microbes.png", height = 10, width = 10)
 
 ```
