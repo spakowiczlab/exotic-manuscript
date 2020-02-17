@@ -12,12 +12,14 @@ library(tableone)
 library(forcats)
 library(glue)
 library(readxl)
+library(flextable)
+library(officer)
 ```
 
 # Load data
 ```{r}
 # I'm storing these in my T drive as I suspect the may have identifiable information
-clinfiles <- list.files("T:/Labs/Spakowicz/data/exoTCC/", full.names = F)
+clinfiles <- list.files("T:/Labs/Spakowicz/data/exoTCC/", full.names = F, "_Spakowicz")
 clinfiles <- paste0("T:/Labs/Spakowicz/data/exoTCC/", clinfiles)
 
 clindat <- lapply(clinfiles, function(x) read_excel(x))
@@ -129,5 +131,68 @@ table1
 tabMat <- print(table1, quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
 ## Save to a CSV file
 write.csv(tabMat, file = "../../figures/AACR/table1.csv")
+```
+
+# Version 2
+
+```{r}
+
+
+getstages <- clindat.form %>%
+  mutate(Cancer.Stage.at.Collection = ifelse(Cancer.Stage.at.Collection %in% c("88", "99", "undeterm."), 
+                         "Unknown", Cancer.Stage.at.Collection),
+         Cancer.Stage.at.Collection = paste0("Stage.", Cancer.Stage.at.Collection)) %>%
+  group_by(Cancer, Cancer.Stage.at.Collection) %>%
+  tally() %>%
+  spread(key = "Cancer.Stage.at.Collection", value = "n")
+
+getreatment <- clindat[[2]] %>%
+  select(RNA.SL.ID, X.Treatment.) %>%
+  left_join(clindat.form, .) %>%
+  mutate(Chemo.given = ifelse(grepl("chemo", X.Treatment.), 1, 
+                              ifelse(Chemo.Drug.Name != "N/A" & Chemo.Drug.Name != "N", 1, 0)),
+         IO.given = ifelse(!is.na(I.O.Drug.Name), 1, 0),
+         Targeted.given = ifelse(X.Treatment. == "targeted", 1, 0)) %>%
+  group_by(Cancer) %>%
+  summarise(given.Chemo = sum(Chemo.given),
+            given.IO = sum(IO.given),
+            given.Targeted = sum(Targeted.given, na.rm = T))
+
+tabMat.v2 <- clindat.form %>%
+  mutate(percent.male = ifelse(Gender == "Male", 1, 0),
+         patnum = 1) %>%
+  group_by(Cancer) %>%
+  summarise(dem.Percent.Male = mean(percent.male),
+            avg.age = mean(Age.at.Collection),
+            std.age = sqrt(var(Age.at.Collection)),
+            avg.bmi = mean(BMI.at.Collection),
+            std.bmi = sqrt(var(BMI.at.Collection)),
+            dem.Total.n = sum(patnum)) %>%
+  mutate(dem.Age = paste0(round(avg.age), " (", round(std.age, 2), ")"),
+         dem.BMI = paste0(round(avg.bmi), " (", round(std.bmi, 2), ")")) %>%
+  select(Cancer, dem.Age, dem.BMI, dem.Total.n, dem.Percent.Male) %>%
+  left_join(getstages) %>%
+  left_join(getreatment)
+```
+
+```{r table formatting}
+tab1.flextab <- tabMat.v2 %>%
+  gather(-Cancer, key = "Measurement", value = "Result") %>%
+  mutate(Result = ifelse(is.na(Result), 0, Result),
+         Measure.type = ifelse(grepl("Stage", Measurement), "Stage",
+                               ifelse(grepl("given", Measurement), "Treatment Type",
+                                      "Demographic"))) %>%
+  spread(key = "Cancer", value = "Result") %>%
+  select(Measure.type, Measurement, everything()) %>%
+  mutate(Measurement = fct_relevel(Measurement, "Total.n", "Age", "BMI", "Targeted.given")) %>%
+  flextable() %>%
+  merge_v("Measure.type") %>%
+  theme_vanilla() 
+```
+
+```{r}
+doc <- read_docx()
+doc <- body_add_flextable(doc, value = tab1.flextab)
+print(doc, target = "../../figures/AACR/tab1.docx")
 ```
 
