@@ -17,7 +17,7 @@ library(forcats)
 # Load data
 
 ```{r}
-exo.ra <- read.table("../../data/agg_exo-ra.txt", header = TRUE, stringsAsFactors = F)
+exo.ra <- read.csv("../../data/agg_exo-ra_taxonomy.csv", header = TRUE, stringsAsFactors = F)
 immunecells <- read.csv("../../data/split-deconvolved-aggcuff_absolute/2019-12-09_cibersort_absolute_aggregated+TILS.csv")
 ```
 
@@ -46,34 +46,41 @@ labsjoin <- as.data.frame(cbind(celltype = oldlabs, newlabs), stringsAsFactors =
 # Microbe stacked bar
 
 ```{r}
-# are there any NAs in the df
-any(is.na(exo.ra))
 
-# Fill any NAs with a 0
-exo.ra[is.na(exo.ra)] <- 0
+exo.ra.phyl <- exo.ra %>%
+  group_by(sample, phylum) %>%
+  summarise(ra = sum(ra, na.rm = T)) %>%
+  as.data.frame()
+
+choosephyl <- exo.ra.phyl %>%
+  group_by(phylum) %>%
+  summarise(med.abun = median(ra)) %>%
+  arrange(desc(med.abun)) %>%
+  filter(med.abun > 0 & !is.na(phylum))
+
+exo.ra.phyl %>%
+  ggplot(aes(x = ra)) +
+  facet_wrap(vars(phylum)) +
+  geom_histogram() +
+  ggsave("../../figures/AACR/investigate-phylum-distributions.png")
 
 
-exo.ra.l <- exo.ra %>%
-  gather(-sample, -cancer, key = "micro", value = "percent")
+exo.ra.phyl.fil <- exo.ra.phyl %>%
+  filter(phylum %in% choosephyl$phylum)
+```
 
-get.mic.ord <- exo.ra.l %>%
-  group_by(micro) %>%
-  summarise(mean.pr = mean(percent)) %>%
-  arrange(mean.pr)
+```{r}
 
-exo.ra.l %>%
+exo.ra.phyl.fil %>%
   ggplot(aes(x = sample,
-             y = percent, 
-             # fill = fct_relevel(micro, get.mic.ord$micro)
-             fill = micro
+             y = ra, 
+             fill = phylum
              ))+
-  facet_wrap(vars(cancer), scales = "free_x", nrow = 1) +
+  # facet_wrap(vars(cancer), scales = "free_x", nrow = 1) +
   geom_bar(position="fill", stat = "identity") +
   labs(x = "", y = "") +
   theme_bw() +
-  theme(legend.position = "none",
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(), 
-        panel.grid.major = element_blank()) +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
   ggsave("../../figures/AACR/stacked-bar_microbes.png", height = 10, width = 10)
 
 ```
