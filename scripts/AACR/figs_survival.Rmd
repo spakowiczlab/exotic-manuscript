@@ -146,6 +146,7 @@ loop.output %>%
   filter(Taxa.Level != "species") %>%
   ggplot(aes(x = Taxa, y = cancer, fill = pvalue)) +
   geom_tile() +
+  geom_text(aes(label = ifelse(hazard.ratio< 1, "+", "")), size = 1) +
   facet_grid(. ~ fct_relevel(capitalize(Taxa.Level), capitalize(taxalevels)),
              scales = "free_x", space = "free_x") +
   labs(x = "", y = "") +
@@ -154,9 +155,10 @@ loop.output %>%
                        values = c(0.000000000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), 
                        type = "div", palette = "RdBu", direction = 1,
                        labels = c("<0.01", "0.01", "0.02","0.03", "0.04","0.05","0.1", "0.2", "0.5", "1")) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 3), axis.ticks.x = element_blank()) +
-  ggsave("../../figures/AACR/survival-significance.png", width = 25)
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0, size = 3),
+        axis.ticks.x = element_blank()) +
+  ggsave("../../figures/AACR/survival-significance.png", width = 25, height = 4)
 ```
 
 

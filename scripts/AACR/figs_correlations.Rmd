@@ -113,7 +113,7 @@ cor.dat %>%
   labs(x = "", y = "") +
   scale_x_discrete(position = "top") +
   scale_y_discrete(breaks = oldlabs, labels = newlabs) +
-  theme_minimal() +
+  theme_classic() +
   theme(axis.text.x = element_blank(), panel.grid = element_blank()) +
   ggsave("../../figures/AACR/correlation-heatmap_toprow.png", width = 8, height = 3.5)
 
@@ -132,7 +132,7 @@ cor.dat %>%
   labs(x = "", y = "") +
   scale_x_discrete(position = "top") +
   scale_y_discrete(breaks = oldlabs, labels = newlabs) +
-  theme_minimal() +
+  theme_classic() +
   theme(axis.text.x = element_blank(), panel.grid = element_blank()) +
   ggsave("../../figures/AACR/correlation-heatmap_bottomrow.png", width = 8, height = 3.5)
 ```
