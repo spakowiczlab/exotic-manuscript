@@ -1,0 +1,101 @@
+---
+title: "Testing differences in important microbes between treaments"
+author: "Rebecca Hoyd"
+date: "February 17, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(survminer)
+library(survival)
+library(survMisc)
+library(ggplot2)
+library(dplyr)
+library(glue)
+library(readxl)
+library(tidyr)
+library(glmnet)
+```
+
+# Load data
+```{r}
+exo.ra <- read.csv("../../data/agg_exo-ra_taxonomy.csv")
+clindat <- read_excel("T:/Labs/Spakowicz/data/exoTCC/GI_PatientList_Spakowicz_WithClinicalData_01.2020.xlsx")
+```
+
+
+# Format for LASSO
+
+```{r}
+exo.ra.fam <- exo.ra %>%
+  filter(!is.na(family)) %>%
+  group_by(sample, family) %>%
+  summarise(ra = sum(ra)) %>%
+  spread(key = "family", value = "ra") %>%
+  gather(-sample, key = "family", value = "ra") %>%
+  mutate(ra = ifelse(is.na(ra), 0, ra),
+         ra = ifelse(ra > 0, 1, 0)) %>%
+  spread(key = "family", value = "ra")
+
+```
+
+```{r}
+input.mat <- clindat %>%
+  rename("sample" = "RNA SL ID",
+         "BMI" = "BMI at Collection",
+         "Age" = "Age at Collection") %>%
+  mutate(Sex = ifelse(Gender == "Male", 1, 0)) %>%
+  select(sample, BMI, Age, Sex) %>%
+  left_join(exo.ra.fam) %>%
+  select(-sample)
+
+input.surv <- clindat %>%
+  mutate(days = `Overall Survival from Dx (days)`,
+         vitalstatus = `Vital Status`,
+         vitalstatus = ifelse(vitalstatus == "Deceased", 1, 0))
+
+io.rows <- !grepl("N/A", input.surv$`I/O Drug Name`)
+chemo.rows <- !grepl("N/A", input.surv$`Chemo Drug Name`)
+
+input.mat.io <- as.matrix(input.mat[io.rows, ])
+input.surv.io <- input.surv[io.rows, ]
+
+input.mat.chemo <- as.matrix(input.mat[chemo.rows, ])
+input.surv.chemo <- input.surv[chemo.rows, ]
+```
+
+
+# Run LASSO
+```{r}
+set.seed(112358)
+fit.io <- glmnet(input.mat.io, Surv(input.surv.io$days, input.surv.io$vitalstatus), family = "cox", maxit = 1000)
+cv.fit.io <- cv.glmnet(input.mat.io, y = Surv(input.surv.io$days, input.surv.io$vitalstatus),
+                       family="cox", maxit = 1000)
+
+Coefficients.io <-  coef(fit.io, s = cv.fit.io$lambda.min)
+Active.Index.io <- which(Coefficients.io != 0)
+
+
+set.seed(112358)
+fit.chemo <- glmnet(input.mat.chemo, Surv(input.surv.chemo$days, input.surv.chemo$vitalstatus), 
+                    family = "cox", maxit = 1000)
+cv.fit.chemo <- cv.glmnet(input.mat.chemo, y = Surv(input.surv.chemo$days, input.surv.chemo$vitalstatus),
+                          family="cox", maxit = 1000)
+
+Coefficients.chemo <-  coef(fit.chemo, s = cv.fit.chemo$lambda.min)
+Active.Index.chemo <- which(Coefficients.chemo != 0)
+
+
+chosenvars.io <- Coefficients.io@Dimnames[[1]][Active.Index.io]
+chosenvars.chemo <- Coefficients.chemo@Dimnames[[1]][Active.Index.chemo]
+```
+
+# Generate cox models
+
+```{r}
+coxdat.io <- bind_cols(input.mat.io, input.surv.io)
+
+coxres.io <- coxph()
+```
