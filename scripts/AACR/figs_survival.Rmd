@@ -17,6 +17,7 @@ library(survminer)
 library(forcats)
 library(Hmisc)
 library(devEMF)
+library(ggforce)
 ```
 
 # Load data
@@ -144,11 +145,11 @@ loop.output <- bind_rows(lapply(canc.res, function(x) bind_rows(x)))
 loop.output %>%
   separate(taxa, by = "_", into = c("Taxa.Level", "Taxa")) %>%
   filter(Taxa.Level != "species") %>%
-  ggplot(aes(x = Taxa, y = cancer, fill = pvalue)) +
+  ggplot(aes(x = cancer, y = Taxa, fill = pvalue)) +
   geom_tile() +
   geom_text(aes(label = ifelse(hazard.ratio< 1, "+", "")), size = 1) +
-  facet_grid(. ~ fct_relevel(capitalize(Taxa.Level), capitalize(taxalevels)),
-             scales = "free_x", space = "free_x") +
+  facet_col(vars(fct_relevel(capitalize(Taxa.Level), capitalize(taxalevels))),
+             scales = "free_y", space = "free") +
   labs(x = "", y = "") +
   scale_fill_distiller(guide = "legend", limits = c(0, 1), name = "P.Value",
                        breaks = c(0.000000000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1),
@@ -156,9 +157,12 @@ loop.output %>%
                        type = "div", palette = "RdBu", direction = 1,
                        labels = c("<0.01", "0.01", "0.02","0.03", "0.04","0.05","0.1", "0.2", "0.5", "1")) +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0, size = 3),
-        axis.ticks.x = element_blank()) +
-  ggsave("../../figures/AACR/survival-significance.png", width = 25, height = 4)
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text.y = element_text(size = 3, vjust = 0.5),
+        axis.ticks.y = element_blank(),
+        axis.ticks.x = element_blank()
+        ) +
+  ggsave("../../figures/AACR/survival-significance.png", width = 5, height = 25)
 ```
 
 
