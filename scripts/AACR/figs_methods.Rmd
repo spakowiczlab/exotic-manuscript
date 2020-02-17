@@ -13,8 +13,44 @@ library(dplyr)
 library(tidyr)
 ```
 
+# Load data
 
 ```{r}
 exo.ra <- read.csv("../../data/agg_exo-ra_taxonomy.csv", stringsAsFactors = F)
 sitekey <- read.csv("../../data/microbe-directory.csv",stringsAsFactors = F)
+```
+
+# Try to make things compatible for join
+
+Ok, so the metaphlan-formatted output from Kraken2 does not perfectly match the values that metaphlan would create, particularly for some of the weirder taxa. To try and resolve this, I want to only use those columns which have decently well filled out information for the join and which should have standard names. In practice this will mean phylum through genus. Genera must have unique names so I'm just going to use them for now.
+
+
+```{r}
+exo.site <- exo.ra %>%
+  group_by(sample, genus) %>%
+  summarise(ra = sum(ra)) %>%
+  ungroup() %>%
+  group_by(genus) %>%
+  summarise(ra = median(ra)) %>%
+  as.data.frame() %>%
+  left_join(sitekey)
+```
+
+
+```{r}
+colnames(sitekey)
+```
+# Make histogram
+
+```{r}
+exo.site %>%
+  mutate(site = ifelse(microbiome_location == 1, "Human microbiome",
+                       ifelse(extreme_environment == 1, "Extremophile",
+                              ifelse(animal_pathogen == 1, "Animal pathogen",
+                                     ifelse(plant_pathogen == 1, "Plant pathogen", NA))))) %>%
+  ggplot(aes(x = genus, y = ra, fill = site)) +
+  geom_col() +
+  labs(x = "Genus", y = "Median relative abundance over samples") +
+  theme_bw() +
+  theme(axis.text.x = element_blank())
 ```
