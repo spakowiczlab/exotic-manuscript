@@ -115,7 +115,7 @@ cor.dat %>%
   scale_y_discrete(breaks = oldlabs, labels = newlabs) +
   theme_bw() +
   theme(axis.text.x = element_blank()) +
-  ggsave("../../figures/AACR/correlation-heatmap_toprow.png", width = 8, height = 3.5)
+  ggsave("../../figures/AACR/correlation-heatmap_toprow.svg", width = 8, height = 3.5)
 
 cor.dat %>%
   filter(!cancer %in% c("CUT", "GU", "RCC")) %>%
@@ -134,5 +134,5 @@ cor.dat %>%
   scale_y_discrete(breaks = oldlabs, labels = newlabs) +
   theme_bw() +
   theme(axis.text.x = element_blank()) +
-  ggsave("../../figures/AACR/correlation-heatmap_bottomrow.png", width = 8, height = 3.5)
+  ggsave("../../figures/AACR/correlation-heatmap_bottomrow.svg", width = 8, height = 3.5)
 ```

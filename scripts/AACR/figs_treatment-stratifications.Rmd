@@ -95,7 +95,32 @@ chosenvars.chemo <- Coefficients.chemo@Dimnames[[1]][Active.Index.chemo]
 # Generate cox models
 
 ```{r}
-coxdat.io <- bind_cols(input.mat.io, input.surv.io)
+coxdat.io <-input.mat.io %>%
+  as.data.frame() %>%
+  mutate(`RNA SL ID` = input.surv.io$`RNA SL ID`) %>%
+  left_join(input.surv.io)
 
-coxres.io <- coxph()
+io.form <- as.formula(paste0("Surv(days, vitalstatus) ~ ", paste(chosenvars.io, collapse = " + ")))
+
+coxres.io <- coxph(data = coxdat.io, formula = io.form)
+
+
+coxdat.chemo <-input.mat.chemo %>%
+  as.data.frame() %>%
+  mutate(`RNA SL ID` = input.surv.chemo$`RNA SL ID`) %>%
+  left_join(input.surv.chemo)
+
+chemo.form <- as.formula(paste0("Surv(days, vitalstatus) ~ ", paste(chosenvars.chemo, collapse = " + ")))
+
+coxres.chemo <- coxph(data = coxdat.chemo, formula = chemo.form)
+```
+
+# GGforest plot
+
+```{r}
+ggforest(coxres.io) +
+  ggsave("../../figures/AACR/forrestplot_io.png")
+
+ggforest(coxres.chemo) +
+  ggsave("../../figures/AACR/forrestplot_chemo.png")
 ```
