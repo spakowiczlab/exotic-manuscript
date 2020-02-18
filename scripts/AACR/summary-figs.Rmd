@@ -99,7 +99,7 @@ ggplot(exo.dend$segments) +
   geom_point(data = exo.dend$labels, aes(x, y, color = cancer), shape = "square") +
   scale_color_brewer(palette = "Dark2", name = "Cancer") +
   theme_void() +
-  ggsave("../../figures/AACR/clustering_samples-by-cancer.svg", width = 10, height = 4)
+  ggsave("../../figures/AACR/clustering_samples-by-cancer.pdf", width = 10, height = 4)
 
 ```
 
@@ -117,7 +117,7 @@ exo.ra.phyl.fil %>%
   scale_fill_manual(breaks = unique(exo.ra.phyl.fil$phylum), values = getPalette(ncolor), name = "Phylum") +
   theme_minimal() +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), panel.grid.major = element_blank()) +
-  ggsave("../../figures/AACR/stacked-bar_microbes.svg", height = 10, width = 10)
+  ggsave("../../figures/AACR/stacked-bar_microbes.pdf", height = 10, width = 10)
 
 ```
 
@@ -149,7 +149,7 @@ immunecells.l %>%
   theme(legend.position = "none",
         axis.text.x = element_blank(), axis.ticks.x = element_blank(), 
         panel.grid.major = element_blank()) +
-  ggsave("../../figures/AACR/stacked-bar_immune-cells.svg", height = 10, width = 10)
+  ggsave("../../figures/AACR/stacked-bar_immune-cells.pdf", height = 10, width = 10)
 ```
 
 ## Boxplots by cancer
@@ -163,7 +163,7 @@ immunecells.l %>%
   # scale_x_discrete(breaks = oldlabs, labels = newlabs) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggsave("../../figures/AACR/boxplot_immune-by-cancer.svg", height = 15)
+  ggsave("../../figures/AACR/boxplot_immune-by-cancer.pdf", height = 15)
 ```
 
 ## Boxplots of just CD8+ Tcells and TILs by cancer
@@ -179,5 +179,5 @@ immunecells.l %>%
   scale_fill_brewer(name = "Cancer", palette = "Dark2") +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggsave("../../figures/AACR/boxplot_cd8-and-TILs.svg", width = 10)
+  ggsave("../../figures/AACR/boxplot_cd8-and-TILs.pdf", width = 10)
 ```
