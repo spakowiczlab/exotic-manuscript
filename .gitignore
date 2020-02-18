@@ -50,3 +50,6 @@ CIB*.csv
 # other csv files
 *.csv
 
+# text files including wget urls
+*.txt
+
