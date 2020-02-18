@@ -162,7 +162,7 @@ loop.output %>%
         axis.ticks.y = element_blank()
         # axis.ticks.x = element_blank()
         ) +
-  ggsave("../../figures/AACR/survival-significance.png", width = 25, height = 5)
+  ggsave("../../figures/AACR/survival-significance.emf", width = 25, height = 5)
 ```
 
 
