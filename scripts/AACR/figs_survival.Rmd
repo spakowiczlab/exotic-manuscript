@@ -113,30 +113,33 @@ loop.input <-clindat %>%
 # Run surv ~ each microbe, in each cancer, at every taxa level
 
 ```{r, error=F, message=F, warning=F}
-cancers <- unique(loop.input$Cancer)
-microbes <- make.names(microbes)
-colnames(loop.input) <- make.names(colnames(loop.input))
-
-canc.res <- list()
-mic.res <- list()
-
-for(c in cancers){
-  loop.tmp <- loop.input %>%
-    filter(Cancer == c)
-  for(m in microbes){
-    mic.res[[m]] <- coxph(formula = as.formula(paste0("Surv(days, vitalstatus) ~ ", m)), data = loop.tmp) %>%
-      tidy() %>%
-      mutate(hazard.ratio = exp(estimate),
-             pvalue = p.value,
-             taxa = m,
-             cancer = c) %>%
-      select(hazard.ratio, pvalue, taxa, cancer)
-  }
-  canc.res[[c]] <- mic.res
-  mic.res <- list()
-}
-
-loop.output <- bind_rows(lapply(canc.res, function(x) bind_rows(x)))
+# cancers <- unique(loop.input$Cancer)
+# microbes <- make.names(microbes)
+# colnames(loop.input) <- make.names(colnames(loop.input))
+# 
+# canc.res <- list()
+# mic.res <- list()
+# 
+# for(c in cancers){
+#   loop.tmp <- loop.input %>%
+#     filter(Cancer == c)
+#   for(m in microbes){
+#     mic.res[[m]] <- coxph(formula = as.formula(paste0("Surv(days, vitalstatus) ~ ", m)), data = loop.tmp) %>%
+#       tidy() %>%
+#       mutate(hazard.ratio = exp(estimate),
+#              pvalue = p.value,
+#              taxa = m,
+#              cancer = c) %>%
+#       select(hazard.ratio, pvalue, taxa, cancer)
+#   }
+#   canc.res[[c]] <- mic.res
+#   mic.res <- list()
+# }
+# 
+# loop.output <- bind_rows(lapply(canc.res, function(x) bind_rows(x)))
+# 
+# write.csv(loop.output, "../../data/survival-microbe-output.csv", row.names = F)
+loop.output <- read.csv("../../data/survival-microbe-output.csv", stringsAsFactors = F)
 ```
 
 # Create heatmap
