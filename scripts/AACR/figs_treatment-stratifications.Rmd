@@ -98,9 +98,10 @@ chosenvars.chemo <- Coefficients.chemo@Dimnames[[1]][Active.Index.chemo]
 coxdat.io <-input.mat.io %>%
   as.data.frame() %>%
   mutate(`RNA SL ID` = input.surv.io$`RNA SL ID`) %>%
-  left_join(input.surv.io)
+  left_join(input.surv.io) %>%
+  select(days, vitalstatus, chosenvars.io)
 
-io.form <- as.formula(paste0("Surv(days, vitalstatus) ~ ", paste(chosenvars.io, collapse = " + ")))
+io.form <- as.formula(paste0("Surv(days, vitalstatus) ~ ", paste(chosenvars.io[1:5], collapse = " + ")))
 
 coxres.io <- coxph(data = coxdat.io, formula = io.form)
 
@@ -108,9 +109,10 @@ coxres.io <- coxph(data = coxdat.io, formula = io.form)
 coxdat.chemo <-input.mat.chemo %>%
   as.data.frame() %>%
   mutate(`RNA SL ID` = input.surv.chemo$`RNA SL ID`) %>%
-  left_join(input.surv.chemo)
+  left_join(input.surv.chemo) %>%
+  select(days, vitalstatus, chosenvars.chemo)
 
-chemo.form <- as.formula(paste0("Surv(days, vitalstatus) ~ ", paste(chosenvars.chemo, collapse = " + ")))
+chemo.form <- as.formula(paste0("Surv(days, vitalstatus) ~ ", paste(chosenvars.chemo[1:8], collapse = " + ")))
 
 coxres.chemo <- coxph(data = coxdat.chemo, formula = chemo.form)
 ```
