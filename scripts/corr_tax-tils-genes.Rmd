@@ -190,7 +190,7 @@ intersting[grep("Acidipropionibacterium", intersting$Var2),]
 
 ```{r}
 write.csv(intersting %>% 
-            separate(Var2, by = "_", into = c("Taxa.Level", "Taxa")),
+            separate(Var2, by = "_", into = c("Taxa.Level", "Taxa"), extra = "merge"),
           "../data/corr_microbes-with-genes.csv", row.names = F)
 ```
 

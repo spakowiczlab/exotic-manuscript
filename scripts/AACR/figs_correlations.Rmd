@@ -15,23 +15,91 @@ library(broom)
 ```
 
 # Load data
-```{r}
+```{r, eval = F}
 exo.ra <- read.csv("../../data/agg_exo-ra_taxonomy.csv", stringsAsFactors = F)
 immunecells <- read.csv("../../data/split-deconvolved-aggcuff_absolute/2019-12-09_cibersort_absolute_aggregated+TILS.csv", stringsAsFactors = F) %>%
   select(cancer, everything()) %>%
   rename("sample" = "Input.Sample")
 
+kingphyl <- read.csv("../../data/fix-king-assign_manual-edits.csv", stringsAsFactors = F)
+```
+
+```{r, eval = F}
+
+exoRAtowideprev <- function(data, taxlev){
+  tmp <- data
+  tmp$Taxa <- tmp[[taxlev]]
+  tmp.wide<- tmp %>%
+    filter(!is.na(Taxa)) %>%
+    mutate(Taxa = paste(taxlev, Taxa, sep = "_")) %>%
+    group_by(sample, Taxa) %>%
+    summarise(ra = sum(ra, na.rm = T)) %>%
+    spread(key = "Taxa", value = "ra")
+  
+  tmp.wide[is.na(tmp.wide)] <- 0
+  # tmp.prev <- bind_rows(lapply(tmp.wide[,-1], function(x) ifelse(x > 0, 1, 0))) %>%
+  #   mutate(sample = tmp.wide$sample) %>%
+  #   select(sample, everything())
+  return(tmp.wide)
+}
+```
+
+```{r, eval = F}
+exo.taxfix.domain <- exo.ra %>%
+  filter(is.na(taxonomy)) %>%
+  mutate(domain = ifelse(grepl("phage|virus", spec.join, ignore.case = TRUE), "Viruses", domain),
+         domain = ifelse(grepl("calothrix", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("anabaena", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("chondrocystis", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("cyanobacterium", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("dolichospermum", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("euhalothece", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("fischerella", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("geitlerinema", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("geminocystis", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("gloeobacter", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("gloeothece", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("limnospira", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("microcoleus", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("moorea", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("nostoc", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("oscillatoria", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("prochlorococcus", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("rivularia", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("synechococcus", spec.join, ignore.case = TRUE) & !grepl("phage|virus", spec.join,
+                                                                                        ignore.case = TRUE),
+                         "Bacteria", domain),
+         domain = ifelse(grepl("tenericutes", spec.join, ignore.case = TRUE), "Bacteria", domain),
+         domain = ifelse(grepl("trichodesmium", spec.join, ignore.case = TRUE), "Bacteria", domain)
+         )
+
+exo.ra <-exo.ra %>%
+  filter(!is.na(taxonomy)) %>%
+  select(-kingdom) %>%
+  left_join(kingphyl)
+
+exo.ra <- bind_rows(exo.ra, exo.taxfix.domain)
+
+
+
+
+taxalevels <- c("domain", "kingdom", "phylum", "class", "order", "family", "genus", "species")
+
+exo.wide.list <- lapply(taxalevels, function(x) exoRAtowideprev(exo.ra, x))
+names(exo.wide.list) <- taxalevels
+
+microbes <- unlist(lapply(exo.wide.list, function(x) colnames(x)[-1]))
+
+exo <- bind_cols(exo.wide.list) %>%
+  column_to_rownames(var = "sample") %>%
+  select(-contains("sample")) %>%
+  rownames_to_column(var = "sample") %>%
+  select(sample, everything())
+
+exo[is.na(exo)] <- 0
 ```
 
 
-```{r}
-exo.ra.gen <- exo.ra %>%
-  group_by(sample, genus) %>%
-  summarise(ra = sum(ra)) %>%
-  spread(key = "genus", value = "ra")
-
-exo.ra.gen[is.na(exo.ra.gen)] <- 0
-```
 
 ```{r}
 oldlabs <- c("B.cells.naive", "B.cells.memory", 
@@ -56,26 +124,27 @@ newlabs <- c("Naive B Cells", "Memory B Cells",
 ```
 
 # Test correlations
-```{r}
-microbes <- colnames(exo.ra.gen)[-1]
+```{r, eval = F}
+microbes <- colnames(exo)[-1]
 imcells <- colnames(immunecells)[-c(1:3)]
 cancers <- unique(immunecells$cancer)
 
-micim <- exo.ra.gen %>%
+micim <- exo %>%
   left_join(immunecells)
 ```
+
 ```{r}
 # cor.can <- list()
 # for(c in cancers){
 #   micim.tmp <- micim %>%
 #     filter(cancer == c)
-#   
+# 
 #   cor.can[[c]] <- lapply(microbes, function(m) lapply(imcells, function(i) cor.test(micim.tmp[[m]], micim.tmp[[i]],
 #                                                                     method = "spearman") %>%
 #                                         tidy() %>%
-#                                         mutate(im.cell = i, microbe = m, cancer = c))) 
-#   
-#   
+#                                         mutate(im.cell = i, microbe = m, cancer = c)))
+# 
+# 
 # }
 # 
 # test <- lapply(cor.can, function(x) lapply(x, function (y) bind_rows(y)))
@@ -95,7 +164,8 @@ cor.dat <- cor.can %>%
   # group_by(cancer) %>%
   # mutate(padj = p.adjust(p.value, method = "fdr")) %>%
   # ungroup() %>%
-  filter(!is.na(estimate))
+  separate(microbe, by = "_", into = c("Taxa.Level", "microbe"), extra = "merge") %>%
+  filter(Taxa.Level == "genus" & !is.na(estimate))
 # cor.dat <- cor.dat[!duplicated(cor.dat),]
 
 cor.dat %>%
