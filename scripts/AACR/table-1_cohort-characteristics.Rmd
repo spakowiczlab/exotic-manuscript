@@ -202,7 +202,7 @@ print(doc, target = "../../figures/AACR/tab1.docx")
 ## Load data : 
 ```{r}
 cor.can <- read.csv("../../data/AACR_correlations.csv", stringsAsFactors = F) %>%
-  rename("Taxa" = "microbe")
+  separate(microbe, by = "_", into = c("Taxa.Level", "Taxa"), extra = "merge")
 surv.can <- read.csv("../../data/survival-microbe-output.csv", stringsAsFactors = F)%>%
   separate(taxa, by = "_", into = c("Taxa.Level", "Taxa"), extra = "merge")
 cor.gene <- read.csv("../../data/corr_microbes-with-genes.csv", stringsAsFactors = F) %>%
@@ -217,24 +217,24 @@ cor.gene <- read.csv("../../data/corr_microbes-with-genes.csv", stringsAsFactors
 tab2.cancers <- cor.can %>%
   filter(im.cell == "TILs") %>%
   left_join(surv.can) %>%
-  group_by(Taxa) %>%
+  group_by(Taxa.Level, Taxa) %>%
   summarise(Survival.significant = ifelse(any(pvalue < 0.05),1, 0),
             Immune.correlation = ifelse(any(p.value < 0.05),1, 0))
 
 tab2.genes <- cor.gene %>%
   filter(Var1 %in% c("DDX58", "MB21D1") & !is.na(Taxa)) %>%
   mutate(gene.sig = ifelse(fdr < 0.05, 1, 0)) %>%
-  group_by(Taxa, Var1) %>%
+  group_by(Taxa.Level, Taxa, Var1) %>%
   mutate(gene.sig = ifelse(sum(gene.sig) > 0, 1, 0)) %>%
   spread(key = "Var1", value = "gene.sig")
 
 tab2.all <- tab2.cancers %>%
   left_join(tab2.genes) %>%
-  select(Taxa, DDX58 , MB21D1 , Survival.significant , Immune.correlation) 
+  select(Taxa.Level, Taxa, DDX58 , MB21D1 , Survival.significant , Immune.correlation) 
 
-tab2.all[, -1] <- bind_rows(lapply(tab2.all[,-1], function(x) ifelse(is.na(x), 0, x)))
+tab2.all[, -c(1,2)] <- bind_rows(lapply(tab2.all[,-c(1,2)], function(x) ifelse(is.na(x), 0, x)))
 
-tab2.all$times.sig <- rowSums(tab2.all[, -1])
+tab2.all$times.sig <- rowSums(tab2.all[, -c(1,2)])
 
 tab2.all %>%
   arrange(desc(times.sig)) %>%
