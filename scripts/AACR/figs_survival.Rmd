@@ -146,7 +146,7 @@ loop.output <- read.csv("../../data/survival-microbe-output.csv", stringsAsFacto
 
 ```{r}
 loop.output %>%
-  separate(taxa, by = "_", into = c("Taxa.Level", "Taxa")) %>%
+  separate(taxa, sep = "_", into = c("Taxa.Level", "Taxa")) %>%
   filter(Taxa.Level != "species") %>%
   ggplot(aes(y = cancer, x = Taxa, fill = pvalue)) +
   geom_tile() +
@@ -159,13 +159,13 @@ loop.output %>%
                        values = c(0.000000000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), 
                        type = "div", palette = "RdBu", direction = 1,
                        labels = c("<0.01", "0.01", "0.02","0.03", "0.04","0.05","0.1", "0.2", "0.5", "1")) +
-  theme_classic() +
+  theme_classic(base_size = 18) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 3),
         # axis.text.y = element_text(size = 3, vjust = 0.5),
         axis.ticks.y = element_blank()
         # axis.ticks.x = element_blank()
         ) +
-  ggsave("../../figures/AACR/survival-significance.pdf", width = 25, height = 5)
+  ggsave("../../figures/AACR/survival-significance.emf", width = 35, height = 4)
 ```
 
 
