@@ -22,7 +22,9 @@ library(officer)
 clinfiles <- list.files("T:/Labs/Spakowicz/data/exoTCC/", full.names = F, "_Spakowicz")
 clinfiles <- paste0("T:/Labs/Spakowicz/data/exoTCC/", clinfiles)
 
-clindat <- lapply(clinfiles, function(x) read_excel(x))
+clindat <- lapply(clinfiles, function(x) read_excel(x, na = "N/A"))
+
+
 ```
 
 
@@ -38,12 +40,25 @@ for(i in 1:length(clindat)){
 
 lapply(clindat, function(x) colnames(x))
 ```
+
+Drop the `Days.from...` columns that are being read in as both a numeric and character vector.
+
+```{r}
+for (i in 1:length(clindat)) {
+  clindat[[i]] <- 
+    clindat[[i]] %>%
+    select(-contains("Days.from"))
+}
+
+lapply(clindat, function(x) colnames(x))
+```
+
 While the first two objects have similar naming schemes and information available, the second object may need to be handled separately.
 
 ```{r}
-clindat.form1 <- bind_rows(clindat[[1]], clindat[[3]]) %>%
-  mutate(Days.from.RT.Start.to.Last.Follow.Up.or.Death = as.numeric(Days.from.RT.Start.to.Last.Follow.Up.or.Death),
-         Days.from.Hormone.Start.to.Last.Follow.Up.or.Death = as.numeric(Days.from.Hormone.Start.to.Last.Follow.Up.or.Death))
+clindat.form1 <- bind_rows(clindat[[1]], clindat[[3]])
+#   mutate(Days.from.RT.Start.to.Last.Follow.Up.or.Death = as.numeric(Days.from.RT.Start.to.Last.Follow.Up.or.Death),
+#          Days.from.Hormone.Start.to.Last.Follow.Up.or.Death = as.numeric(Days.from.Hormone.Start.to.Last.Follow.Up.or.Death))
 
 clindat.form2 <- clindat[[2]] %>%
   rename( "Cancer.Stage.at.Collection" = "Cancer.Stage.at.Collection..Best.CS.AJCC.") %>%
@@ -54,7 +69,7 @@ clindat.form <- bind_rows(clindat.form1, clindat.form2)
 ```
 
 ```{r, eval=F}
-write.csv(clindat.form, "T:/Labs/Spakowicz/data/exoTCC/clinical_aggregated.csv", row.names = F)
+write.csv(clindat.form, paste0("T:/Labs/Spakowicz/data/exoTCC/", Sys.Date(), "_clinical_aggregated.csv"), row.names = F)
 ```
 
 # Format  for the table
@@ -136,8 +151,6 @@ write.csv(tabMat, file = "../../figures/AACR/table1.csv")
 # Version 2
 
 ```{r}
-
-
 getstages <- clindat.form %>%
   mutate(Cancer.Stage.at.Collection = ifelse(Cancer.Stage.at.Collection %in% c("88", "99", "undeterm."), 
                          "Unknown", Cancer.Stage.at.Collection),
@@ -162,7 +175,7 @@ tabMat.v2 <- clindat.form %>%
   mutate(percent.male = ifelse(Gender == "Male", 1, 0),
          patnum = 1) %>%
   group_by(Cancer) %>%
-  summarise(dem.Percent.Male = mean(percent.male),
+  summarise(dem.Percent.Male = round(mean(percent.male), 2),
             avg.age = mean(Age.at.Collection),
             std.age = sqrt(var(Age.at.Collection)),
             avg.bmi = mean(BMI.at.Collection),
