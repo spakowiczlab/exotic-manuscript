@@ -164,7 +164,7 @@ cor.dat <- cor.can %>%
   # group_by(cancer) %>%
   # mutate(padj = p.adjust(p.value, method = "fdr")) %>%
   # ungroup() %>%
-  separate(taxa, by = "_", into = c("Taxa.Level", "microbe"), extra = "merge") %>%
+  separate(microbe, by = "_", into = c("Taxa.Level", "microbe"), extra = "merge") %>%
   filter(Taxa.Level == "genus" & !is.na(estimate))
 # cor.dat <- cor.dat[!duplicated(cor.dat),]
 
