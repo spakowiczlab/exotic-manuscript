@@ -3,7 +3,11 @@
 "family","Paenibacillaceae",1,0,1,1,3
 "genus","Cicer",1,0,1,1,3
 "genus","Leuconostoc",1,0,1,1,3
+"genus","Solanum",1,1,0,1,3
 "order","Glomerellales",1,0,1,1,3
+"species","Bacillus.megaterium",0,1,1,1,3
+"species","Colletotrichum.higginsianum",1,0,1,1,3
+"species","Theileria.annulata",1,0,1,1,3
 "class","Alphaproteobacteria",0,0,1,1,2
 "class","Bacillariophyceae",0,0,1,1,2
 "class","Betaproteobacteria",0,0,1,1,2
@@ -19,7 +23,6 @@
 "family","Cryptosporidiidae",0,0,1,1,2
 "family","Dipodascaceae",1,0,1,0,2
 "family","Erythrobacteraceae",0,0,1,1,2
-"family","Erythrobacteraceae",0,0,1,1,2
 "family","Frankiaceae",1,0,0,1,2
 "family","Glomerellaceae",0,0,1,1,2
 "family","Halieaceae",0,0,1,1,2
@@ -34,7 +37,6 @@
 "family","Mycoplasmataceae",0,0,1,1,2
 "family","Nitrosomonadaceae",0,0,1,1,2
 "family","Oxalobacteraceae",0,0,1,1,2
-"family","Paenibacillaceae",0,0,1,1,2
 "family","Peptoniphilaceae",1,0,0,1,2
 "family","Phaeodactylaceae",0,0,1,1,2
 "family","Retroviridae",0,0,1,1,2
@@ -47,13 +49,10 @@
 "genus","Altererythrobacter",0,0,1,1,2
 "genus","Anaeromyxobacter",0,0,1,1,2
 "genus","Azospirillum",0,0,1,1,2
-"genus","Azospirillum",0,0,1,1,2
 "genus","Bathycoccus",0,0,1,1,2
-"genus","Bigelowiella",0,0,1,1,2
 "genus","Bigelowiella",0,0,1,1,2
 "genus","Colletotrichum",0,0,1,1,2
 "genus","Cryobacterium",1,0,0,1,2
-"genus","Cryptosporidium",0,0,1,1,2
 "genus","Cryptosporidium",0,0,1,1,2
 "genus","Cucurbita",0,1,0,1,2
 "genus","Cytomegalovirus",0,0,1,1,2
@@ -63,7 +62,6 @@
 "genus","Gammaretrovirus",0,0,1,1,2
 "genus","Gossypium",0,1,0,1,2
 "genus","Halioglobus",0,0,1,1,2
-"genus","Hirschia",0,0,1,1,2
 "genus","Hirschia",0,0,1,1,2
 "genus","Ipomoea",0,1,0,1,2
 "genus","Janthinobacterium",0,0,1,1,2
@@ -85,10 +83,7 @@
 "genus","Porphyrobacter",0,0,1,1,2
 "genus","Pyricularia",0,1,0,1,2
 "genus","Serratia",1,0,0,1,2
-"genus","Solanum",0,1,0,1,2
-"genus","Solanum",1,0,0,1,2
 "genus","Stenotrophomonas",0,0,1,1,2
-"genus","Sugiyamaella",0,0,1,1,2
 "genus","Sugiyamaella",0,0,1,1,2
 "genus","Symbiobacterium",1,0,0,1,2
 "genus","Theobroma",0,0,1,1,2
@@ -98,13 +93,13 @@
 "order","Aeromonadales",0,0,1,1,2
 "order","Apiales",0,1,0,1,2
 "order","Burkholderiales",0,0,1,1,2
+"order","Caulobacterales",1,1,0,0,2
 "order","Cellvibrionales",0,0,1,1,2
 "order","Cucurbitales",0,1,0,1,2
 "order","Eurotiales",0,1,0,1,2
 "order","Gentianales",1,0,0,1,2
 "order","Herpesvirales",0,0,1,1,2
 "order","Malasseziales",0,0,1,1,2
-"order","Mycoplasmatales",0,0,1,1,2
 "order","Mycoplasmatales",0,0,1,1,2
 "order","Naviculales",0,0,1,1,2
 "order","Nitrosomonadales",0,0,1,1,2
@@ -117,6 +112,62 @@
 "phylum","Firmicutes",0,1,0,1,2
 "phylum","Proteobacteria",0,0,1,1,2
 "phylum","Tenericutes",0,0,1,1,2
+"species","Actinosynnema.pretiosum",0,1,0,1,2
+"species","Aeromonas.rivipollensis",0,0,1,1,2
+"species","Altererythrobacter.ishigakiensis",0,0,1,1,2
+"species","Amycolatopsis.sp..YIM.10",0,0,1,1,2
+"species","Anaeromyxobacter.dehalogenans",0,0,1,1,2
+"species","Aspergillus.oryzae",0,0,1,1,2
+"species","Azospirillum.sp..TSH58",0,0,1,1,2
+"species","Bacillus.thuringiensis",0,0,1,1,2
+"species","Bathycoccus.prasinos",0,0,1,1,2
+"species","Bigelowiella.natans",0,0,1,1,2
+"species","Brevibacillus.laterosporus",1,0,1,0,2
+"species","Candida.orthopsilosis",0,0,1,1,2
+"species","Capsicum.annuum",0,1,0,1,2
+"species","Cicer.arietinum",0,0,1,1,2
+"species","Citrobacter.farmeri",1,0,1,0,2
+"species","Cronobacter.dublinensis",1,0,1,0,2
+"species","Cryptococcus.gattii.VGI",1,0,0,1,2
+"species","Cryptococcus.neoformans",0,0,1,1,2
+"species","Cryptosporidium.parvum",0,0,1,1,2
+"species","Cutibacterium.acnes",1,0,0,1,2
+"species","Daucus.carota",0,1,0,1,2
+"species","Fusarium.pseudograminearum",1,0,1,0,2
+"species","Halioglobus.japonicus",0,0,1,1,2
+"species","Hirschia.baltica",0,0,1,1,2
+"species","Human.betaherpesvirus.5",0,0,1,1,2
+"species","Janthinobacterium.sp..LM6",0,0,1,1,2
+"species","Kluyveromyces.marxianus",1,0,0,1,2
+"species","Leishmania.donovani",1,0,1,0,2
+"species","Lelliottia.nimipressuralis",0,0,1,1,2
+"species","Leuconostoc.citreum",0,0,1,1,2
+"species","Lysobacter.enzymogenes",1,0,1,0,2
+"species","Malassezia.restricta",0,0,1,1,2
+"species","Medicago.truncatula",0,0,1,1,2
+"species","Methylorubrum.populi",0,0,1,1,2
+"species","Micromonas.commoda",0,0,1,1,2
+"species","Mycobacterium.dioxanotrophicus",0,0,1,1,2
+"species","Mycoplasma.dispar",0,0,1,1,2
+"species","Naumovozyma.dairenensis",0,0,1,1,2
+"species","Nitrosomonas.ureae",0,0,1,1,2
+"species","Panicum.hallii",0,1,0,1,2
+"species","Phaeodactylum.tricornutum",0,0,1,1,2
+"species","Phaseolus.vulgaris",0,1,0,1,2
+"species","Plasmodium.cynomolgi",1,0,1,0,2
+"species","Plasmodium.sp..gorilla.clade.G2",1,0,1,0,2
+"species","Porphyrobacter.neustonensis",0,0,1,1,2
+"species","Pseudonocardia.sp..AL041005-10",1,0,0,1,2
+"species","Pyricularia.grisea",0,1,0,1,2
+"species","Solanum.lycopersicum",0,0,1,1,2
+"species","Stenotrophomonas.sp..G4",0,0,1,1,2
+"species","Streptomyces.cattleya",0,0,1,1,2
+"species","Streptomyces.griseoviridis",0,0,1,1,2
+"species","Streptomyces.lividans",0,0,1,1,2
+"species","Streptomyces.sp..CdTB01",0,0,1,1,2
+"species","Sugiyamaella.lignohabitans",0,0,1,1,2
+"species","Theobroma.cacao",0,0,1,1,2
+"species","Zygosaccharomyces.rouxii",0,0,1,1,2
 "class","Aconoidasida",0,0,0,1,1
 "class","Actinobacteria",0,0,0,1,1
 "class","Bacilli",0,0,0,1,1
@@ -127,21 +178,18 @@
 "class","Coscinodiscophyceae",0,0,0,1,1
 "class","Cytophagia",0,0,1,0,1
 "class","Deltaproteobacteria",0,0,1,0,1
-"class","Deltaproteobacteria",0,0,1,0,1
 "class","Eumycetozoa",0,0,0,1,1
 "class","Eurotiomycetes",0,0,0,1,1
 "class","Flavobacteriia",0,0,1,0,1
 "class","Gammaproteobacteria",0,0,1,0,1
 "class","Leotiomycetes",0,0,0,1,1
 "class","Magnoliopsida",0,0,0,1,1
-"class","Negativicutes",0,0,0,1,1
 "class","Oligoflexia",0,0,1,0,1
 "class","Saccharomycetes",0,0,0,1,1
 "class","Tissierellia",0,0,0,1,1
 "class","Ustilaginomycetes",0,0,0,1,1
 "domain","Eukaryota",0,0,0,1,1
 "family","Acidaminococcaceae",0,0,0,1,1
-"family","Actinomycetaceae",0,0,1,0,1
 "family","Actinomycetaceae",0,0,1,0,1
 "family","Alcaligenaceae",0,0,0,1,1
 "family","Alteromonadaceae",1,0,0,0,1
@@ -165,9 +213,7 @@
 "family","Cyanidiaceae",0,0,0,1,1
 "family","Cytophagaceae",1,0,0,0,1
 "family","Desulfuromonadaceae",0,0,1,0,1
-"family","Desulfuromonadaceae",0,0,1,0,1
 "family","Dictyosteliaceae",0,0,0,1,1
-"family","Dipodascaceae",0,0,1,0,1
 "family","Enterobacteriaceae",0,0,1,0,1
 "family","Euphorbiaceae",0,0,0,1,1
 "family","Fabaceae",0,0,0,1,1
@@ -183,8 +229,6 @@
 "family","Micrococcaceae",0,0,1,0,1
 "family","Micromonosporaceae",0,0,0,1,1
 "family","Musaceae",0,0,0,1,1
-"family","Musaceae",0,0,0,1,1
-"family","Nectriaceae",0,0,0,1,1
 "family","Nectriaceae",0,0,0,1,1
 "family","Nocardiaceae",0,0,0,1,1
 "family","Nocardioidaceae",0,0,0,1,1
@@ -193,14 +237,11 @@
 "family","Nymphaeaceae",0,0,0,1,1
 "family","Oleaceae",0,0,0,1,1
 "family","Papaveraceae",0,0,0,1,1
-"family","Papaveraceae",0,0,0,1,1
 "family","Pasteurellaceae",0,0,1,0,1
 "family","Pedaliaceae",0,0,0,1,1
-"family","Peptoniphilaceae",0,0,0,1,1
 "family","Peptostreptococcaceae",0,0,1,0,1
 "family","Phaffomycetaceae",1,0,0,0,1
 "family","Pichiaceae",1,0,0,0,1
-"family","Piscirickettsiaceae",0,0,0,1,1
 "family","Piscirickettsiaceae",0,0,0,1,1
 "family","Plasmodiidae",0,0,0,1,1
 "family","Poaceae",0,0,0,1,1
@@ -208,7 +249,6 @@
 "family","Pseudomonadaceae",0,0,1,0,1
 "family","Pseudonocardiaceae",0,0,0,1,1
 "family","Pyriculariaceae",0,0,0,1,1
-"family","Rhamnaceae",0,0,0,1,1
 "family","Rhodobacteraceae",0,0,1,0,1
 "family","Rhodospirillaceae",1,0,0,0,1
 "family","Rosaceae",0,0,0,1,1
@@ -222,18 +262,15 @@
 "family","Solanaceae",0,0,0,1,1
 "family","Streptococcaceae",0,0,1,0,1
 "family","Streptomycetaceae",0,0,0,1,1
-"family","Streptomycetaceae",0,0,0,1,1
 "family","Symbiobacteriaceae",0,0,0,1,1
 "family","Thalassiosiraceae",0,0,0,1,1
 "family","Theileriidae",0,0,0,1,1
 "family","Thermoanaerobacteraceae",0,0,0,1,1
 "family","Trypanosomatidae",0,0,0,1,1
-"family","Trypanosomatidae",0,0,0,1,1
 "family","Unikaryonidae",0,0,0,1,1
 "family","Ustilaginaceae",0,0,0,1,1
 "family","Vitaceae",0,0,1,0,1
 "family","Yersiniaceae",0,0,0,1,1
-"genus","Acidaminococcus",0,0,0,1,1
 "genus","Actinoplanes",0,0,0,1,1
 "genus","Aeromicrobium",0,0,0,1,1
 "genus","Alcaligenes",0,0,0,1,1
@@ -256,7 +293,6 @@
 "genus","Brevibacillus",0,0,1,0,1
 "genus","Cajanus",0,0,0,1,1
 "genus","Camelina",0,0,0,1,1
-"genus","Camelina",0,0,0,1,1
 "genus","Cannabis",0,0,0,1,1
 "genus","Capsicum",0,0,0,1,1
 "genus","Chryseobacterium",0,0,1,0,1
@@ -268,14 +304,12 @@
 "genus","Corynebacterium",1,0,0,0,1
 "genus","Cronobacter",0,0,1,0,1
 "genus","Cucumis",0,0,0,1,1
-"genus","Cucurbita",0,0,0,1,1
 "genus","Cutibacterium",0,0,0,1,1
 "genus","Cyanidioschyzon",0,0,0,1,1
 "genus","Cynara",0,0,0,1,1
 "genus","Daucus",0,0,0,1,1
 "genus","Desulfovibrio",1,0,0,0,1
 "genus","Dictyostelium",0,0,0,1,1
-"genus","Encephalitozoon",0,0,0,1,1
 "genus","Encephalitozoon",0,0,0,1,1
 "genus","Faecalibacterium",0,0,0,1,1
 "genus","Fragaria",0,0,0,1,1
@@ -290,7 +324,6 @@
 "genus","Intrasporangium",0,0,1,0,1
 "genus","Kazachstania",0,0,1,0,1
 "genus","Kitasatospora",0,0,0,1,1
-"genus","Kitasatospora",0,0,0,1,1
 "genus","Klebsiella",1,0,0,0,1
 "genus","Labilithrix",0,0,0,1,1
 "genus","Leishmania",0,0,0,1,1
@@ -304,15 +337,12 @@
 "genus","Mycobacteroides",0,0,1,0,1
 "genus","Myroides",0,0,1,0,1
 "genus","Nocardia",0,0,0,1,1
-"genus","Nocardia",0,0,0,1,1
-"genus","Nymphaea",0,0,0,1,1
 "genus","Nymphaea",0,0,0,1,1
 "genus","Oceanisphaera",0,0,1,0,1
 "genus","Olea",0,0,0,1,1
 "genus","Oryza",0,0,0,1,1
 "genus","Panicum",0,0,0,1,1
 "genus","Papaver",0,0,0,1,1
-"genus","Paracoccus",0,0,1,0,1
 "genus","Paraoerskovia",0,0,0,1,1
 "genus","Pasteurella",0,0,1,0,1
 "genus","Pelobacter",0,0,1,0,1
@@ -321,13 +351,11 @@
 "genus","Piscirickettsia",0,0,0,1,1
 "genus","Plasmodium",0,0,0,1,1
 "genus","Pochonia",0,0,1,0,1
-"genus","Pochonia",0,0,1,0,1
 "genus","Populus",0,0,0,1,1
 "genus","Prunus",0,0,0,1,1
 "genus","Pseudomonas",0,0,1,0,1
 "genus","Pseudonocardia",0,0,0,1,1
 "genus","Punica",0,0,0,1,1
-"genus","Pyricularia",0,0,0,1,1
 "genus","Quercus",0,0,0,1,1
 "genus","Rhodoferax",1,0,0,0,1
 "genus","Rhodopseudomonas",0,0,0,1,1
@@ -342,7 +370,6 @@
 "genus","Sinomonas",0,0,1,0,1
 "genus","Sorghum",0,0,0,1,1
 "genus","Streptococcus",0,0,1,0,1
-"genus","Streptococcus",0,0,1,0,1
 "genus","Streptomyces",0,0,0,1,1
 "genus","Sulfitobacter",0,0,0,1,1
 "genus","Thalassiosira",0,0,0,1,1
@@ -356,7 +383,6 @@
 "genus","Ziziphus",0,0,0,1,1
 "genus","Zymoseptoria",0,0,0,1,1
 "kingdom","Amoebozoa",0,0,0,1,1
-"kingdom","Amoebozoa",0,0,0,1,1
 "kingdom","Chromista",0,0,0,1,1
 "kingdom","Eukaryota",0,0,0,1,1
 "kingdom","Fungi",0,0,0,1,1
@@ -365,33 +391,24 @@
 "order","Actinomycetales",0,0,1,0,1
 "order","Arecales",0,0,0,1,1
 "order","Asparagales",0,0,0,1,1
-"order","Asparagales",0,0,0,1,1
 "order","Asterales",0,0,0,1,1
 "order","Bacillales",0,0,0,1,1
-"order","Bacteriovoracales",0,0,1,0,1
 "order","Bacteriovoracales",0,0,1,0,1
 "order","Bacteroidetes",1,0,0,0,1
 "order","Brassicales",0,0,0,1,1
 "order","Caryophyllales",0,0,0,1,1
-"order","Caulobacterales",1,0,0,0,1
-"order","Caulobacterales",0,1,0,0,1
 "order","Clostridiales",0,0,0,1,1
 "order","Cyanidiales",0,0,0,1,1
 "order","Cytophagales",0,0,1,0,1
 "order","Desulfuromonadales",0,0,1,0,1
-"order","Desulfuromonadales",0,0,1,0,1
 "order","Dictyosteliales",0,0,0,1,1
-"order","Dictyosteliales",0,0,0,1,1
-"order","Enterobacterales",0,0,1,0,1
 "order","Enterobacterales",0,0,1,0,1
 "order","Eucoccidiorida",0,0,1,0,1
 "order","Fabales",0,0,0,1,1
 "order","Fagales",0,0,0,1,1
 "order","Flavobacteriales",0,0,1,0,1
-"order","Flavobacteriales",0,0,1,0,1
 "order","Frankiales",0,0,0,1,1
 "order","Funariales",0,0,0,1,1
-"order","Gentianales",0,0,0,1,1
 "order","Geodermatophilales",1,0,0,0,1
 "order","Haemosporida",0,0,0,1,1
 "order","Helotiales",0,0,0,1,1
@@ -431,14 +448,11 @@
 "order","Tissierellales",0,0,0,1,1
 "order","Tremellales",1,0,0,0,1
 "order","Ustilaginales",0,0,0,1,1
-"order","Ustilaginales",0,0,0,1,1
 "order","Vitales",0,0,1,0,1
 "order","Zingiberales",0,0,0,1,1
 "phylum","Actinobacteria",0,0,0,1,1
-"phylum","Actinobacteria",0,0,0,1,1
 "phylum","Apicomplexa",0,0,0,1,1
 "phylum","Bacillariophyta",0,0,0,1,1
-"phylum","Bacteroidetes",0,0,1,0,1
 "phylum","Bacteroidetes",0,0,1,0,1
 "phylum","Balneolaeota",1,0,0,0,1
 "phylum","Basidiomycota",0,0,0,1,1
@@ -448,169 +462,180 @@
 "phylum","Planctomycetes",1,0,0,0,1
 "phylum","Rhodophyta",0,0,0,1,1
 "phylum","Streptophyta",0,0,0,1,1
-"species","Acidaminococcus intestini",0,0,0,1,1
-"species","Actinoplanes sp. OR16",0,0,0,1,1
-"species","Actinosynnema pretiosum",0,0,0,1,1
-"species","Aeromicrobium sp. 592",0,0,0,1,1
-"species","Aeromonas rivipollensis",0,0,0,1,1
-"species","Alcaligenes faecalis",0,0,0,1,1
-"species","Altererythrobacter ishigakiensis",0,0,0,1,1
-"species","Amycolatopsis sp. YIM 10",0,0,0,1,1
-"species","Anaerococcus mediterraneensis",0,0,0,1,1
-"species","Anaeromyxobacter dehalogenans",0,0,0,1,1
-"species","Anaerostipes rhamnosivorans",0,0,0,1,1
-"species","Ananas comosus",0,0,0,1,1
-"species","Arabidopsis thaliana",0,0,0,1,1
-"species","Arachis duranensis",0,0,0,1,1
-"species","Arachis hypogaea",0,0,0,1,1
-"species","Asparagus officinalis",0,0,0,1,1
-"species","Aspergillus fumigatus",0,0,0,1,1
-"species","Aspergillus oryzae",0,0,0,1,1
-"species","Azospirillum sp. TSH58",0,0,0,1,1
-"species","Babesia bigemina",0,0,0,1,1
-"species","Bacillus albus",0,0,0,1,1
-"species","Bacillus atrophaeus",0,0,0,1,1
-"species","Bacillus megaterium",0,0,0,1,1
-"species","Bacillus thuringiensis",0,0,0,1,1
-"species","Bathycoccus prasinos",0,0,0,1,1
-"species","Beta vulgaris",0,0,0,1,1
-"species","Bigelowiella natans",0,0,0,1,1
-"species","Bosea sp. Tri-49",0,0,0,1,1
-"species","Botrytis cinerea",0,0,0,1,1
-"species","Brachypodium distachyon",0,0,0,1,1
-"species","Brassica napus",0,0,0,1,1
-"species","Brassica rapa",0,0,0,1,1
-"species","Cajanus cajan",0,0,0,1,1
-"species","Camelina sativa",0,0,0,1,1
-"species","Candida orthopsilosis",0,0,0,1,1
-"species","Cannabis sativa",0,0,0,1,1
-"species","Capsicum annuum",0,0,0,1,1
-"species","Cicer arietinum",0,0,0,1,1
-"species","Citrus sinensis",0,0,0,1,1
-"species","Cnuibacter physcomitrellae",0,0,0,1,1
-"species","Coffea arabica",0,0,0,1,1
-"species","Coffea eugenioides",0,0,0,1,1
-"species","Colletotrichum higginsianum",0,0,0,1,1
-"species","Cryobacterium arcticum",0,0,0,1,1
-"species","Cryptococcus gattii VGI",0,0,0,1,1
-"species","Cryptococcus neoformans",0,0,0,1,1
-"species","Cryptosporidium parvum",0,0,0,1,1
-"species","Cucumis sativus",0,0,0,1,1
-"species","Cucurbita pepo",0,0,0,1,1
-"species","Cutibacterium acnes",0,0,0,1,1
-"species","Cyanidioschyzon merolae",0,0,0,1,1
-"species","Cynara cardunculus",0,0,0,1,1
-"species","Daucus carota",0,0,0,1,1
-"species","Dictyostelium discoideum",0,0,0,1,1
-"species","Elaeis guineensis",0,0,0,1,1
-"species","Encephalitozoon cuniculi",0,0,0,1,1
-"species","endosymbiont of unidentified scaly snail isolate Monju",0,0,0,1,1
-"species","Faecalibacterium prausnitzii",0,0,0,1,1
-"species","Fragaria vesca",0,0,0,1,1
-"species","Frankia alni",0,0,0,1,1
-"species","Friedmanniella sagamiharensis",0,0,0,1,1
-"species","Fujinami sarcoma virus",0,0,0,1,1
-"species","Fusarium oxysporum",0,0,0,1,1
-"species","Fusarium venenatum",0,0,0,1,1
-"species","Fusarium verticillioides",0,0,0,1,1
-"species","Glaesserella parasuis",0,0,0,1,1
-"species","Glycine max",0,0,0,1,1
-"species","Gossypium arboreum",0,0,0,1,1
-"species","Gossypium hirsutum",0,0,0,1,1
-"species","Gossypium raimondii",0,0,0,1,1
-"species","Halioglobus japonicus",0,0,0,1,1
-"species","Hardy-Zuckerman feline sarcoma virus",0,0,0,1,1
-"species","Helianthus annuus",0,0,0,1,1
-"species","Herbaspirillum seropedicae",0,0,0,1,1
-"species","Hirschia baltica",0,0,0,1,1
-"species","Human betaherpesvirus 5",0,0,0,1,1
-"species","Hungatella hathewayi",0,0,0,1,1
-"species","Ipomoea triloba",0,0,0,1,1
-"species","Janthinobacterium sp. LM6",0,0,0,1,1
-"species","Kitasatospora albolonga",0,0,0,1,1
-"species","Kluyveromyces marxianus",0,0,0,1,1
-"species","Labilithrix luteola",0,0,0,1,1
-"species","Leishmania major",0,0,0,1,1
-"species","Leishmania panamensis",0,0,0,1,1
-"species","Lelliottia nimipressuralis",0,0,0,1,1
-"species","Leuconostoc citreum",0,0,0,1,1
-"species","Malassezia restricta",0,0,0,1,1
-"species","Malus domestica",0,0,0,1,1
-"species","Manihot esculenta",0,0,0,1,1
-"species","Medicago truncatula",0,0,0,1,1
-"species","Methylomonas sp. DH-1",0,0,0,1,1
-"species","Methylorubrum populi",0,0,0,1,1
-"species","Micromonas commoda",0,0,0,1,1
-"species","Moorella thermoacetica",0,0,0,1,1
-"species","Musa acuminata",0,0,0,1,1
-"species","Mycobacterium dioxanotrophicus",0,0,0,1,1
-"species","Mycoplasma dispar",0,0,0,1,1
-"species","Naumovozyma dairenensis",0,0,0,1,1
-"species","Nicotiana attenuata",0,0,0,1,1
-"species","Nitrosomonas ureae",0,0,0,1,1
-"species","Nocardia cyriacigeorgica",0,0,0,1,1
-"species","Nymphaea colorata",0,0,0,1,1
-"species","Olea europaea",0,0,0,1,1
-"species","Oryza brachyantha",0,0,0,1,1
-"species","Oryza sativa",0,0,0,1,1
-"species","Paenibacillus sp. 18JY67-1",0,0,0,1,1
-"species","Panicum hallii",0,0,0,1,1
-"species","Papaver somniferum",0,0,0,1,1
-"species","Paraoerskovia marina",0,0,0,1,1
-"species","Phaeodactylum tricornutum",0,0,0,1,1
-"species","Phaseolus vulgaris",0,0,0,1,1
-"species","Physcomitrella patens",0,0,0,1,1
-"species","Piscirickettsia salmonis",0,0,0,1,1
-"species","Plasmodium coatneyi",0,0,0,1,1
-"species","Plasmodium malariae",0,0,0,1,1
-"species","Plasmodium vivax",0,0,0,1,1
-"species","Populus trichocarpa",0,0,0,1,1
-"species","Porphyrobacter neustonensis",0,0,0,1,1
-"species","Prunus persica",0,0,0,1,1
-"species","Pseudomonas stutzeri",0,0,0,1,1
-"species","Pseudonocardia sp. AL041005-10",0,0,0,1,1
-"species","Punica granatum",0,0,0,1,1
-"species","Pyricularia grisea",0,0,0,1,1
-"species","Quercus lobata",0,0,0,1,1
-"species","Rhodopseudomonas palustris",0,0,0,1,1
-"species","Rosa chinensis",0,0,0,1,1
-"species","Scheffersomyces stipitis",0,0,0,1,1
-"species","Serratia rubidaea",0,0,0,1,1
-"species","Sesamum indicum",0,0,0,1,1
-"species","Setaria italica",0,0,0,1,1
-"species","Solanum lycopersicum",0,0,0,1,1
-"species","Solanum pennellii",0,0,0,1,1
-"species","Sorghum bicolor",0,0,0,1,1
-"species","Stenotrophomonas sp. G4",0,0,0,1,1
-"species","Streptomyces albidoflavus",0,0,0,1,1
-"species","Streptomyces cattleya",0,0,0,1,1
-"species","Streptomyces exfoliatus",0,0,0,1,1
-"species","Streptomyces griseoviridis",0,0,0,1,1
-"species","Streptomyces lividans",0,0,0,1,1
-"species","Streptomyces lunaelactis",0,0,0,1,1
-"species","Streptomyces roseochromogenus",0,0,0,1,1
-"species","Streptomyces sp. CdTB01",0,0,0,1,1
-"species","Streptomyces sp. Sge12",0,0,0,1,1
-"species","Streptomyces sp. SUK 48",0,0,0,1,1
-"species","Sugiyamaella lignohabitans",0,0,0,1,1
-"species","Sulfitobacter sp. SK012",0,0,0,1,1
-"species","Symbiobacterium thermophilum",0,0,0,1,1
-"species","Thalassiosira pseudonana",0,0,0,1,1
-"species","Theileria annulata",0,0,0,1,1
-"species","Theobroma cacao",0,0,0,1,1
-"species","Thermobifida fusca",0,0,0,1,1
-"species","Thermothelomyces thermophilus",0,0,0,1,1
-"species","Ustilago maydis",0,0,0,1,1
-"species","Vigna radiata",0,0,0,1,1
-"species","Vigna unguiculata",0,0,0,1,1
-"species","Xanthomonadaceae bacterium AQ6-296",0,0,0,1,1
-"species","Zea mays",0,0,0,1,1
-"species","Ziziphus jujuba",0,0,0,1,1
-"species","Zygosaccharomyces rouxii",0,0,0,1,1
-"species","Zymoseptoria tritici",0,0,0,1,1
+"species","Acidaminococcus.intestini",0,0,0,1,1
+"species","Actinobacteria.bacterium.IMCC26256",0,0,1,0,1
+"species","Actinoplanes.sp..OR16",0,0,0,1,1
+"species","Aeromicrobium.sp..592",0,0,0,1,1
+"species","Alcaligenes.faecalis",0,0,0,1,1
+"species","Amycolatopsis.mediterranei",0,0,1,0,1
+"species","Anaerococcus.mediterraneensis",0,0,0,1,1
+"species","Anaerostipes.rhamnosivorans",0,0,0,1,1
+"species","Ananas.comosus",0,0,0,1,1
+"species","Arabidopsis.thaliana",0,0,0,1,1
+"species","Arachis.duranensis",0,0,0,1,1
+"species","Arachis.hypogaea",0,0,0,1,1
+"species","Asparagus.officinalis",0,0,0,1,1
+"species","Aspergillus.fumigatus",0,0,0,1,1
+"species","Babesia.bigemina",0,0,0,1,1
+"species","Babesia.bovis",0,0,1,0,1
+"species","Bacillus.albus",0,0,0,1,1
+"species","Bacillus.atrophaeus",0,0,0,1,1
+"species","Bacillus.pseudomycoides",0,0,1,0,1
+"species","Beta.vulgaris",0,0,0,1,1
+"species","Bosea.sp..Tri-49",0,0,0,1,1
+"species","Botrytis.cinerea",0,0,0,1,1
+"species","Brachypodium.distachyon",0,0,0,1,1
+"species","Bradyrhizobium.sp..SK17",0,1,0,0,1
+"species","Brassica.napus",0,0,0,1,1
+"species","Brassica.oleracea",0,0,1,0,1
+"species","Brassica.rapa",0,0,0,1,1
+"species","Cajanus.cajan",0,0,0,1,1
+"species","Camelina.sativa",0,0,0,1,1
+"species","Cannabis.sativa",0,0,0,1,1
+"species","Chamaesiphon.minutus",1,0,0,0,1
+"species","Chryseobacterium.gleum",0,0,1,0,1
+"species","Citrus.sinensis",0,0,0,1,1
+"species","Clostridioides.difficile",0,0,1,0,1
+"species","Cnuibacter.physcomitrellae",0,0,0,1,1
+"species","Coffea.arabica",0,0,0,1,1
+"species","Coffea.eugenioides",0,0,0,1,1
+"species","Cryobacterium.arcticum",0,0,0,1,1
+"species","Cucumis.sativus",0,0,0,1,1
+"species","Cucurbita.pepo",0,0,0,1,1
+"species","Cyanidioschyzon.merolae",0,0,0,1,1
+"species","Cynara.cardunculus",0,0,0,1,1
+"species","Debaryomyces.hansenii",0,0,1,0,1
+"species","Dictyostelium.discoideum",0,0,0,1,1
+"species","Drosophila.innubila.nudivirus",0,0,1,0,1
+"species","Elaeis.guineensis",0,0,0,1,1
+"species","Encephalitozoon.cuniculi",0,0,0,1,1
+"species","endosymbiont.of.unidentified.scaly.snail.isolate.Monju",0,0,0,1,1
+"species","Eremothecium.sinecaudum",0,0,1,0,1
+"species","Faecalibacterium.prausnitzii",0,0,0,1,1
+"species","Fragaria.vesca",0,0,0,1,1
+"species","Frankia.alni",0,0,0,1,1
+"species","Friedmanniella.sagamiharensis",0,0,0,1,1
+"species","Fujinami.sarcoma.virus",0,0,0,1,1
+"species","Fusarium.oxysporum",0,0,0,1,1
+"species","Fusarium.venenatum",0,0,0,1,1
+"species","Fusarium.verticillioides",0,0,0,1,1
+"species","Glaesserella.parasuis",0,0,0,1,1
+"species","Glycine.max",0,0,0,1,1
+"species","Gossypium.arboreum",0,0,0,1,1
+"species","Gossypium.hirsutum",0,0,0,1,1
+"species","Gossypium.raimondii",0,0,0,1,1
+"species","Halobacteriovorax.sp..BALOs_7",0,0,1,0,1
+"species","Halomonas.hydrothermalis",0,0,1,0,1
+"species","Hardy-Zuckerman.feline.sarcoma.virus",0,0,0,1,1
+"species","Helianthus.annuus",0,0,0,1,1
+"species","Herbaspirillum.seropedicae",0,0,0,1,1
+"species","Hungatella.hathewayi",0,0,0,1,1
+"species","Intrasporangium.calvum",0,0,1,0,1
+"species","Ipomoea.triloba",0,0,0,1,1
+"species","Kazachstania.naganishii",0,0,1,0,1
+"species","Kitasatospora.albolonga",0,0,0,1,1
+"species","Klebsiella.sp..LY",1,0,0,0,1
+"species","Labilithrix.luteola",0,0,0,1,1
+"species","Lactobacillus.fermentum",1,0,0,0,1
+"species","Leishmania.major",0,0,0,1,1
+"species","Leishmania.panamensis",0,0,0,1,1
+"species","Malus.domestica",0,0,0,1,1
+"species","Manihot.esculenta",0,0,0,1,1
+"species","Methanothrix.soehngenii",1,0,0,0,1
+"species","Methylomonas.sp..DH-1",0,0,0,1,1
+"species","Microbacterium.sp..SGAir0570",0,1,0,0,1
+"species","Minicystis.rosea",0,0,1,0,1
+"species","Moorella.thermoacetica",0,0,0,1,1
+"species","Moraxella.osloensis",1,0,0,0,1
+"species","Musa.acuminata",0,0,0,1,1
+"species","Mycoavidus.cysteinexigens",0,0,1,0,1
+"species","Mycobacteroides.salmoniphilum",0,0,1,0,1
+"species","Myroides.profundi",0,0,1,0,1
+"species","Natronolimnobius.sulfurireducens",1,0,0,0,1
+"species","Naumovozyma.castellii",0,0,1,0,1
+"species","Neurospora.crassa",1,0,0,0,1
+"species","Nicotiana.attenuata",0,0,0,1,1
+"species","Nocardia.cyriacigeorgica",0,0,0,1,1
+"species","Nonomuraea.sp..ATCC.55076",1,0,0,0,1
+"species","Nymphaea.colorata",0,0,0,1,1
+"species","Oceanisphaera.profunda",0,0,1,0,1
+"species","Olea.europaea",0,0,0,1,1
+"species","Oryza.brachyantha",0,0,0,1,1
+"species","Oryza.sativa",0,0,0,1,1
+"species","Ostreococcus.tauri",0,0,1,0,1
+"species","Paenibacillus.sp..18JY67-1",0,0,0,1,1
+"species","Papaver.somniferum",0,0,0,1,1
+"species","Paracoccus.mutanolyticus",0,0,1,0,1
+"species","Paraoerskovia.marina",0,0,0,1,1
+"species","Pasteurella.multocida",0,0,1,0,1
+"species","Pelobacter.carbinolicus",0,0,1,0,1
+"species","Physcomitrella.patens",0,0,0,1,1
+"species","Piscirickettsia.salmonis",0,0,0,1,1
+"species","Plantibacter.flavus",1,0,0,0,1
+"species","Plasmodium.chabaudi",0,0,1,0,1
+"species","Plasmodium.coatneyi",0,0,0,1,1
+"species","Plasmodium.falciparum",1,0,0,0,1
+"species","Plasmodium.knowlesi",0,0,1,0,1
+"species","Plasmodium.malariae",0,0,0,1,1
+"species","Plasmodium.relictum",0,0,1,0,1
+"species","Plasmodium.vivax",0,0,0,1,1
+"species","Pochonia.chlamydosporia",0,0,1,0,1
+"species","Populus.trichocarpa",0,0,0,1,1
+"species","Prunus.mume",0,0,1,0,1
+"species","Prunus.persica",0,0,0,1,1
+"species","Pseudomonas.chlororaphis",0,0,1,0,1
+"species","Pseudomonas.frederiksbergensis",1,0,0,0,1
+"species","Pseudomonas.psychrotolerans",0,0,1,0,1
+"species","Pseudomonas.stutzeri",0,0,0,1,1
+"species","Punica.granatum",0,0,0,1,1
+"species","Pyricularia.oryzae",0,0,1,0,1
+"species","Quercus.lobata",0,0,0,1,1
+"species","Rhodopseudomonas.palustris",0,0,0,1,1
+"species","Rhodospirillum.centenum",1,0,0,0,1
+"species","Rhodothermus.marinus",1,0,0,0,1
+"species","Rosa.chinensis",0,0,0,1,1
+"species","Rufibacter.tibetensis",0,0,1,0,1
+"species","Saccharomyces.cerevisiae",0,0,1,0,1
+"species","Saccharomyces.eubayanus",0,0,1,0,1
+"species","Schaalia.odontolytica",0,0,1,0,1
+"species","Scheffersomyces.stipitis",0,0,0,1,1
+"species","Serratia.rubidaea",0,0,0,1,1
+"species","Sesamum.indicum",0,0,0,1,1
+"species","Setaria.italica",0,0,0,1,1
+"species","Sinomonas.atrocyanea",0,0,1,0,1
+"species","Solanum.pennellii",0,0,0,1,1
+"species","Sorghum.bicolor",0,0,0,1,1
+"species","Sphingomonas.paucimobilis",0,0,1,0,1
+"species","Sphingomonas.sp..LK11",1,0,0,0,1
+"species","Stenotrophomonas.maltophilia",1,0,0,0,1
+"species","Streptococcus.equinus",0,0,1,0,1
+"species","Streptomyces.albidoflavus",0,0,0,1,1
+"species","Streptomyces.exfoliatus",0,0,0,1,1
+"species","Streptomyces.griseorubiginosus",0,0,1,0,1
+"species","Streptomyces.lunaelactis",0,0,0,1,1
+"species","Streptomyces.peucetius",0,0,1,0,1
+"species","Streptomyces.roseochromogenus",0,0,0,1,1
+"species","Streptomyces.sp..Sge12",0,0,0,1,1
+"species","Streptomyces.sp..SUK.48",0,0,0,1,1
+"species","Streptomyces.sp..SYP-A7193",1,0,0,0,1
+"species","Sulfitobacter.sp..SK012",0,0,0,1,1
+"species","Symbiobacterium.thermophilum",0,0,0,1,1
+"species","Tetrapisispora.blattae",1,0,0,0,1
+"species","Tetrapisispora.phaffii",0,0,1,0,1
+"species","Thalassiosira.pseudonana",0,0,0,1,1
+"species","Thermobifida.fusca",0,0,0,1,1
+"species","Thermothelomyces.thermophilus",0,0,0,1,1
+"species","Ustilago.maydis",0,0,0,1,1
+"species","Vigna.radiata",0,0,0,1,1
+"species","Vigna.unguiculata",0,0,0,1,1
+"species","Vitis.vinifera",0,0,1,0,1
+"species","Xanthomonadaceae.bacterium.AQ6-296",0,0,0,1,1
+"species","Yarrowia.lipolytica",0,0,1,0,1
+"species","Zea.mays",0,0,0,1,1
+"species","Ziziphus.jujuba",0,0,0,1,1
+"species","Zymoseptoria.tritici",0,0,0,1,1
 "class","Ardenticatenia",0,0,0,0,0
 "class","Deinococci",0,0,0,0,0
-"class","Dothideomycetes",0,0,0,0,0
 "class","Dothideomycetes",0,0,0,0,0
 "class","Epsilonproteobacteria",0,0,0,0,0
 "class","Fusobacteriia",0,0,0,0,0
@@ -640,14 +665,11 @@
 "family","Desulfovibrionaceae",0,0,0,0,0
 "family","Enterococcaceae",0,0,0,0,0
 "family","Gallionellaceae",0,0,0,0,0
-"family","Gallionellaceae",0,0,0,0,0
 "family","Geminigeraceae",0,0,0,0,0
-"family","Gemmatimonadaceae",0,0,0,0,0
 "family","Gemmatimonadaceae",0,0,0,0,0
 "family","Geobacteraceae",0,0,0,0,0
 "family","Geodermatophilaceae",0,0,0,0,0
 "family","Halomonadaceae",0,0,0,0,0
-"family","Helicobacteraceae",0,0,0,0,0
 "family","Helicobacteraceae",0,0,0,0,0
 "family","Hemiselmidaceae",0,0,0,0,0
 "family","Kofleriaceae",0,0,0,0,0
@@ -659,27 +681,21 @@
 "family","Mycobacteriaceae",0,0,0,0,0
 "family","Mycosphaerellaceae",0,0,0,0,0
 "family","Myxococcaceae",0,0,0,0,0
-"family","Myxococcaceae",0,0,0,0,0
 "family","Natrialbaceae",0,0,0,0,0
 "family","Persicobacteraceae",0,0,0,0,0
-"family","Phaffomycetaceae",0,0,0,0,0
 "family","Phyllobacteriaceae",0,0,0,0,0
-"family","Pichiaceae",0,0,0,0,0
 "family","Promicromonosporaceae",0,0,0,0,0
 "family","Rhizobiaceae",0,0,0,0,0
 "family","Rhodothermaceae",0,0,0,0,0
-"family","Schizosaccharomycetaceae",0,0,0,0,0
 "family","Schizosaccharomycetaceae",0,0,0,0,0
 "family","Sordariaceae",0,0,0,0,0
 "family","Sphingomonadaceae",0,0,0,0,0
 "family","Staphylococcaceae",0,0,0,0,0
 "family","Streptosporangiaceae",0,0,0,0,0
-"family","Streptosporangiaceae",0,0,0,0,0
 "family","Thermaceae",0,0,0,0,0
 "family","Thermoactinomycetaceae",0,0,0,0,0
 "family","Thermomonosporaceae",0,0,0,0,0
 "family","Thermoproteaceae",0,0,0,0,0
-"family","Vibrionaceae",0,0,0,0,0
 "family","Vibrionaceae",0,0,0,0,0
 "family","Xanthobacteraceae",0,0,0,0,0
 "family","Zoogloeaceae",0,0,0,0,0
@@ -703,7 +719,6 @@
 "genus","Candidatus",0,0,0,0,0
 "genus","Cedecea",0,0,0,0,0
 "genus","Cellulosimicrobium",0,0,0,0,0
-"genus","Cellulosimicrobium",0,0,0,0,0
 "genus","Cercospora",0,0,0,0,0
 "genus","Chamaesiphon",0,0,0,0,0
 "genus","Chromobacterium",0,0,0,0,0
@@ -712,7 +727,6 @@
 "genus","Cryptococcus",0,0,0,0,0
 "genus","Cupriavidus",0,0,0,0,0
 "genus","Curtobacterium",0,0,0,0,0
-"genus","Cycloclasticus",0,0,0,0,0
 "genus","Cycloclasticus",0,0,0,0,0
 "genus","Deinococcus",0,0,0,0,0
 "genus","Enterococcus",0,0,0,0,0
@@ -729,10 +743,8 @@
 "genus","Helicobacter",0,0,0,0,0
 "genus","Hemiselmis",0,0,0,0,0
 "genus","Herbaspirillum",0,0,0,0,0
-"genus","Klebsiella",0,0,0,0,0
 "genus","Komagataeibacter",0,0,0,0,0
 "genus","Komagataella",0,0,0,0,0
-"genus","Labrys",0,0,0,0,0
 "genus","Labrys",0,0,0,0,0
 "genus","Laceyella",0,0,0,0,0
 "genus","Lachancea",0,0,0,0,0
@@ -745,7 +757,6 @@
 "genus","Mesorhizobium",0,0,0,0,0
 "genus","Methanothrix",0,0,0,0,0
 "genus","Microbacterium",0,0,0,0,0
-"genus","Microbacterium",0,0,0,0,0
 "genus","Microlunatus",0,0,0,0,0
 "genus","Micromonospora",0,0,0,0,0
 "genus","Microvirga",0,0,0,0,0
@@ -756,7 +767,6 @@
 "genus","Nakaseomyces",0,0,0,0,0
 "genus","Natronolimnobius",0,0,0,0,0
 "genus","Ndongobacter",0,0,0,0,0
-"genus","Neospora",0,0,0,0,0
 "genus","Neospora",0,0,0,0,0
 "genus","Neurospora",0,0,0,0,0
 "genus","Nitrospirillum",0,0,0,0,0
@@ -787,10 +797,8 @@
 "genus","Salinicola",0,0,0,0,0
 "genus","Schizosaccharomyces",0,0,0,0,0
 "genus","Serpentinomonas",0,0,0,0,0
-"genus","Simplicispira",0,0,0,0,0
 "genus","Sphingomonas",0,0,0,0,0
 "genus","Sporisorium",0,0,0,0,0
-"genus","Staphylococcus",0,0,0,0,0
 "genus","Staphylococcus",0,0,0,0,0
 "genus","Streptomonospora",0,0,0,0,0
 "genus","Tateyamaria",0,0,0,0,0
@@ -800,10 +808,8 @@
 "genus","Thermobispora",0,0,0,0,0
 "genus","Thermothielavioides",0,0,0,0,0
 "genus","Thermus",0,0,0,0,0
-"genus","Thermus",0,0,0,0,0
 "genus","Thiohalobacter",0,0,0,0,0
 "genus","Torulaspora",0,0,0,0,0
-"genus","Toxoplasma",0,0,0,0,0
 "genus","Toxoplasma",0,0,0,0,0
 "genus","Trypanosoma",0,0,0,0,0
 "genus","Verrucosispora",0,0,0,0,0
@@ -811,11 +817,8 @@
 "genus","Xanthomonas",0,0,0,0,0
 "kingdom","Archaea",0,0,0,0,0
 "kingdom","Eubacteria",0,0,0,0,0
-"kingdom","Eubacteria",0,0,0,0,0
-"kingdom","Proteoarchaeota",0,0,0,0,0
 "kingdom","Proteoarchaeota",0,0,0,0,0
 "order","Alteromonadales",0,0,0,0,0
-"order","Ardenticatenales",0,0,0,0,0
 "order","Ardenticatenales",0,0,0,0,0
 "order","Campylobacterales",0,0,0,0,0
 "order","Capnodiales",0,0,0,0,0
@@ -829,308 +832,228 @@
 "order","Lactobacillales",0,0,0,0,0
 "order","Mamiellales",0,0,0,0,0
 "order","Micrococcales",0,0,0,0,0
-"order","Micrococcales",0,0,0,0,0
-"order","Natrialbales",0,0,0,0,0
 "order","Neisseriales",0,0,0,0,0
 "order","Piroplasmida",0,0,0,0,0
 "order","Pyrenomonadales",0,0,0,0,0
 "order","Rhodocyclales",0,0,0,0,0
-"order","Rhodocyclales",0,0,0,0,0
-"order","Rickettsiales",0,0,0,0,0
 "order","Rickettsiales",0,0,0,0,0
 "order","Schizosaccharomycetales",0,0,0,0,0
-"order","Synechococcales",0,0,0,0,0
 "order","Thermales",0,0,0,0,0
 "order","Thermoproteales",0,0,0,0,0
-"order","Thermoproteales",0,0,0,0,0
 "order","Vibrionales",0,0,0,0,0
-"phylum","Balneolaeota",0,0,0,0,0
 "phylum","Chloroflexi",0,0,0,0,0
 "phylum","Chlorophyta",0,0,0,0,0
 "phylum","Crenarchaeota",0,0,0,0,0
 "phylum","Cryptophyta",0,0,0,0,0
 "phylum","Cyanobacteria",0,0,0,0,0
 "phylum","Deinococcus",0,0,0,0,0
-"phylum","Deinococcus",0,0,0,0,0
 "phylum","Euryarchaeota",0,0,0,0,0
 "phylum","Fusobacteria",0,0,0,0,0
 "phylum","Gemmatimonadetes",0,0,0,0,0
-"phylum","Gemmatimonadetes",0,0,0,0,0
-"species","Abelson murine leukemia virus",0,0,0,0,0
-"species","Acetobacter persici",0,0,0,0,0
-"species","Achromobacter xylosoxidans",0,0,0,0,0
-"species","Acidovorax avenae",0,0,0,0,0
-"species","Actinoalloteichus hoggarensis",0,0,0,0,0
-"species","Actinobacteria bacterium IMCC26256",0,0,0,0,0
-"species","Actinomadura amylolytica",0,0,0,0,0
-"species","Actinomadura sp. WMMB499",0,0,0,0,0
-"species","Actinoplanes friuliensis",0,0,0,0,0
-"species","Agrobacterium tumefaciens",0,0,0,0,0
-"species","Agrococcus jejuensis",0,0,0,0,0
-"species","Agromyces flavus",0,0,0,0,0
-"species","Alloactinosynnema sp. L-07",0,0,0,0,0
-"species","Amycolatopsis mediterranei",0,0,0,0,0
-"species","Anaerostipes hadrus",0,0,0,0,0
-"species","Arachis ipaensis",0,0,0,0,0
-"species","Arthrobacter sp. ERGS1:01",0,0,0,0,0
-"species","Arthrobacter sp. PGP41",0,0,0,0,0
-"species","Babesia bovis",0,0,0,0,0
-"species","Babesia microti",0,0,0,0,0
-"species","Bacillus cereus",0,0,0,0,0
-"species","Bacillus pseudomycoides",0,0,0,0,0
-"species","Bacillus pumilus",0,0,0,0,0
-"species","Bacillus sp. S3",0,0,0,0,0
-"species","Bartonella ancashensis",0,0,0,0,0
-"species","Besnoitia besnoiti",0,0,0,0,0
-"species","Blastococcus saxobsidens",0,0,0,0,0
-"species","Bordetella holmesii",0,0,0,0,0
-"species","Bosea sp. AS-1",0,0,0,0,0
-"species","Bradyrhizobium erythrophlei",0,0,0,0,0
-"species","Bradyrhizobium sp. SK17",0,0,0,0,0
-"species","Brassica oleracea",0,0,0,0,0
-"species","Brevibacillus laterosporus",0,0,0,0,0
-"species","Burkholderia pseudomallei",0,0,0,0,0
-"species","Burkholderia sp. KK1",0,0,0,0,0
-"species","Candida albicans",0,0,0,0,0
-"species","Candida dubliniensis",0,0,0,0,0
-"species","Candida] glabrata",0,0,0,0,0
-"species","Candidatus Aquiluna sp. UB-MaderosW2red",0,0,0,0,0
-"species","Candidatus Cyclonatronum proteinivorum",0,0,0,0,0
-"species","Candidatus Midichloria mitochondrii",0,0,0,0,0
-"species","Candidatus Promineofilum breve",0,0,0,0,0
-"species","Caulobacteraceae bacterium OTSz_A_272",0,0,0,0,0
-"species","Cedecea neteri",0,0,0,0,0
-"species","Cellulosimicrobium cellulans",0,0,0,0,0
-"species","Cercospora beticola",0,0,0,0,0
-"species","Chamaesiphon minutus",0,0,0,0,0
-"species","Chromobacterium rhizoryzae",0,0,0,0,0
-"species","Chromobacterium sp. 257-1",0,0,0,0,0
-"species","Chromobacterium vaccinii",0,0,0,0,0
-"species","Chryseobacterium gleum",0,0,0,0,0
-"species","Citrobacter farmeri",0,0,0,0,0
-"species","Clostridioides difficile",0,0,0,0,0
-"species","Clostridium saccharobutylicum",0,0,0,0,0
-"species","Clostridium sp. AWRP",0,0,0,0,0
-"species","Clostridium] bolteae",0,0,0,0,0
-"species","Comamonas aquatica",0,0,0,0,0
-"species","Corynebacterium deserti",0,0,0,0,0
-"species","Cronobacter dublinensis",0,0,0,0,0
-"species","Cupriavidus basilensis",0,0,0,0,0
-"species","Cupriavidus oxalaticus",0,0,0,0,0
-"species","Curtobacterium flaccumfaciens",0,0,0,0,0
-"species","Cycloclasticus zancles",0,0,0,0,0
-"species","Debaryomyces hansenii",0,0,0,0,0
-"species","Deinococcus gobiensis",0,0,0,0,0
-"species","Desulfovibrio carbinolicus",0,0,0,0,0
-"species","Drosophila innubila nudivirus",0,0,0,0,0
-"species","Enterococcus thailandicus",0,0,0,0,0
-"species","Eremothecium cymbalariae",0,0,0,0,0
-"species","Eremothecium sinecaudum",0,0,0,0,0
-"species","Escherichia coli",0,0,0,0,0
-"species","Ferriphaselus amnicola",0,0,0,0,0
-"species","Flavobacterium johnsoniae",0,0,0,0,0
-"species","Frankia sp. QA3",0,0,0,0,0
-"species","Frankia symbiont of Datisca glomerata",0,0,0,0,0
-"species","Fusarium fujikuroi",0,0,0,0,0
-"species","Fusarium graminearum",0,0,0,0,0
-"species","Fusarium pseudograminearum",0,0,0,0,0
-"species","gamma proteobacterium SS-5",0,0,0,0,0
-"species","Gemmatimonas phototrophica",0,0,0,0,0
-"species","Geobacter pickeringii",0,0,0,0,0
-"species","Glaesserella sp. 15-184",0,0,0,0,0
-"species","Glycine soja",0,0,0,0,0
-"species","Guillardia theta",0,0,0,0,0
-"species","Haematobacter massiliensis",0,0,0,0,0
-"species","Haemophilus influenzae",0,0,0,0,0
-"species","Haliangium ochraceum",0,0,0,0,0
-"species","Halobacteriovorax sp. BALOs_7",0,0,0,0,0
-"species","Halomonas hydrothermalis",0,0,0,0,0
-"species","Halomonas sp. JS92-SW72",0,0,0,0,0
-"species","Helicobacter pylori",0,0,0,0,0
-"species","Hemiselmis andersenii",0,0,0,0,0
-"species","Herbaspirillum huttiense",0,0,0,0,0
-"species","Intrasporangium calvum",0,0,0,0,0
-"species","Kazachstania naganishii",0,0,0,0,0
-"species","Kitasatospora setae",0,0,0,0,0
-"species","Kitasatospora sp. MMS16-BH015",0,0,0,0,0
-"species","Klebsiella pneumoniae",0,0,0,0,0
-"species","Klebsiella sp. LY",0,0,0,0,0
-"species","Kluyveromyces lactis",0,0,0,0,0
-"species","Komagataeibacter medellinensis",0,0,0,0,0
-"species","Komagataella phaffii",0,0,0,0,0
-"species","Labrys neptuniae",0,0,0,0,0
-"species","Laceyella sacchari",0,0,0,0,0
-"species","Lachancea thermotolerans",0,0,0,0,0
-"species","Lactobacillus fermentum",0,0,0,0,0
-"species","Leishmania braziliensis",0,0,0,0,0
-"species","Leishmania donovani",0,0,0,0,0
-"species","Leishmania infantum",0,0,0,0,0
-"species","Leishmania mexicana",0,0,0,0,0
-"species","Leptotrichia buccalis",0,0,0,0,0
-"species","Lupinus angustifolius",0,0,0,0,0
-"species","Lysobacter enzymogenes",0,0,0,0,0
-"species","Lysobacter maris",0,0,0,0,0
-"species","Marinobacter sp. LV10R510-11A",0,0,0,0,0
-"species","Massilia umbonata",0,0,0,0,0
-"species","Mesorhizobium sp. M2A.F.Ca.ET.043.05.1.1",0,0,0,0,0
-"species","Methanothrix soehngenii",0,0,0,0,0
-"species","Microbacterium sp. 1S1",0,0,0,0,0
-"species","Microbacterium sp. ABRD_28",0,0,0,0,0
-"species","Microbacterium sp. L-031",0,0,0,0,0
-"species","Microbacterium sp. SGAir0570",0,0,0,0,0
-"species","Microlunatus sp. KUDC0627",0,0,0,0,0
-"species","Micromonospora echinaurantiaca",0,0,0,0,0
-"species","Microvirga sp. HR1",0,0,0,0,0
-"species","Minicystis rosea",0,0,0,0,0
-"species","Modestobacter marinus",0,0,0,0,0
-"species","Moraxella osloensis",0,0,0,0,0
-"species","Mycoavidus cysteinexigens",0,0,0,0,0
-"species","Mycobacterium haemophilum",0,0,0,0,0
-"species","Mycobacterium sp. KMS",0,0,0,0,0
-"species","Mycobacteroides salmoniphilum",0,0,0,0,0
-"species","Mycolicibacterium vaccae",0,0,0,0,0
-"species","Mycoplasma parvum",0,0,0,0,0
-"species","Myroides profundi",0,0,0,0,0
-"species","Myxococcus xanthus",0,0,0,0,0
-"species","Natronolimnobius sulfurireducens",0,0,0,0,0
-"species","Naumovozyma castellii",0,0,0,0,0
-"species","Ndongobacter massiliensis",0,0,0,0,0
-"species","Neospora caninum",0,0,0,0,0
-"species","Neurospora crassa",0,0,0,0,0
-"species","Nitrosomonas sp. AL212",0,0,0,0,0
-"species","Nitrospirillum amazonense",0,0,0,0,0
-"species","Nocardia sp. CS682",0,0,0,0,0
-"species","Nocardioides sp. 603",0,0,0,0,0
-"species","Nonomuraea sp. ATCC 55076",0,0,0,0,0
-"species","Nonomuraea sp. WYY166",0,0,0,0,0
-"species","Novosphingobium aromaticivorans",0,0,0,0,0
-"species","Oceanisphaera avium",0,0,0,0,0
-"species","Oceanisphaera profunda",0,0,0,0,0
-"species","Ogataea parapolymorpha",0,0,0,0,0
-"species","Ostreococcus sp. lucimarinus",0,0,0,0,0
-"species","Ostreococcus tauri",0,0,0,0,0
-"species","Ottowia oryzae",0,0,0,0,0
-"species","Ottowia sp. oral taxon 894",0,0,0,0,0
-"species","Pandoraea oxalativorans",0,0,0,0,0
-"species","Paracoccus mutanolyticus",0,0,0,0,0
-"species","Paracoccus pantotrophus",0,0,0,0,0
-"species","Pasteurella multocida",0,0,0,0,0
-"species","Pelobacter carbinolicus",0,0,0,0,0
-"species","Pelobacter propionicus",0,0,0,0,0
-"species","Persicobacter sp. JZB09",0,0,0,0,0
-"species","Phaeobacter inhibens",0,0,0,0,0
-"species","Pichia kudriavzevii",0,0,0,0,0
-"species","Pimelobacter simplex",0,0,0,0,0
-"species","Planctomycetes bacterium SRT547",0,0,0,0,0
-"species","Plantibacter flavus",0,0,0,0,0
-"species","Plasmodium berghei",0,0,0,0,0
-"species","Plasmodium chabaudi",0,0,0,0,0
-"species","Plasmodium cynomolgi",0,0,0,0,0
-"species","Plasmodium falciparum",0,0,0,0,0
-"species","Plasmodium gaboni",0,0,0,0,0
-"species","Plasmodium knowlesi",0,0,0,0,0
-"species","Plasmodium reichenowi",0,0,0,0,0
-"species","Plasmodium relictum",0,0,0,0,0
-"species","Plasmodium sp. gorilla clade G2",0,0,0,0,0
-"species","Plasmodium yoelii",0,0,0,0,0
-"species","Pochonia chlamydosporia",0,0,0,0,0
-"species","Protaetiibacter intestinalis",0,0,0,0,0
-"species","Prunus mume",0,0,0,0,0
-"species","Pseudomonas aeruginosa",0,0,0,0,0
-"species","Pseudomonas alkylphenolica",0,0,0,0,0
-"species","Pseudomonas chlororaphis",0,0,0,0,0
-"species","Pseudomonas fluorescens",0,0,0,0,0
-"species","Pseudomonas frederiksbergensis",0,0,0,0,0
-"species","Pseudomonas mendocina",0,0,0,0,0
-"species","Pseudomonas parafulva",0,0,0,0,0
-"species","Pseudomonas psychrotolerans",0,0,0,0,0
-"species","Pseudomonas putida",0,0,0,0,0
-"species","Pseudomonas sp. CC6-YY-74",0,0,0,0,0
-"species","Pseudomonas tolaasii",0,0,0,0,0
-"species","Pseudomonas yamanorum",0,0,0,0,0
-"species","Pyricularia oryzae",0,0,0,0,0
-"species","Pyricularia pennisetigena",0,0,0,0,0
-"species","Pyrobaculum neutrophilum",0,0,0,0,0
-"species","Ralstonia insidiosa",0,0,0,0,0
-"species","Rathayibacter rathayi",0,0,0,0,0
-"species","Rhizobium sp. WL3",0,0,0,0,0
-"species","Rhodococcus ruber",0,0,0,0,0
-"species","Rhodoferax antarcticus",0,0,0,0,0
-"species","Rhodospirillaceae bacterium R5913",0,0,0,0,0
-"species","Rhodospirillum centenum",0,0,0,0,0
-"species","Rhodothermus marinus",0,0,0,0,0
-"species","Roseovarius sp. THAF9",0,0,0,0,0
-"species","Rothia mucilaginosa",0,0,0,0,0
-"species","Rufibacter tibetensis",0,0,0,0,0
-"species","Runella sp. SP2",0,0,0,0,0
-"species","Saccharomyces cerevisiae",0,0,0,0,0
-"species","Saccharomyces eubayanus",0,0,0,0,0
-"species","Saccharopolyspora erythraea",0,0,0,0,0
-"species","Salinicola tamaricis",0,0,0,0,0
-"species","Schaalia odontolytica",0,0,0,0,0
-"species","Schizosaccharomyces pombe",0,0,0,0,0
-"species","Serpentinomonas mccroryi",0,0,0,0,0
-"species","Simplicispira suum",0,0,0,0,0
-"species","Sinomonas atrocyanea",0,0,0,0,0
-"species","Snyder-Theilen feline sarcoma virus",0,0,0,0,0
-"species","Sphingomonas paucimobilis",0,0,0,0,0
-"species","Sphingomonas sp. C8-2",0,0,0,0,0
-"species","Sphingomonas sp. LK11",0,0,0,0,0
-"species","Sphingomonas sp. PAMC26645",0,0,0,0,0
-"species","Sporisorium graminicola",0,0,0,0,0
-"species","Staphylococcus epidermidis",0,0,0,0,0
-"species","Staphylococcus nepalensis",0,0,0,0,0
-"species","Stenotrophomonas maltophilia",0,0,0,0,0
-"species","Streptococcus equinus",0,0,0,0,0
-"species","Streptococcus porcinus",0,0,0,0,0
-"species","Streptococcus pyogenes",0,0,0,0,0
-"species","Streptomonospora sp. M2",0,0,0,0,0
-"species","Streptomyces albus",0,0,0,0,0
-"species","Streptomyces collinus",0,0,0,0,0
-"species","Streptomyces ficellus",0,0,0,0,0
-"species","Streptomyces globisporus",0,0,0,0,0
-"species","Streptomyces griseorubiginosus",0,0,0,0,0
-"species","Streptomyces hygroscopicus",0,0,0,0,0
-"species","Streptomyces lavendulae",0,0,0,0,0
-"species","Streptomyces peucetius",0,0,0,0,0
-"species","Streptomyces rimosus",0,0,0,0,0
-"species","Streptomyces sp. ADI95-16",0,0,0,0,0
-"species","Streptomyces sp. CMB-StM0423",0,0,0,0,0
-"species","Streptomyces sp. GSSD-12",0,0,0,0,0
-"species","Streptomyces sp. GY16",0,0,0,0,0
-"species","Streptomyces sp. M2",0,0,0,0,0
-"species","Streptomyces sp. S063",0,0,0,0,0
-"species","Streptomyces sp. SAT1",0,0,0,0,0
-"species","Streptomyces sp. SYP-A7193",0,0,0,0,0
-"species","Streptomyces sp. TLI_053",0,0,0,0,0
-"species","Streptomyces sp. WAC00288",0,0,0,0,0
-"species","Streptomyces sp. Z022",0,0,0,0,0
-"species","Streptomyces sp. ZFG47",0,0,0,0,0
-"species","Streptomyces tsukubensis",0,0,0,0,0
-"species","Streptomyces venezuelae",0,0,0,0,0
-"species","Streptomyces xinghaiensis",0,0,0,0,0
-"species","Tateyamaria omphalii",0,0,0,0,0
-"species","Tenacibaculum dicentrarchi",0,0,0,0,0
-"species","Terasakiella sp. SH-1",0,0,0,0,0
-"species","Tetrapisispora blattae",0,0,0,0,0
-"species","Tetrapisispora phaffii",0,0,0,0,0
-"species","Theileria equi",0,0,0,0,0
-"species","Theileria orientalis",0,0,0,0,0
-"species","Thermobispora bispora",0,0,0,0,0
-"species","Thermothielavioides terrestris",0,0,0,0,0
-"species","Thermus sp. CCB_US3_UF1",0,0,0,0,0
-"species","Thiohalobacter thiocyanaticus",0,0,0,0,0
-"species","Torulaspora delbrueckii",0,0,0,0,0
-"species","Toxoplasma gondii",0,0,0,0,0
-"species","Trypanosoma brucei",0,0,0,0,0
-"species","Tupaiid betaherpesvirus 1",0,0,0,0,0
-"species","Verrucosispora maris",0,0,0,0,0
-"species","Vibrio casei",0,0,0,0,0
-"species","Vibrio gazogenes",0,0,0,0,0
-"species","Vibrio parahaemolyticus",0,0,0,0,0
-"species","Vibrio tritonius",0,0,0,0,0
-"species","Vigna angularis",0,0,0,0,0
-"species","Vitis vinifera",0,0,0,0,0
-"species","Xanthomonas translucens",0,0,0,0,0
-"species","Yarrowia lipolytica",0,0,0,0,0
-"species","Zoogloeaceae bacteirum Par-f-2",0,0,0,0,0
+"species","Abelson.murine.leukemia.virus",0,0,0,0,0
+"species","Acetobacter.persici",0,0,0,0,0
+"species","Achromobacter.xylosoxidans",0,0,0,0,0
+"species","Acidovorax.avenae",0,0,0,0,0
+"species","Actinoalloteichus.hoggarensis",0,0,0,0,0
+"species","Actinomadura.amylolytica",0,0,0,0,0
+"species","Actinomadura.sp..WMMB499",0,0,0,0,0
+"species","Actinoplanes.friuliensis",0,0,0,0,0
+"species","Agrobacterium.tumefaciens",0,0,0,0,0
+"species","Agrococcus.jejuensis",0,0,0,0,0
+"species","Agromyces.flavus",0,0,0,0,0
+"species","Alloactinosynnema.sp..L-07",0,0,0,0,0
+"species","Anaerostipes.hadrus",0,0,0,0,0
+"species","Arachis.ipaensis",0,0,0,0,0
+"species","Arthrobacter.sp..ERGS1:01",0,0,0,0,0
+"species","Arthrobacter.sp..PGP41",0,0,0,0,0
+"species","Babesia.microti",0,0,0,0,0
+"species","Bacillus.cereus",0,0,0,0,0
+"species","Bacillus.pumilus",0,0,0,0,0
+"species","Bacillus.sp..S3",0,0,0,0,0
+"species","Bartonella.ancashensis",0,0,0,0,0
+"species","Besnoitia.besnoiti",0,0,0,0,0
+"species","Blastococcus.saxobsidens",0,0,0,0,0
+"species","Bordetella.holmesii",0,0,0,0,0
+"species","Bosea.sp..AS-1",0,0,0,0,0
+"species","Bradyrhizobium.erythrophlei",0,0,0,0,0
+"species","Burkholderia.pseudomallei",0,0,0,0,0
+"species","Burkholderia.sp..KK1",0,0,0,0,0
+"species","Candida.albicans",0,0,0,0,0
+"species","Candida.dubliniensis",0,0,0,0,0
+"species","Candida].glabrata",0,0,0,0,0
+"species","Candidatus.Aquiluna.sp..UB-MaderosW2red",0,0,0,0,0
+"species","Candidatus.Cyclonatronum.proteinivorum",0,0,0,0,0
+"species","Candidatus.Midichloria.mitochondrii",0,0,0,0,0
+"species","Candidatus.Promineofilum.breve",0,0,0,0,0
+"species","Caulobacteraceae.bacterium.OTSz_A_272",0,0,0,0,0
+"species","Cedecea.neteri",0,0,0,0,0
+"species","Cellulosimicrobium.cellulans",0,0,0,0,0
+"species","Cercospora.beticola",0,0,0,0,0
+"species","Chromobacterium.rhizoryzae",0,0,0,0,0
+"species","Chromobacterium.sp..257-1",0,0,0,0,0
+"species","Chromobacterium.vaccinii",0,0,0,0,0
+"species","Clostridium.saccharobutylicum",0,0,0,0,0
+"species","Clostridium.sp..AWRP",0,0,0,0,0
+"species","Clostridium].bolteae",0,0,0,0,0
+"species","Comamonas.aquatica",0,0,0,0,0
+"species","Corynebacterium.deserti",0,0,0,0,0
+"species","Cupriavidus.basilensis",0,0,0,0,0
+"species","Cupriavidus.oxalaticus",0,0,0,0,0
+"species","Curtobacterium.flaccumfaciens",0,0,0,0,0
+"species","Cycloclasticus.zancles",0,0,0,0,0
+"species","Deinococcus.gobiensis",0,0,0,0,0
+"species","Desulfovibrio.carbinolicus",0,0,0,0,0
+"species","Enterococcus.thailandicus",0,0,0,0,0
+"species","Eremothecium.cymbalariae",0,0,0,0,0
+"species","Escherichia.coli",0,0,0,0,0
+"species","Ferriphaselus.amnicola",0,0,0,0,0
+"species","Flavobacterium.johnsoniae",0,0,0,0,0
+"species","Frankia.sp..QA3",0,0,0,0,0
+"species","Frankia.symbiont.of.Datisca.glomerata",0,0,0,0,0
+"species","Fusarium.fujikuroi",0,0,0,0,0
+"species","Fusarium.graminearum",0,0,0,0,0
+"species","gamma.proteobacterium.SS-5",0,0,0,0,0
+"species","Gemmatimonas.phototrophica",0,0,0,0,0
+"species","Geobacter.pickeringii",0,0,0,0,0
+"species","Glaesserella.sp..15-184",0,0,0,0,0
+"species","Glycine.soja",0,0,0,0,0
+"species","Guillardia.theta",0,0,0,0,0
+"species","Haematobacter.massiliensis",0,0,0,0,0
+"species","Haemophilus.influenzae",0,0,0,0,0
+"species","Haliangium.ochraceum",0,0,0,0,0
+"species","Halomonas.sp..JS92-SW72",0,0,0,0,0
+"species","Helicobacter.pylori",0,0,0,0,0
+"species","Hemiselmis.andersenii",0,0,0,0,0
+"species","Herbaspirillum.huttiense",0,0,0,0,0
+"species","Kitasatospora.setae",0,0,0,0,0
+"species","Kitasatospora.sp..MMS16-BH015",0,0,0,0,0
+"species","Klebsiella.pneumoniae",0,0,0,0,0
+"species","Kluyveromyces.lactis",0,0,0,0,0
+"species","Komagataeibacter.medellinensis",0,0,0,0,0
+"species","Komagataella.phaffii",0,0,0,0,0
+"species","Labrys.neptuniae",0,0,0,0,0
+"species","Laceyella.sacchari",0,0,0,0,0
+"species","Lachancea.thermotolerans",0,0,0,0,0
+"species","Leishmania.braziliensis",0,0,0,0,0
+"species","Leishmania.infantum",0,0,0,0,0
+"species","Leishmania.mexicana",0,0,0,0,0
+"species","Leptotrichia.buccalis",0,0,0,0,0
+"species","Lupinus.angustifolius",0,0,0,0,0
+"species","Lysobacter.maris",0,0,0,0,0
+"species","Marinobacter.sp..LV10R510-11A",0,0,0,0,0
+"species","Massilia.umbonata",0,0,0,0,0
+"species","Mesorhizobium.sp..M2A.F.Ca.ET.043.05.1.1",0,0,0,0,0
+"species","Microbacterium.sp..1S1",0,0,0,0,0
+"species","Microbacterium.sp..ABRD_28",0,0,0,0,0
+"species","Microbacterium.sp..L-031",0,0,0,0,0
+"species","Microlunatus.sp..KUDC0627",0,0,0,0,0
+"species","Micromonospora.echinaurantiaca",0,0,0,0,0
+"species","Microvirga.sp..HR1",0,0,0,0,0
+"species","Modestobacter.marinus",0,0,0,0,0
+"species","Mycobacterium.haemophilum",0,0,0,0,0
+"species","Mycobacterium.sp..KMS",0,0,0,0,0
+"species","Mycolicibacterium.vaccae",0,0,0,0,0
+"species","Mycoplasma.parvum",0,0,0,0,0
+"species","Myxococcus.xanthus",0,0,0,0,0
+"species","Ndongobacter.massiliensis",0,0,0,0,0
+"species","Neospora.caninum",0,0,0,0,0
+"species","Nitrosomonas.sp..AL212",0,0,0,0,0
+"species","Nitrospirillum.amazonense",0,0,0,0,0
+"species","Nocardia.sp..CS682",0,0,0,0,0
+"species","Nocardioides.sp..603",0,0,0,0,0
+"species","Nonomuraea.sp..WYY166",0,0,0,0,0
+"species","Novosphingobium.aromaticivorans",0,0,0,0,0
+"species","Oceanisphaera.avium",0,0,0,0,0
+"species","Ogataea.parapolymorpha",0,0,0,0,0
+"species","Ostreococcus.sp..lucimarinus",0,0,0,0,0
+"species","Ottowia.oryzae",0,0,0,0,0
+"species","Ottowia.sp..oral.taxon.894",0,0,0,0,0
+"species","Pandoraea.oxalativorans",0,0,0,0,0
+"species","Paracoccus.pantotrophus",0,0,0,0,0
+"species","Pelobacter.propionicus",0,0,0,0,0
+"species","Persicobacter.sp..JZB09",0,0,0,0,0
+"species","Phaeobacter.inhibens",0,0,0,0,0
+"species","Pichia.kudriavzevii",0,0,0,0,0
+"species","Pimelobacter.simplex",0,0,0,0,0
+"species","Planctomycetes.bacterium.SRT547",0,0,0,0,0
+"species","Plasmodium.berghei",0,0,0,0,0
+"species","Plasmodium.gaboni",0,0,0,0,0
+"species","Plasmodium.reichenowi",0,0,0,0,0
+"species","Plasmodium.yoelii",0,0,0,0,0
+"species","Protaetiibacter.intestinalis",0,0,0,0,0
+"species","Pseudomonas.aeruginosa",0,0,0,0,0
+"species","Pseudomonas.alkylphenolica",0,0,0,0,0
+"species","Pseudomonas.fluorescens",0,0,0,0,0
+"species","Pseudomonas.mendocina",0,0,0,0,0
+"species","Pseudomonas.parafulva",0,0,0,0,0
+"species","Pseudomonas.putida",0,0,0,0,0
+"species","Pseudomonas.sp..CC6-YY-74",0,0,0,0,0
+"species","Pseudomonas.tolaasii",0,0,0,0,0
+"species","Pseudomonas.yamanorum",0,0,0,0,0
+"species","Pyricularia.pennisetigena",0,0,0,0,0
+"species","Pyrobaculum.neutrophilum",0,0,0,0,0
+"species","Ralstonia.insidiosa",0,0,0,0,0
+"species","Rathayibacter.rathayi",0,0,0,0,0
+"species","Rhizobium.sp..WL3",0,0,0,0,0
+"species","Rhodococcus.ruber",0,0,0,0,0
+"species","Rhodoferax.antarcticus",0,0,0,0,0
+"species","Rhodospirillaceae.bacterium.R5913",0,0,0,0,0
+"species","Roseovarius.sp..THAF9",0,0,0,0,0
+"species","Rothia.mucilaginosa",0,0,0,0,0
+"species","Runella.sp..SP2",0,0,0,0,0
+"species","Saccharopolyspora.erythraea",0,0,0,0,0
+"species","Salinicola.tamaricis",0,0,0,0,0
+"species","Schizosaccharomyces.pombe",0,0,0,0,0
+"species","Serpentinomonas.mccroryi",0,0,0,0,0
+"species","Simplicispira.suum",0,0,0,0,0
+"species","Snyder-Theilen.feline.sarcoma.virus",0,0,0,0,0
+"species","Sphingomonas.sp..C8-2",0,0,0,0,0
+"species","Sphingomonas.sp..PAMC26645",0,0,0,0,0
+"species","Sporisorium.graminicola",0,0,0,0,0
+"species","Staphylococcus.epidermidis",0,0,0,0,0
+"species","Staphylococcus.nepalensis",0,0,0,0,0
+"species","Streptococcus.porcinus",0,0,0,0,0
+"species","Streptococcus.pyogenes",0,0,0,0,0
+"species","Streptomonospora.sp..M2",0,0,0,0,0
+"species","Streptomyces.albus",0,0,0,0,0
+"species","Streptomyces.collinus",0,0,0,0,0
+"species","Streptomyces.ficellus",0,0,0,0,0
+"species","Streptomyces.globisporus",0,0,0,0,0
+"species","Streptomyces.hygroscopicus",0,0,0,0,0
+"species","Streptomyces.lavendulae",0,0,0,0,0
+"species","Streptomyces.rimosus",0,0,0,0,0
+"species","Streptomyces.sp..ADI95-16",0,0,0,0,0
+"species","Streptomyces.sp..CMB-StM0423",0,0,0,0,0
+"species","Streptomyces.sp..GSSD-12",0,0,0,0,0
+"species","Streptomyces.sp..GY16",0,0,0,0,0
+"species","Streptomyces.sp..M2",0,0,0,0,0
+"species","Streptomyces.sp..S063",0,0,0,0,0
+"species","Streptomyces.sp..SAT1",0,0,0,0,0
+"species","Streptomyces.sp..TLI_053",0,0,0,0,0
+"species","Streptomyces.sp..WAC00288",0,0,0,0,0
+"species","Streptomyces.sp..Z022",0,0,0,0,0
+"species","Streptomyces.sp..ZFG47",0,0,0,0,0
+"species","Streptomyces.tsukubensis",0,0,0,0,0
+"species","Streptomyces.venezuelae",0,0,0,0,0
+"species","Streptomyces.xinghaiensis",0,0,0,0,0
+"species","Tateyamaria.omphalii",0,0,0,0,0
+"species","Tenacibaculum.dicentrarchi",0,0,0,0,0
+"species","Terasakiella.sp..SH-1",0,0,0,0,0
+"species","Theileria.equi",0,0,0,0,0
+"species","Theileria.orientalis",0,0,0,0,0
+"species","Thermobispora.bispora",0,0,0,0,0
+"species","Thermothielavioides.terrestris",0,0,0,0,0
+"species","Thermus.sp..CCB_US3_UF1",0,0,0,0,0
+"species","Thiohalobacter.thiocyanaticus",0,0,0,0,0
+"species","Torulaspora.delbrueckii",0,0,0,0,0
+"species","Toxoplasma.gondii",0,0,0,0,0
+"species","Trypanosoma.brucei",0,0,0,0,0
+"species","Tupaiid.betaherpesvirus.1",0,0,0,0,0
+"species","Verrucosispora.maris",0,0,0,0,0
+"species","Vibrio.casei",0,0,0,0,0
+"species","Vibrio.gazogenes",0,0,0,0,0
+"species","Vibrio.parahaemolyticus",0,0,0,0,0
+"species","Vibrio.tritonius",0,0,0,0,0
+"species","Vigna.angularis",0,0,0,0,0
+"species","Xanthomonas.translucens",0,0,0,0,0
+"species","Zoogloeaceae.bacteirum.Par-f-2",0,0,0,0,0
