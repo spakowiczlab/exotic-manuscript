@@ -169,4 +169,20 @@ loop.output %>%
 ```
 
 
+# Fusobacteria prevalence
 
+```{r}
+test <- loop.input %>%
+  mutate(Fusobacteria = as.factor(ifelse(phylum_Fusobacteria == 1, "Present", "Absent")),
+         Cancer = as.factor(Cancer)) %>%
+  select(Cancer, Fusobacteria)
+  
+test <- table(test$Cancer, test$Fusobacteria)
+mosaicplot(test, main = "Fusobacteria presence across cancers")
+```
+
+```{r}
+png("../../figures/AACR/mosaicplot_fuso-presence.png")
+mosaicplot(test, main = "Fusobacteria presence across cancers")
+dev.off()
+```
