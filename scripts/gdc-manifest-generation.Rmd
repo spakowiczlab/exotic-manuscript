@@ -73,3 +73,70 @@ grab.uids <- dplyr::bind_rows(grab.uids)
 nrow(grab.uids)
 ```
 
+# Notes on next steps
+
+The following function downloads files based on the uuids provided, and automatically throws them in a cache. This is the step that requires Dan's token.
+
+```{r}
+fnames = gdcdata(manifest_df$id[1:2],progress=FALSE)
+```
+
+
+After this, we will need to make the BAM files fastqs again. It looks like each row of the manifest I generated is referring to a single BAM file, which does simplify things, however I need a way to detect whether the BAM was created from single or paired end reads. We probably only want to continue with files that have paired end data as that matches our own experiment, so that can be built in as an if statement.
+
+At this point, we simply integrate with our loop. We run kraken2, then bracken, then we remove all intermediary files and probably just save bracken output table. This should be possible from Dan's cluster account once he has a bracken conda environment, provided bracken hasn't updated a bunch. All kraken2 code and databases are in PAS1479. 
+
+rough loop, not tested:
+
+```{r}
+for(i in nrow(grab.uids)){
+  # Define desired vars
+  u <- grab.uids$id[i]
+  bnam <- grab.uids$filename[i]
+   # Write pbs submission file
+  fileOut<-file(paste0("/fs/scratch/PAS1460/exoTCC/batch/TCGA_kraken2-bracken/", u, ".pbs"))
+  
+  writeLines(c(paste("#PBS -N exoTCC_TCGA-validate", u, sep = "_"),
+               "#PBS -l walltime=4:00:00", # We might need a good bit more time here for the download, we'll see
+               "#PBS -l nodes=1:ppn=20", # This may also need to be made greedier
+               "#PBS -j oe",
+               "#PBS -m abe",
+               "#PBS -A PAS1460",
+               "",
+               "module load R",
+               "module load python/3.6-conda5.2",
+               "module load bedtools",
+               "module load samtools",
+               "",
+               #BAM download and test - I'm assuming DS saves token in home directory here
+               paste0("Rscript -e 'fnames = gdcdata(", u, ", progress=FALSE)'"), #Do the BAMs stay in cache between                                                                                        once R quits?
+               paste0("$testpaired = samtools view -c -f 1 ", gdccache, "/", u, "/", bnam), # count number of paired                                                                           reads, not sure if this sytax will work
+               paste0("If[$testpaired = 0];then rm ", gdccache, "/", u, "/", bnam,"; fi"), # Causes rest of script to                                                                       fail if no paired reads, if I've done it right 
+               "",
+               
+               # Create our working direcory
+               paste0("mkdir ", tmpdir),
+               
+               # Manipulate to fastqs.
+               paste0("samtools sort -n ", gdccache, "/", u, "/", bnam, " ", tmpdir, u, ".qsort"), # Needed to keep                                                                                                   reads in same order                     
+               paste0("bamtofastq -i ",tmpdir, u, ".qsort.bam -fq ", tmpdir, u, "_1.fastq.gz -fq2 ", 
+                      tmpdir, u, "_2.fastq.gz"),
+               "",
+               
+               # Run kraken2/bracken
+               paste0("cd ", tmpdir),
+               paste0("/fs/scratch/PAS1479/src/kraken2-src/kraken2/kraken2 --db /fs/scratch/PAS1479/databases/kraken2-db --threads 10 --minimum-base-quality 20 --report ", u, ".txt --confidence 0.1 --paired ", tmpdir, u, "_1.fastq.gz ", tmpdir, u, "_2.fastq.gz"),
+               "",
+               "source activate kraken2", # Change to Dan's enironment name
+             paste0("bracken -d /fs/scratch/PAS1479/databases/kraken2-db -l S -i ", u, ".txt -o ../../brackout/TCGA-validate/", u, ".txt"),
+             "",
+             
+             # Remove tmp files. Need to double check that this removes directory + all files in it
+             paste0("rmdir -r ", tmpdir),
+             paste0("rmdir -r ", gdccache, u)
+             ),
+               
+             fileOut
+  )
+}
+```
