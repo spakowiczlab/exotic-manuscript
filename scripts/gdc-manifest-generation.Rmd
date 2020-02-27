@@ -1,0 +1,29 @@
+---
+title: "gdc-manifest-generation"
+author: "Rebecca Hoyd"
+date: "February 27, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(GenomicDataCommons)
+```
+
+# Query the metadata
+
+# Query the files
+
+```{r}
+# Get the files from TCGA only that are of the data type "aligned reads"
+tcga.bams <- GenomicDataCommons::files() %>%
+  filter(type == "aligned_reads") %>%
+  filter(cases.project.program.name =='TCGA')
+
+# Use facet + aggregations to count how many files are in each value of a given variable
+tcga.bams %>%
+  # facet(c("cases.project.name", "cases.project.project_id")) %>% 
+  facet(c("cases.project.project_id")) %>% 
+  aggregations()
+```
