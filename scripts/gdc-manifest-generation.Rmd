@@ -56,15 +56,20 @@ tcga.bams %>%
 ```
 
 # Get the list of files, limited to desired cancers + made into manifest
-```{r}
-tcga.bams.tumors <- tcga.bams %>%
-  filter(cases.samples.sample_type == "primary tumor") %>%
-  filter(experimental_strategy == "RNA-Seq") %>%
-  filter(cases.project.project_id %in% c("TCGA-LUAD", "TCGA-COAD", "TCGA-READ"))
-```
 
 ```{r}
-tcga.bams.tumors %>%
+grab.uids <- list()
+
+for(c in c("TCGA-LUAD", "TCGA-COAD", "TCGA-READ")){
+  grab.uids[[c]] <- tcga.bams %>%
+  filter(cases.samples.sample_type == "primary tumor") %>%
+  filter(experimental_strategy == "RNA-Seq") %>%
+  filter(cases.project.project_id == c) %>% 
   manifest() %>%
-  nrow()
+  dplyr::mutate(cancer = c)
+}
+
+grab.uids <- dplyr::bind_rows(grab.uids)
+nrow(grab.uids)
 ```
+
