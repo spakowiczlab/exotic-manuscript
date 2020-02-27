@@ -11,14 +11,29 @@ knitr::opts_chunk$set(echo = TRUE)
 library(GenomicDataCommons)
 ```
 
-# Query the metadata
+# Look for variables to filter
 
-# Query the files
+```{r}
+avail.data <- available_fields(files())
+length(avail.data)
+
+```
+
+```{r}
+avail.data[grep("project", avail.data)]
+```
+
+```{r}
+avail.data[grep("tumor", avail.data)]
+```
+
+# Query the files, find desired filters
 
 ```{r}
 # Get the files from TCGA only that are of the data type "aligned reads"
-tcga.bams <- GenomicDataCommons::files() %>%
+tcga.bams <- GenomicDataCommons::files(legacy = F) %>%
   filter(type == "aligned_reads") %>%
+  # filter(experimental_strategy == "RNA-Seq") %>% # This line breaks everything after it but the results, but I want                                                         to add it back later
   filter(cases.project.program.name =='TCGA')
 
 # Use facet + aggregations to count how many files are in each value of a given variable
@@ -26,4 +41,30 @@ tcga.bams %>%
   # facet(c("cases.project.name", "cases.project.project_id")) %>% 
   facet(c("cases.project.project_id")) %>% 
   aggregations()
+```
+
+```{r}
+tcga.bams %>%
+  # facet(c("cases.project.name", "cases.project.project_id")) %>% 
+  facet(c("experimental_strategy")) %>% 
+  aggregations()
+
+tcga.bams %>%
+  # facet(c("cases.project.name", "cases.project.project_id")) %>% 
+  facet(c('cases.samples.sample_type')) %>% 
+  aggregations()
+```
+
+# Get the list of files, limited to desired cancers + made into manifest
+```{r}
+tcga.bams.tumors <- tcga.bams %>%
+  filter(cases.samples.sample_type == "primary tumor") %>%
+  filter(experimental_strategy == "RNA-Seq") %>%
+  filter(cases.project.project_id %in% c("TCGA-LUAD", "TCGA-COAD", "TCGA-READ"))
+```
+
+```{r}
+tcga.bams.tumors %>%
+  manifest() %>%
+  nrow()
 ```
