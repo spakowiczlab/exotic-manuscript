@@ -58,26 +58,40 @@ tcga.bams %>%
 # Get the list of files, limited to desired cancers + made into manifest
 
 ```{r}
-grab.uids <- list()
-
+grab.uids.1 <- list()
 for(c in c("TCGA-LUAD", "TCGA-COAD", "TCGA-READ")){
-  grab.uids[[c]] <- tcga.bams %>%
+  grab.uids.1[[c]] <- tcga.bams %>%
   filter(cases.samples.sample_type == "primary tumor") %>%
   filter(experimental_strategy == "RNA-Seq") %>%
   filter(cases.project.project_id == c) %>% 
   manifest() %>%
-  dplyr::mutate(cancer = c)
+  dplyr::mutate(cancer = c,
+                source = "tumor")
 }
+grab.uids.1 <- dplyr::bind_rows(grab.uids.1)
+nrow(grab.uids.1)
 
-grab.uids <- dplyr::bind_rows(grab.uids)
-nrow(grab.uids)
+grab.uids.2 <- list()
+for(c in c("TCGA-LUAD", "TCGA-COAD", "TCGA-READ")){
+  grab.uids.2[[c]] <- tcga.bams %>%
+  filter(cases.samples.sample_type == "solid tissue normal") %>%
+  filter(experimental_strategy == "RNA-Seq") %>%
+  filter(cases.project.project_id == c) %>% 
+  manifest() %>%
+  dplyr::mutate(cancer = c,
+                source = "solid.tissue.normal")
+}
+grab.uids.2 <- dplyr::bind_rows(grab.uids.2)
+nrow(grab.uids.2)
+
+grab.uids <- dplyr::bind_rows(grab.uids.1, grab.uids.2)
 ```
 
 # Notes on next steps
 
 The following function downloads files based on the uuids provided, and automatically throws them in a cache. This is the step that requires Dan's token.
 
-```{r}
+```{r, eval = F}
 fnames = gdcdata(manifest_df$id[1:2],progress=FALSE)
 ```
 
