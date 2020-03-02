@@ -124,8 +124,8 @@ for(i in nrow(grab.uids)){
                "",
                #BAM download and test - I'm assuming DS saves token in home directory here
                paste0("Rscript -e 'fnames = gdcdata(", u, ", progress=FALSE)'"), #Do the BAMs stay in cache between                                                                                        once R quits?
-               paste0("$testpaired = samtools view -c -f 1 ", gdccache, "/", u, "/", bnam), # count number of paired                                                                           reads, not sure if this sytax will work
-               paste0("If[$testpaired -eq 0];then rm ", gdccache, "/", u, "/", bnam,"; fi"), # Causes rest of script to                                                                       fail if no paired reads, if I've done it right 
+               paste0("$testpaired=(samtools view -c -f 1 ", gdccache, "/", u, "/", bnam, ")"), # count number of                                                                                                        paired reads
+               paste0("if[ $testpaired -eq 0 ];then rm ", gdccache, "/", u, "/", bnam,";fi"), # Causes rest of script to                                                                       fail if no paired reads, if I've done it right 
                "",
                
                # Create our working direcory
