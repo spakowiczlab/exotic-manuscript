@@ -87,6 +87,11 @@ nrow(grab.uids.2)
 grab.uids <- dplyr::bind_rows(grab.uids.1, grab.uids.2)
 ```
 
+```{r}
+# We need to keep the manifest, as it has all the metadata of where the samples are from, and we should date it because TCGA can change as more studies are updated
+# write.csv(grab.uids, "../data/tcga-gdc-manifest_date.csv", row.names = F)
+```
+
 # Notes on next steps
 
 The following function downloads files based on the uuids provided, and automatically throws them in a cache. This is the step that requires Dan's token.
@@ -103,6 +108,8 @@ At this point, we simply integrate with our loop. We run kraken2, then bracken, 
 rough loop, not tested:
 
 ```{r}
+# grab.uids <- read.csv("../data/tcga-gdc-manifest_date.csv")
+
 for(i in nrow(grab.uids)){
   # Define desired vars
   u <- grab.uids$id[i]
@@ -123,9 +130,9 @@ for(i in nrow(grab.uids)){
                "module load samtools",
                "",
                #BAM download and test - I'm assuming DS saves token in home directory here
-               paste0("Rscript -e 'fnames = gdcdata(", u, ", progress=FALSE)'"), #Do the BAMs stay in cache between                                                                                        once R quits?
+               paste0("Rscript -e 'GenomicDataCommons::fnames = gdcdata(", u, ", progress=FALSE)'"), # Need to check                                                           if BAMs are maintained in the cache outside of R sessions
                paste0("$testpaired=(samtools view -c -f 1 ", gdccache, "/", u, "/", bnam, ")"), # count number of                                                                                                        paired reads
-               paste0("if[ $testpaired -eq 0 ];then rm ", gdccache, "/", u, "/", bnam,";fi"), # Causes rest of script to                                                                       fail if no paired reads, if I've done it right 
+               paste0("if[ $testpaired -eq 0 ];then rm ", gdccache, "/", u, "/", bnam,";fi"), # Causes rest of script               to fail if their are no paired reads, so we will be left only with data for the BAMs we want in the end 
                "",
                
                # Create our working direcory
