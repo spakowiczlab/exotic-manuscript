@@ -1,0 +1,141 @@
+---
+title: "Make Table 1: Cohort characteristics"
+author: "Rebecca Hoyd"
+date: "February 6, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tableone)
+library(forcats)
+library(glue)
+library(readxl)
+library(flextable)
+library(officer)
+```
+
+# Load data
+```{r}
+# I'm storing these in my T drive as I suspect the may have identifiable information
+clinfiles <- list.files("T:/Labs/Spakowicz/data/exoTCC/", full.names = F, "_Spakowicz")
+clinfiles <- paste0("T:/Labs/Spakowicz/data/exoTCC/", clinfiles)
+
+clindat <- lapply(clinfiles, function(x) read_excel(x, na = "N/A"))
+
+
+```
+
+
+# Coercing the clinical data into a tidier object
+```{r}
+
+for(i in 1:length(clindat)){
+  # First, I don't want to have to deal with names poorly formatted for R. 
+  colnames(clindat[[i]]) <- make.names(colnames(clindat[[i]]))
+}
+
+# Now, let's display the new column names and find the information needed for the table
+
+tho <- clindat[[3]]
+```
+
+# General characteristics
+
+```{r}
+
+# Select and adjust dataframe for Table 1
+tho.tabnames <- tho %>%
+  mutate(Stage  = ifelse(Cancer.Stage.at.Collection %in% c("88", "99", "undeterm.") , 
+                         "Unknown", Cancer.Stage.at.Collection),
+         BMI = BMI.at.Collection,
+         Age = Age.at.Collection,
+         Sex = Gender,
+         `Vital Status` = Vital.Status,
+         Radiation = ifelse(Radiation == "None", "No", "Yes"),
+         Surgery = ifelse(grepl("None", Surgery), "No", "Yes"),
+         Hormones = ifelse(is.na(Hormone.Therapy), "No", "Yes")
+  )
+```
+
+```{r}
+listVars <- c("BMI", "Age", "Sex", "Cancer", "Stage", "Vital Status",
+              "Radiation", "Surgery", "Hormones")
+catVars <- c("Sex", "Cancer", "Stage", "Vital Status", "Radiation", "Surgery", "Hormones")
+```
+
+```{r table 1}
+table1 <- CreateTableOne(vars = listVars,
+                         data = tho.tabnames,
+                         factorVars = catVars)
+table1
+```
+
+# Drugs given
+
+## Chemotherapy
+```{r learn about condensing variables}
+
+tho %>% 
+  mutate(Chemo.Drug.Name = tolower(Chemo.Drug.Name)) %>%
+  # separate(Chemo.Drug.Name, into = c('testChem')) %>%
+  group_by(Chemo.Drug.Name) %>%
+  tally() %>%
+  arrange(desc(n)) %>%
+  mutate(`%.given` = n/nrow(tho)) %>%
+  print()
+```
+
+
+## IO
+
+```{r}
+
+tho %>%
+  mutate(I.O.Drug.Name = tolower(I.O.Drug.Name)) %>%
+  # separate(I.O.Drug.Name, into = c('testIO')) %>%
+  group_by(I.O.Drug.Name) %>%
+  tally() %>%
+  arrange(desc(n)) %>%
+  mutate(`%.given` = n/nrow(tho))
+```
+
+
+# Time from diagnosis/treatment the samples were taken
+
+## Days after diagnosis
+
+
+```{r}
+tho %>%
+  mutate(days.from.diagnosis.to.collection = Overall.Survival.from.Dx..days. - Days.from.Collection.to.Last.Follow.Up.or.Death) %>%
+  ggplot(aes(x = days.from.diagnosis.to.collection)) +
+  geom_histogram() +
+  theme_bw() +
+  labs(x = "Days", y = "", title = "Time from diagnosis to sample collection")
+```
+
+## Days after treatment - Chemo
+
+```{r}
+tho %>%
+  mutate(days.from.chemo.to.collection = Days.from.Chemo.Start.to.Last.Follow.Up.or.Death -
+           Days.from.Collection.to.Last.Follow.Up.or.Death) %>%
+  ggplot(aes(x = days.from.chemo.to.collection)) +
+  geom_histogram() +
+  theme_bw() +
+  labs(x = "Days", y = "", title = "Time from chemotherapy to sample collection")
+```
+
+## Days after treatment - IO
+
+```{r}
+tho %>%
+  mutate(days.from.io.to.collection = Days.from.I.O.Start.to.Last.Follow.Up.or.Death -
+           Days.from.Collection.to.Last.Follow.Up.or.Death) %>%
+  ggplot(aes(x = days.from.io.to.collection)) +
+  geom_histogram() +
+  theme_bw() +
+  labs(x = "Days", y = "", title = "Time from immunotherapy to sample collection")
+```
