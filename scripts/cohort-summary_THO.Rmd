@@ -14,6 +14,7 @@ library(glue)
 library(readxl)
 library(flextable)
 library(officer)
+library(UpSetR)
 ```
 
 # Load data
@@ -36,7 +37,6 @@ for(i in 1:length(clindat)){
   colnames(clindat[[i]]) <- make.names(colnames(clindat[[i]]))
 }
 
-# Now, let's display the new column names and find the information needed for the table
 
 tho <- clindat[[3]]
 ```
@@ -53,16 +53,17 @@ tho.tabnames <- tho %>%
          Age = Age.at.Collection,
          Sex = Gender,
          `Vital Status` = Vital.Status,
-         Radiation = ifelse(Radiation == "None", "No", "Yes"),
-         Surgery = ifelse(grepl("None", Surgery), "No", "Yes"),
-         Hormones = ifelse(is.na(Hormone.Therapy), "No", "Yes")
+         Radiation = ifelse(Radiation == "None", 0, 1),
+         Surgery = ifelse(grepl("None", Surgery), 0, 1),
+         Hormones = ifelse(is.na(Hormone.Therapy), 0, 1),
+         IO = ifelse(is.na(I.O.Drug.Name), 0, 1),
+         Chemotherapy = ifelse(is.na(Chemo.Drug.Name), 0, 1)
   )
 ```
 
 ```{r}
-listVars <- c("BMI", "Age", "Sex", "Cancer", "Stage", "Vital Status",
-              "Radiation", "Surgery", "Hormones")
-catVars <- c("Sex", "Cancer", "Stage", "Vital Status", "Radiation", "Surgery", "Hormones")
+listVars <- c("BMI", "Age", "Sex", "Cancer", "Stage", "Vital Status")
+catVars <- c("Sex", "Cancer", "Stage", "Vital Status")
 ```
 
 ```{r table 1}
@@ -70,6 +71,16 @@ table1 <- CreateTableOne(vars = listVars,
                          data = tho.tabnames,
                          factorVars = catVars)
 table1
+```
+
+# Treatment types prescribed each patien
+
+```{r}
+upsetdat <- tho.tabnames %>%
+  select(Radiation, Hormones, Surgery, Chemotherapy, IO) %>%
+  as.data.frame()
+
+upset(upsetdat)
 ```
 
 # Drugs given
