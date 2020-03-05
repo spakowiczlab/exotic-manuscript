@@ -15,6 +15,8 @@ library(readxl)
 library(flextable)
 library(officer)
 library(UpSetR)
+library(ggdendro)
+library(RColorBrewer)
 
 ```
 
@@ -150,4 +152,56 @@ tho %>%
   geom_histogram() +
   theme_bw() +
   labs(x = "Days", y = "", title = "Time from immunotherapy to sample collection")
+```
+
+# Timeline of events
+
+```{r calculate dates in terms of diagnosis}
+tho.times <- tho %>%
+  mutate(Stage  = ifelse(Cancer.Stage.at.Collection %in% c("88", "99", "undeterm.") , 
+                         "Unknown", Cancer.Stage.at.Collection)) %>%
+  select(contains("Days"), Stage)
+colnames(tho.times) <- c("Death.or.last.followup", "Chemo.Start", "IO.Start", "Radiation.start", 
+                         "Hormones.start", "Sample.Collection", "Stage")
+
+tho.times <- tho.times %>%
+  mutate(pat.id = paste0(id(tho.times), "a")) %>%
+  gather(-Death.or.last.followup, -pat.id, -Stage, key = "Event.type", value = "days.ev.to.ev") %>%
+  mutate(days.diag.to.ev = Death.or.last.followup - days.ev.to.ev) %>%
+  select(-days.ev.to.ev) %>%
+  spread(key = "Event.type", value = "days.diag.to.ev") %>%
+  mutate(Diagnosis = 0) %>%
+  gather(-pat.id, -Stage, key = "Event.type", value = "days.diag.to.ev")
+```
+
+```{r cluster patients}
+tho.time.mat <- tho.times %>%
+  spread(key = "Event.type", value = "days.diag.to.ev") %>%
+  column_to_rownames(var = "pat.id") %>%
+  select(-Stage)
+
+pat.ord <- tho.time.mat %>%
+  dist() %>%
+  hclust() %>%
+  dendro_data()
+pat.ord <- pat.ord$labels %>%
+  arrange(x)
+pat.ord <- as.character(pat.ord$label)
+```
+
+
+```{r make timeline figure, fig.height = 8, fig.width = 7}
+getpallete <- colorRampPalette(brewer.pal(9, "PRGn"))
+
+tho.times %>%
+  filter(days.diag.to.ev >= 0) %>% #This line removes a single patient listed as having chemo >2000 days before                                            diagnosis and one who started radiation 3 days before diagnosis.
+  ggplot(aes(x = days.diag.to.ev, y = fct_relevel(pat.id, pat.ord))) +
+  geom_path(alpha = .75, aes(color = Stage)) +
+  geom_point(aes(shape = fct_relevel(Event.type, "Diagnosis", after = 6))) +
+  scale_color_manual(breaks = sort(unique(tho.times$Stage)), values = c(getpallete(10), "grey")) +
+  labs(x = "Days from diagnosis to event", y = "Patient") +
+  theme_classic() +
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank()) +
+  ggsave("../figures/timeline-of-events_THO.png", height = 8, width = 7)
 ```
