@@ -15,6 +15,7 @@ library(readxl)
 library(flextable)
 library(officer)
 library(UpSetR)
+
 ```
 
 # Load data
@@ -73,7 +74,7 @@ table1 <- CreateTableOne(vars = listVars,
 table1
 ```
 
-# Treatment types prescribed each patien
+# Treatment types prescribed each patient
 
 ```{r}
 upsetdat <- tho.tabnames %>%
