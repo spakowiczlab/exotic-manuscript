@@ -246,8 +246,8 @@ table1</code></pre>
 ##      Unknown                     24 ( 11.9) 
 ##   Vital Status = Deceased (%)    90 ( 44.6)</code></pre>
 </div>
-<div id="treatment-types-prescribed-each-patien" class="section level1">
-<h1>Treatment types prescribed each patien</h1>
+<div id="treatment-types-prescribed-each-patient" class="section level1">
+<h1>Treatment types prescribed each patient</h1>
 <pre class="r"><code>upsetdat &lt;- tho.tabnames %&gt;%
   select(Radiation, Hormones, Surgery, Chemotherapy, IO) %&gt;%
   as.data.frame()
@@ -307,8 +307,8 @@ upset(upsetdat)</code></pre>
 ## 11 tremelimumab                  1   0.00495</code></pre>
 </div>
 </div>
-<div id="time-from-diagnosistreatment-the-samples-were-taken" class="section level1">
-<h1>Time from diagnosis/treatment the samples were taken</h1>
+<div id="time-from-diagnosistreatment-to-when-the-samples-were-taken" class="section level1">
+<h1>Time from diagnosis/treatment to when the samples were taken</h1>
 <div id="days-after-diagnosis" class="section level2">
 <h2>Days after diagnosis</h2>
 <pre class="r"><code>tho %&gt;%
@@ -349,7 +349,6 @@ upset(upsetdat)</code></pre>
 </div>
 <div id="timeline-of-events" class="section level1">
 <h1>Timeline of events</h1>
-<p>First, we will re-calculation all dates to be in terms of days from diagnosis.</p>
 <pre class="r"><code>tho.times &lt;- tho %&gt;%
   mutate(Stage  = ifelse(Cancer.Stage.at.Collection %in% c(&quot;88&quot;, &quot;99&quot;, &quot;undeterm.&quot;) , 
                          &quot;Unknown&quot;, Cancer.Stage.at.Collection)) %&gt;%
@@ -366,7 +365,6 @@ tho.times &lt;- tho.times %&gt;%
   mutate(Diagnosis = 0) %&gt;%
   gather(-pat.id, -Stage, key = &quot;Event.type&quot;, value = &quot;days.diag.to.ev&quot;)</code></pre>
 <pre><code>## Warning: `id()` is deprecated</code></pre>
-<p>Now let’s cluster the patients.</p>
 <pre class="r"><code>tho.time.mat &lt;- tho.times %&gt;%
   spread(key = &quot;Event.type&quot;, value = &quot;days.diag.to.ev&quot;) %&gt;%
   column_to_rownames(var = &quot;pat.id&quot;) %&gt;%
@@ -379,7 +377,6 @@ pat.ord &lt;- tho.time.mat %&gt;%
 pat.ord &lt;- pat.ord$labels %&gt;%
   arrange(x)
 pat.ord &lt;- as.character(pat.ord$label)</code></pre>
-<p>And now we can create a timeline for each patient, with them ordered by the clustering.</p>
 <pre class="r"><code>getpallete &lt;- colorRampPalette(brewer.pal(9, &quot;PRGn&quot;))
 
 tho.times %&gt;%

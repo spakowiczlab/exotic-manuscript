@@ -17,6 +17,7 @@ library(officer)
 library(UpSetR)
 library(ggdendro)
 library(RColorBrewer)
+
 ```
 
 # Load data
@@ -75,7 +76,7 @@ table1 <- CreateTableOne(vars = listVars,
 table1
 ```
 
-# Treatment types prescribed each patien
+# Treatment types prescribed each patient
 
 ```{r}
 upsetdat <- tho.tabnames %>%
@@ -155,8 +156,7 @@ tho %>%
 
 # Timeline of events
 
-First, we will re-calculation all dates to be in terms of days from diagnosis.
-```{r}
+```{r calculate dates in terms of diagnosis}
 tho.times <- tho %>%
   mutate(Stage  = ifelse(Cancer.Stage.at.Collection %in% c("88", "99", "undeterm.") , 
                          "Unknown", Cancer.Stage.at.Collection)) %>%
@@ -174,9 +174,7 @@ tho.times <- tho.times %>%
   gather(-pat.id, -Stage, key = "Event.type", value = "days.diag.to.ev")
 ```
 
-Now let's cluster the patients.
-
-```{r}
+```{r cluster patients}
 tho.time.mat <- tho.times %>%
   spread(key = "Event.type", value = "days.diag.to.ev") %>%
   column_to_rownames(var = "pat.id") %>%
@@ -191,9 +189,8 @@ pat.ord <- pat.ord$labels %>%
 pat.ord <- as.character(pat.ord$label)
 ```
 
-And now we can create a timeline for each patient, with them ordered by the clustering.
 
-```{r, fig.height = 8, fig.width = 7}
+```{r make timeline figure, fig.height = 8, fig.width = 7}
 getpallete <- colorRampPalette(brewer.pal(9, "PRGn"))
 
 tho.times %>%
