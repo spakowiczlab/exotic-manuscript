@@ -197,7 +197,7 @@ tho.times %>%
   filter(days.diag.to.ev >= 0) %>% #This line removes a single patient listed as having chemo >2000 days before                                            diagnosis and one who started radiation 3 days before diagnosis.
   ggplot(aes(x = days.diag.to.ev, y = fct_relevel(pat.id, pat.ord))) +
   geom_path(alpha = .75, aes(color = Stage)) +
-  geom_point(aes(shape = Event.type)) +
+  geom_point(aes(shape = fct_relevel(Event.type, "Diagnosis", after = 6))) +
   scale_color_manual(breaks = sort(unique(tho.times$Stage)), values = c(getpallete(10), "grey")) +
   labs(x = "Days from diagnosis to event", y = "Patient") +
   theme_classic() +
