@@ -102,7 +102,7 @@ tho %>%
 ```
 
 
-# Time from diagnosis/treatment the samples were taken
+# Time from diagnosis/treatment to when the samples were taken
 
 ## Days after diagnosis
 
