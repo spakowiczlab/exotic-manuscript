@@ -175,18 +175,28 @@ tho.times <- tho.times %>%
 ```
 
 ```{r cluster patients}
-tho.time.mat <- tho.times %>%
-  spread(key = "Event.type", value = "days.diag.to.ev") %>%
-  column_to_rownames(var = "pat.id") %>%
-  select(-Stage)
+# tho.time.mat <- tho.times %>%
+#   spread(key = "Event.type", value = "days.diag.to.ev") %>%
+#   column_to_rownames(var = "pat.id") %>%
+#   select(-Stage)
+# 
+# pat.ord <- tho.time.mat %>%
+#   dist() %>%
+#   hclust() %>%
+#   dendro_data()
+# pat.ord <- pat.ord$labels %>%
+#   arrange(x)
+# pat.ord <- as.character(pat.ord$label)
 
-pat.ord <- tho.time.mat %>%
-  dist() %>%
-  hclust() %>%
-  dendro_data()
-pat.ord <- pat.ord$labels %>%
-  arrange(x)
-pat.ord <- as.character(pat.ord$label)
+tho.ev.ord <- tho.times %>%
+  arrange(pat.id, days.diag.to.ev) %>%
+  group_by(pat.id) %>%
+  filter(!is.na(days.diag.to.ev) & Event.type != "Diagnosis") %>%
+  mutate(Event.type = gsub("\\.", " ", Event.type)) %>%
+  summarise(evord = paste(Event.type, collapse = ", ")) %>%
+  arrange(evord)
+         
+
 ```
 
 
@@ -195,7 +205,7 @@ getpallete <- colorRampPalette(brewer.pal(9, "PRGn"))
 
 tho.times %>%
   filter(days.diag.to.ev >= 0) %>% #This line removes a single patient listed as having chemo >2000 days before                                            diagnosis and one who started radiation 3 days before diagnosis.
-  ggplot(aes(x = days.diag.to.ev, y = fct_relevel(pat.id, pat.ord))) +
+  ggplot(aes(x = days.diag.to.ev, y = fct_relevel(pat.id, tho.ev.ord$pat.id))) +
   geom_path(alpha = .75, aes(color = Stage)) +
   geom_point(aes(shape = fct_relevel(Event.type, "Diagnosis", after = 6))) +
   scale_color_manual(breaks = sort(unique(tho.times$Stage)), values = c(getpallete(10), "grey")) +
