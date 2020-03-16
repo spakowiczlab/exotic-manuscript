@@ -13,23 +13,23 @@ library(GenomicDataCommons)
 
 # Look for variables to filter
 
-```{r}
+```{r, eval=F}
 avail.data <- available_fields(files())
 length(avail.data)
 
 ```
 
-```{r}
+```{r, eval=F}
 avail.data[grep("project", avail.data)]
 ```
 
-```{r}
+```{r, eval=F}
 avail.data[grep("tumor", avail.data)]
 ```
 
 # Query the files, find desired filters
 
-```{r}
+```{r, eval=F}
 # Get the files from TCGA only that are of the data type "aligned reads"
 tcga.bams <- GenomicDataCommons::files(legacy = F) %>%
   filter(type == "aligned_reads") %>%
@@ -43,7 +43,7 @@ tcga.bams %>%
   aggregations()
 ```
 
-```{r}
+```{r, eval=F}
 tcga.bams %>%
   # facet(c("cases.project.name", "cases.project.project_id")) %>% 
   facet(c("experimental_strategy")) %>% 
@@ -57,7 +57,7 @@ tcga.bams %>%
 
 # Get the list of files, limited to desired cancers + made into manifest
 
-```{r}
+```{r, eval=F}
 grab.uids.1 <- list()
 for(c in c("TCGA-LUAD", "TCGA-COAD", "TCGA-READ")){
   grab.uids.1[[c]] <- tcga.bams %>%
@@ -89,7 +89,7 @@ grab.uids <- dplyr::bind_rows(grab.uids.1, grab.uids.2)
 
 ```{r}
 # We need to keep the manifest, as it has all the metadata of where the samples are from, and we should date it because TCGA can change as more studies are updated
-# write.csv(grab.uids, "../data/tcga-gdc-manifest_date.csv", row.names = F)
+# write.csv(grab.uids, "../data/tcga-gdc-manifest_2020-03-11.csv", row.names = F)
 ```
 
 # Notes on next steps
@@ -97,7 +97,7 @@ grab.uids <- dplyr::bind_rows(grab.uids.1, grab.uids.2)
 The following function downloads files based on the uuids provided, and automatically throws them in a cache. This is the step that requires Dan's token.
 
 ```{r, eval = F}
-fnames = gdcdata(manifest_df$id[1:2],progress=FALSE)
+fnames = gdcdata(grab.uids$id[1],progress=FALSE, token = tok)
 ```
 
 
@@ -105,59 +105,63 @@ After this, we will need to make the BAM files fastqs again. It looks like each 
 
 At this point, we simply integrate with our loop. We run kraken2, then bracken, then we remove all intermediary files and probably just save bracken output table. This should be possible from Dan's cluster account once he has a bracken conda environment, provided bracken hasn't updated a bunch. All kraken2 code and databases are in PAS1479. 
 
-rough loop, not tested:
+This should create a job we can use to create an array, which we can then qalter to prevent everything from running at once.
 
 ```{r}
-# grab.uids <- read.csv("../data/tcga-gdc-manifest_date.csv")
+grab.uids <- read.csv("../data/tcga-gdc-manifest_2020-03-11.csv", stringsAsFactors = F)
+tok <- read.table("~/Documents/gdc.txt", stringsAsFactors = F)[1,1]
 
-for(i in nrow(grab.uids)){
-  # Define desired vars
-  u <- grab.uids$id[i]
-  bnam <- grab.uids$filename[i]
-   # Write pbs submission file
-  fileOut<-file(paste0("/fs/scratch/PAS1460/exoTCC/batch/TCGA_kraken2-bracken/", u, ".pbs"))
-  
-  writeLines(c(paste("#PBS -N exoTCC_TCGA-validate", u, sep = "_"),
-               "#PBS -l walltime=4:00:00", # We might need a good bit more time here for the download, we'll see
-               "#PBS -l nodes=1:ppn=20", # This may also need to be made greedier
-               "#PBS -j oe",
-               "#PBS -m abe",
-               "#PBS -A PAS1460",
-               "",
-               "module load R",
-               "module load python/3.6-conda5.2",
-               "module load bedtools",
-               "module load samtools",
-               "",
-               #BAM download and test - I'm assuming DS saves token in home directory here
-               paste0("Rscript -e 'GenomicDataCommons::fnames = gdcdata(", u, ", progress=FALSE)'"), # Need to check                                                           if BAMs are maintained in the cache outside of R sessions
-               paste0("$testpaired=(samtools view -c -f 1 ", gdccache, "/", u, "/", bnam, ")"), # count number of                                                                                                        paired reads
-               paste0("if[ $testpaired -eq 0 ];then rm ", gdccache, "/", u, "/", bnam,";fi"), # Causes rest of script               to fail if their are no paired reads, so we will be left only with data for the BAMs we want in the end 
-               "",
-               
-               # Create our working direcory
-               paste0("mkdir ", tmpdir),
-               
-               # Manipulate to fastqs.
-               paste0("samtools sort -n ", gdccache, "/", u, "/", bnam, " ", tmpdir, u, ".qsort"), # Needed to keep                                                                                                   reads in same order                     
-               paste0("bamtofastq -i ",tmpdir, u, ".qsort.bam -fq ", tmpdir, u, "_1.fastq.gz -fq2 ", 
-                      tmpdir, u, "_2.fastq.gz"),
-               "",
-               
-               # Run kraken2/bracken
-               paste0("cd ", tmpdir),
-               paste0("/fs/scratch/PAS1479/src/kraken2-src/kraken2/kraken2 --db /fs/scratch/PAS1479/databases/kraken2-db --threads 10 --minimum-base-quality 20 --report ", u, ".txt --confidence 0.1 --paired ", tmpdir, u, "_1.fastq.gz ", tmpdir, u, "_2.fastq.gz"),
-               "",
-               "source activate kraken2", # Change to Dan's enironment name
-             paste0("bracken -d /fs/scratch/PAS1479/databases/kraken2-db -l S -i ", u, ".txt -o ../../brackout/TCGA-validate/", u, ".txt"),
+# Write pbs submission file
+fileOut<-file("/fs/scratch/PAS1460/exoTCC/batch/TCGA_kraken2-bracken/array-sub.pbs")
+
+writeLines(c("#PBS -N exoTCC_TCGA-validate",
+             "#PBS -l walltime=04:00:00",
+             "#PBS -l nodes=1:ppn=20", # This may also need to be made greedier
+             "#PBS -j oe",
+             "#PBS -m abe",
+             "#PBS -A PAS1460",
+             "",
+             #List our important info in a way that can be indexed
+             paste0("uuids=('", paste(grab.uids$id, collapse = "' '"), "')"),
+             paste0("bnams=('", paste(grab.uids$filename, collapse = "' '"), "')"),
+             "",
+             "module load R",
+             "",
+             #BAM download and test - I'm assuming DS saves token in home directory here
+             paste0('rstring="GenomicDataCommons::gdcdata(\'${uuids[$PBS_ARRAYID]}\', progress=FALSE, token = \'', tok,'\')"'),
+             'Rscript -e \"GenomicDataCommons::gdc_set_cache(\'$TMPDIR\')\" -e \"$rstring\"',
+             "",
+             "module load python/3.6-conda5.2",
+             "module load bam2fastq",
+             "module load samtools",
+             "",
+             "testpaired=$(samtools view -c -f 1 $TMPDIR/${uuids[$PBS_ARRAYID]}/${bnams[$PBS_ARRAYID]})",
+             "if [ $testpaired -eq 0 ];then rm $TMPDIR/${uuids[$PBS_ARRAYID]}/${bnams[$PBS_ARRAYID]};fi", 
              "",
              
-             # Remove tmp files. Need to double check that this removes directory + all files in it
-             paste0("rmdir -r ", tmpdir),
-             paste0("rmdir -r ", gdccache, u)
-             ),
-               
-             fileOut
-  )
-}
+             # Create our working direcory
+             "mkdir $TMPDIR/intermediate/",
+             "mkdir $TMPDIR/brackout",
+             
+             # Manipulate to fastqs.
+             "samtools sort -n --output-fmt BAM -o $TMPDIR/intermediate/${uuids[$PBS_ARRAYID]}.qsort $TMPDIR/${uuids[$PBS_ARRAYID]}/${bnams[$PBS_ARRAYID]}",                     
+             "bam2fastq -o $TMPDIR/intermediate/${uuids[$PBS_ARRAYID]}#.fastq $TMPDIR/intermediate/${uuids[$PBS_ARRAYID]}.qsort",
+             "",
+             
+             # Run kraken2/bracken
+             "cd $TMPDIR/intermediate/",
+             "ls",
+             "/fs/scratch/PAS1479/src/kraken2-src/kraken2/kraken2 --db /fs/scratch/PAS1479/databases/kraken2-db --threads 20 --minimum-base-quality 20 --report ${uuids[$PBS_ARRAYID]}.txt --confidence 0.1 --paired $TMPDIR/intermediate/${uuids[$PBS_ARRAYID]}_1.fastq $TMPDIR/intermediate/${uuids[$PBS_ARRAYID]}_2.fastq",
+             "",
+             "source activate kraken2",
+             "bracken -d /fs/scratch/PAS1479/databases/kraken2-db -l S -i ${uuids[$PBS_ARRAYID]}.txt -o ../brackout/${uuids[$PBS_ARRAYID]}.txt",
+             "",
+             
+             # save desired files.
+             "cp $TMPDIR/brackout/${uuids[$PBS_ARRAYID]}.txt /fs/scratch/PAS1460/exoTCC/brackout/TCGA/"
+),
+
+fileOut
+)
+
 ```
