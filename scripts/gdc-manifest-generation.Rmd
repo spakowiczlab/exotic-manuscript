@@ -19,6 +19,11 @@ length(avail.data)
 
 ```
 
+```{r}
+test[grep("file_id", test)]
+```
+
+
 ```{r, eval=F}
 avail.data[grep("project", avail.data)]
 ```
@@ -85,6 +90,24 @@ grab.uids.2 <- dplyr::bind_rows(grab.uids.2)
 nrow(grab.uids.2)
 
 grab.uids <- dplyr::bind_rows(grab.uids.1, grab.uids.2)
+```
+
+```{r}
+grab.clinid <- GenomicDataCommons::cases(legacy = F) %>%
+  GenomicDataCommons::select(c(default_fields("cases"), "files.file_id")) %>%
+  filter(files.type == "aligned_reads") %>%
+  filter(project.program.name =='TCGA') %>%
+  filter(samples.sample_type == "primary tumor") %>%
+  # filter(files.experimental_strategy == "RNA-Seq") %>%
+  filter(project.project_id == "TCGA-COAD") %>%
+  response_all()
+
+for(cid in names(grab.clinid$results$files)){
+  grab.clinid$results$files[[cid]] <- grab.clinid$results$files[[cid]] %>%
+    dplyr::mutate(case_id = cid)
+}
+checkfilepres <- dplyr::bind_rows(grab.clinid$results$files)
+any(checkfilepres$file_id %in% grab.uids$id)
 ```
 
 ```{r}
