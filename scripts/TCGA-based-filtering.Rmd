@@ -1,0 +1,88 @@
+---
+title: "gdc-manifest-generation"
+author: "Rebecca Hoyd"
+date: "February 27, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(readxl)
+```
+
+# Load data
+```{r}
+tcga.clin <- read.csv("../data/TCGA-clnical.csv", stringsAsFactors = F)
+tcga.ra <- bind_rows(read.csv("../data/tcga_filtered_TCGA-COAD.csv", stringsAsFactors = F),
+                     read.csv("../data/tcga_filtered_TCGA-READ.csv", stringsAsFactors = F))
+exo.ra <-read.table("../data/agg_exo-ra.txt", sep = "\t", header = T, stringsAsFactors = F)
+```
+
+# Try scatterplot
+
+```{r}
+tcga.long <- tcga.ra %>%
+  gather(-sample, key = "microbe", value = "rel.abun") %>%
+  mutate(file_id = sample) %>%
+  left_join(tcga.clin) %>%
+  select(sample, cancer, microbe, rel.abun)
+
+exo.gi.long <- exo.ra %>%
+  gather(-sample, -cancer, key = "microbe", value = "rel.abun") %>%
+  filter(cancer == "GI") %>%
+  select(cancer, sample, microbe, rel.abun)
+```
+
+```{r}
+scatter.dat <- bind_rows(tcga.long, exo.gi.long) %>%
+  spread(key = "cancer", value = "rel.abun") %>%
+  gather(-sample, -microbe, key = "cancer", value = "rel.abun") %>%
+  mutate(prev = ifelse(is.na(rel.abun), 0, 
+                       ifelse(rel.abun > 0, 1, 0))) %>%
+  group_by(microbe, cancer) %>%
+  summarise(prev.frac = mean(prev)) %>%
+  spread(key = "cancer", value = "prev.frac") %>%
+  gather(`TCGA-COAD`, `TCGA-READ`, key = "tcga.cancer", value = "tcga.frac")
+```
+
+
+```{r}
+ggplot(scatter.dat, aes(x = GI, y = tcga.frac, color = tcga.cancer)) +
+  geom_point() +
+  theme_bw()
+
+```
+
+#Try histogram
+
+## Based on max prevalence
+
+```{r}
+scatter.dat %>%
+  mutate(agg.prev = max(GI, tcga.frac)) %>%
+  ggplot(aes(x = agg.prev)) +
+  geom_histogram()
+```
+
+## Based on minimum prevalence
+
+```{r}
+scatter.dat %>%
+  mutate(agg.prev = min(GI, tcga.frac)) %>%
+  ggplot(aes(x = agg.prev)) +
+  geom_histogram()
+```
+
+## Other
+
+```{r}
+ggplot(scatter.dat,aes(x = GI)) +
+  geom_histogram()
+
+ggplot(scatter.dat,aes(x = tcga.frac)) +
+  geom_histogram()
+```
