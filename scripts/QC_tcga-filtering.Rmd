@@ -1,0 +1,198 @@
+---
+title: "QC_filter-all-cancers"
+output: html_document
+---
+
+
+This document will be used to filter our kraken2/bracken pipeling outputs to remove likely contaminants, and report a few numbers on how many species were removed in this process and on what percentage of the sample was found to be human.
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(magrittr)
+library(ggplot2)
+library(GenomicDataCommons)
+library(decontam)
+library(readxl)
+```
+
+```{r define functions}
+
+# Calculate the relative abundance for each microbe for each sample, excluding humans
+calc.RA.exo <- function(counts){
+  tmp.totals <- calc.total.nosapiens(counts)
+  
+  tmp.ra.nosapien <- counts %>%
+    dplyr::select(-Homo.sapiens) %>%
+    gather(-sample, key = "microbe", value = "count") %>%
+    left_join(tmp.totals) %>%
+    mutate(ra = count/total) %>%
+    dplyr::select(sample, microbe, ra) %>%
+    spread(key = "microbe", value = "ra")
+    
+  return(tmp.ra.nosapien)
+    
+}
+
+
+# Get total number of microbes in each sample, excluding humans
+calc.total.nosapiens <- function(tmp){
+  tmp.totals <- tmp %>%
+    dplyr::select(-Homo.sapiens) %>%
+    gather(-sample, key = "microbe", value = "count") %>%
+    group_by(sample) %>%
+    summarise(total = sum(count))
+  
+  return(tmp.totals)
+}
+```
+
+# Load data
+```{r}
+krep.univec <- read.table("../data/kraken2-univec-specs.txt",
+                          stringsAsFactors = F, sep = "\t", header = T)
+krep.taxonomy <- read.table("../data/kraken2-metaphlan-taxonomy.txt", 
+                            sep = "\t", stringsAsFactors = F)
+```
+
+```{r}
+# tho <- read.table("../data/aggcounts_THO-LungCancer.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+gi <- read.table("../data/aggcounts_GI-ColorectalCancer.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+# gu <- read.table("../data/aggcounts_GU-BladderCancer.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+# renal <- read.table("../data/aggcounts_RenalCellCarcinoma.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+# sar <- read.table("../data/aggcounts_SAR-Sarcoma.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+# cut <- read.table("../data/aggcounts_CUT-Melanoma.txt", sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+
+# cancerkeys <- read.csv("../data/exotcc_deidentified-ids.csv") %>%
+#   mutate(sample = id) %>%
+#   select(sample, cancer)
+```
+
+```{r convenient list}
+# allcancers <- list(tho, gi, gu, renal, sar, cut)
+# cancer.names <- c('tho', 'gi', 'gu', 'renal', 'sar', 'cut')
+# names(allcancers) <- cancer.names
+```
+
+```{r}
+tcga.all <- read.table("../data/aggcounts_TCGA.txt", header = T, sep = "\t", stringsAsFactors = F)
+tcga.clin <- read.csv("../data/TCGA-clnical.csv", stringsAsFactors = F) %>%
+  dplyr::filter(file_id %in% tcga.all$sample)
+```
+
+```{r}
+tcga.cancers <- c("TCGA-READ", "TCGA-COAD", "TCGA-LUAD")
+tcga.list <- list()
+
+for(c in tcga.cancers){
+  goodsamps <- tcga.clin %>%
+    dplyr::filter(cancer == c)
+  goodsamps <- goodsamps$file_id
+  
+  tcga.list[[c]] <- tcga.all %>%
+    dplyr::filter(sample %in% goodsamps)
+}
+```
+
+## Grab concentrations for decontam 
+
+```{r}
+grab.concentrations <- files() %>%
+  GenomicDataCommons::select(c("file_id",
+                               "cases.samples.portions.analytes.aliquots.concentration")) %>%
+  filter(file_id %in% tcga.all$sample) %>%
+  results_all()
+
+# Trim that monter list
+
+form.conc <- list()
+cases <- names(grab.concentrations$cases)
+for(c in cases){
+  form.conc[[c]] <- 
+    grab.concentrations$cases[[c]]$samples[[1]]$portions[[1]]$analytes[[1]]$aliquots[[1]]
+}
+
+conc.df <- bind_rows(form.conc) %>%
+  mutate(file_id = names(form.conc)) %>%
+  arrange(file_id)
+```
+
+# Identify and remove contaminants
+
+## decontam method
+
+```{r}
+tcga.found.gi <- bind_rows(tcga.list$`TCGA-READ`, tcga.list$`TCGA-COAD`) %>%
+  gather(-sample, key = "microbe", value = "count") %>%
+  group_by(microbe) %>%
+  mutate(total.count = sum(count, na.rm = T)) %>%
+  dplyr::filter(total.count > 0) %>%
+  dplyr::select(sample, microbe, count) %>%
+  spread(key = "microbe", value = "count") %>%
+  arrange(sample) %>%
+  column_to_rownames(var = "sample") %>%
+  as.matrix()
+
+conc.df.gi <- conc.df %>%
+  dplyr::filter(file_id %in% rownames(tcga.found.gi)) 
+
+identical(rownames(tcga.found.gi), as.character(conc.df.gi$file_id))
+```
+
+```{r}
+set.seed(112358)
+decontam.contams <- isContaminant(tcga.found.gi, conc = conc.df.gi$concentration) %>%
+  rownames_to_column(var = "microbe") %>%
+  dplyr::filter(contaminant == TRUE) %>%
+  separate(microbe, into = c("Genera"), remove = F, sep = "\\.")
+```
+
+## Blacklist from Salter
+
+```{r}
+salter.decontam <- read_excel("../data/41586_2020_2095_MOESM2_ESM.xlsx", sheet = 6, skip = 1)
+salter.blanks <- read_excel("../data/41586_2020_2095_MOESM2_ESM.xlsx", sheet = 7, skip = 1)
+
+salter.eval <- bind_rows(salter.decontam, salter.blanks)
+
+# If the decontam result is in salter, I want to use salter's judgment,otherwise the contaminant is removed
+decontam.rem <- subset(decontam.contams$Genera, !(decontam.contams$Genera%in%salter.eval$Genera))
+
+salter.eval.rem <- salter.eval %>%
+  dplyr::filter(Category == "LIKELY CONTAMINANT")
+salter.eval.rem <- unique(salter.eval$Genera)
+```
+
+## Cut the contaminants from TCGA
+
+```{r}
+tcga.get.approved <- tcga.found.gi %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "sample") %>%
+  gather(-sample, key = "microbe", value = "counts") %>%
+  group_by(microbe) %>%
+  summarise(appears = 1) %>%
+  dplyr::filter(!microbe %in% decontam.rem) %>%
+  separate(microbe, into = c("Genera"), remove = F, sep = "\\.") %>%
+  dplyr::filter(!Genera %in% salter.eval.rem)
+```
+
+# Pull intersection and format TCC results
+
+```{r}
+gi.filtered <- gi %>%
+  gather(-sample, key = "microbe", value = "counts") %>%
+  dplyr::filter(microbe %in% tcga.get.approved$microbe) %>%
+  spread(key = "microbe", value = "counts")
+
+gi.filtered.exo.ra <- calc.RA.exo(gi.filtered)
+```
+
+
+# Save
+
+```{r}
+write.csv(gi.filtered.exo.ra, "../data/exo-ra_gi_filtered-with-tcga.csv")
+```
