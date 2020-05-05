@@ -38,9 +38,6 @@ rsconnect/
 # pbs submission scripts
 *.pbs
 
-# text files containing download urls
-*.txt
-
 # large CIBERSORT csvs
 CIB*.csv
 
