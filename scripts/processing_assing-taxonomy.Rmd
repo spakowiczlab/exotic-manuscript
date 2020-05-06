@@ -1,0 +1,49 @@
+---
+title: "all-taxRank_ras"
+author: "Dan Spakowicz"
+date: "12/9/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+
+# Load data
+```{r read in species names}
+exo.gi <- read.csv("../data/exo-ra_gi_filtered-with-tcga.csv", stringsAsFactors = F)[,-1]
+met.all <- read.table("../data/kraken2-metaphlan-taxonomy.txt", sep = "\t", stringsAsFactors = F) %>%
+  rename("Taxonomy" = "V1")
+
+```
+# Create key
+
+```{r}
+taxkey <- met.all %>%
+  filter(grepl("s__", Taxonomy)) %>%
+  mutate(specjoin = gsub(".*s__(.*)", "\\1", Taxonomy)) %>%
+  separate(specjoin, into = c("Genera", "Species"), sep = " ") %>%
+  mutate(specjoin = paste0(Genera, ".", Species))
+```
+
+```{r}
+exo.gi.forjoin <- exo.gi %>%
+  gather(-sample, key = "microbe", value = "exo.ra") %>%
+  separate(microbe, into = c("Genera.gi", "Species.gi"), sep = "\\.", remove = F) %>%
+  mutate(specjoin = paste0(Genera.gi, ".", Species.gi),
+         specjoin = gsub(".sp$", ".sp.", specjoin))
+```
+
+# Join, split taxonomy
+
+```{r}
+exo.gi.testtax <- exo.gi.forjoin %>%
+  left_join(taxkey)
+
+testtax <- unique(exo.gi.testtax[, c("microbe", "specjoin", "Taxonomy")])
+finderr <- testtax %>% filter(is.na(Taxonomy))
+```
+
