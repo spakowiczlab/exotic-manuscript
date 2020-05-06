@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
+library(stringr)
 ```
 
 
@@ -22,11 +23,27 @@ met.all <- read.table("../data/kraken2-metaphlan-taxonomy.txt", sep = "\t", stri
 # Create key
 
 ```{r}
-taxkey <- met.all %>%
+# Somthing's wrong with met.dall -it seems like certain rows are getting pasted together?
+
+met.good <- met.all %>%
+  filter(!grepl("\n", Taxonomy))
+met.fix <- met.all %>%
+  filter(grepl("\n", Taxonomy)) 
+
+fix.taxa.amalgam <- paste(met.fix$Taxonomy, collapse = "\n")
+fix.taxa.split <- str_split(pattern = "\n", fix.taxa.amalgam)[[1]]
+met.repared <- as.data.frame(cbind(Taxonomy = fix.taxa.split,
+                                   V2 = NA))%>%
+  separate(Taxonomy, into = c("Taxonomy"), sep = "\t")
+
+met.all2 <- bind_rows(met.good, met.repared)
+
+taxkey <- met.all2 %>%
   filter(grepl("s__", Taxonomy)) %>%
   mutate(specjoin = gsub(".*s__(.*)", "\\1", Taxonomy)) %>%
   separate(specjoin, into = c("Genera", "Species"), sep = " ") %>%
-  mutate(specjoin = paste0(Genera, ".", Species))
+  mutate(specjoin = paste0(Genera, ".", Species),
+         specjoin = ifelse(grepl("-", specjoin), gsub("(.*\\..*)\\..*", "\\1", gsub("-", ".", specjoin)), specjoin))
 ```
 
 ```{r}
@@ -34,7 +51,10 @@ exo.gi.forjoin <- exo.gi %>%
   gather(-sample, key = "microbe", value = "exo.ra") %>%
   separate(microbe, into = c("Genera.gi", "Species.gi"), sep = "\\.", remove = F) %>%
   mutate(specjoin = paste0(Genera.gi, ".", Species.gi),
-         specjoin = gsub(".sp$", ".sp.", specjoin))
+         specjoin = ifelse(grepl("sp$", specjoin), gsub("sp$", "sp.", specjoin), specjoin),
+         specjoin = ifelse(grepl("^X\\.", specjoin), 
+                           paste0(gsub("X\\.", "[", specjoin), "].", gsub(".*\\.(.*)", "\\1", microbe)),
+                           specjoin))
 ```
 
 # Join, split taxonomy
@@ -43,7 +63,13 @@ exo.gi.forjoin <- exo.gi %>%
 exo.gi.testtax <- exo.gi.forjoin %>%
   left_join(taxkey)
 
-testtax <- unique(exo.gi.testtax[, c("microbe", "specjoin", "Taxonomy")])
-finderr <- testtax %>% filter(is.na(Taxonomy))
+# testtax <- unique(exo.gi.testtax[, c("microbe", "specjoin", "Taxonomy")])
+# finderr <- testtax %>% filter(is.na(Taxonomy))
+
+exo.gi.tax <- exo.gi.testtax %>%
+  mutate(domain = gsub("(d__\\w+).*", "\\1", Taxonomy),
+         kingdom = gsub(".*(k__\\w+).*", "\\1", Taxonomy),
+         phylum = gsub(".*(p__\\w+).*", "\\1", Taxonomy))
+
 ```
 
