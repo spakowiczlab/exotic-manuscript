@@ -16,6 +16,7 @@ library(stringr)
 # Load data
 ```{r read in species names}
 exo.gi <- read.csv("../data/exo-ra_gi_filtered-with-tcga.csv", stringsAsFactors = F)[,-1]
+exo.tcga <- read.csv("../data/exo-ra_tcga-gi_filtered.csv", stringsAsFactors = F)
 met.all <- read.table("../data/kraken2-metaphlan-taxonomy.txt", sep = "\t", stringsAsFactors = F) %>%
   rename("Taxonomy" = "V1")
 
@@ -56,9 +57,10 @@ exo.gi.forjoin <- exo.gi %>%
   gather(-sample, key = "microbe", value = "exo.ra") %>%
   mutate(specjoin = microbe)
 
-taxkey.dupsearch <- taxkey
-taxkey.dupsearch$dups <- duplicated(taxkey[, c("Taxonomy", "specjoin")])
-dupres <- unique(filter(exo.gi.dupsearch,dups == TRUE)[, c("microbe", "specjoin")])
+exo.tcga.forjoin <- exo.tcga %>%
+  gather(-sample, key = "microbe", value = "exo.ra") %>%
+  mutate(specjoin = microbe)
+
 ```
 
 # Join, split taxonomy
@@ -80,11 +82,25 @@ exo.gi.tax <- exo.gi.testtax %>%
   ) %>%
   dplyr::select(sample, microbe, Taxonomy, domain, kingdom, phylum, class, order, family, genus, species, exo.ra)
 
+
+exo.tcga.tax <- exo.tcga.forjoin %>%
+  left_join(taxkey) %>%
+  mutate(domain = gsub("(d__\\w+).*", "\\1", Taxonomy),
+         kingdom = ifelse(grepl("k__", Taxonomy),gsub(".*(k__\\w+).*", "\\1", Taxonomy), NA),
+         phylum = ifelse(grepl("p__", Taxonomy),gsub(".*(p__\\w+).*", "\\1", Taxonomy), NA),
+         order = ifelse(grepl("o__", Taxonomy),gsub(".*(o__\\w+).*", "\\1", Taxonomy), NA),
+         class = ifelse(grepl("c__", Taxonomy),gsub(".*(c__\\w+).*", "\\1", Taxonomy), NA),
+         family = ifelse(grepl("f__", Taxonomy),gsub(".*(f__\\w+).*", "\\1", Taxonomy), NA),
+         genus = ifelse(grepl("g__", Taxonomy),gsub(".*(g__\\w+).*", "\\1", Taxonomy), NA),
+         species = gsub(".*(s__.*)", "\\1", Taxonomy)
+  ) %>%
+  dplyr::select(sample, microbe, Taxonomy, domain, kingdom, phylum, class, order, family, genus, species, exo.ra)
 ```
 
 # Save
 
 ```{r}
 write.csv(exo.gi.tax, "../data/exo-ra_gi_tcga-filtered_taxonomy.csv", row.names = F)
+write.csv(exo.tcga.tax, "../data/exo-ra_tcga-gi_filtered_taxonomy.csv", row.names = F)
 ```
 
