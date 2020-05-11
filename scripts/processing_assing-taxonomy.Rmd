@@ -38,23 +38,27 @@ met.repared <- as.data.frame(cbind(Taxonomy = fix.taxa.split,
 
 met.all2 <- bind_rows(met.good, met.repared)
 
+# taxkey <- met.all2 %>%
+#   filter(grepl("s__", Taxonomy)) %>%
+#   mutate(specjoin = gsub(".*s__(.*)", "\\1", Taxonomy)) %>%
+#   separate(specjoin, into = c("Genera", "Species"), sep = " ") %>%
+#   mutate(specjoin = paste0(Genera, ".", Species),
+#          specjoin = ifelse(grepl("-", specjoin), gsub("(.*\\..*)\\..*", "\\1", gsub("-", ".", specjoin)), specjoin))
+
 taxkey <- met.all2 %>%
   filter(grepl("s__", Taxonomy)) %>%
-  mutate(specjoin = gsub(".*s__(.*)", "\\1", Taxonomy)) %>%
-  separate(specjoin, into = c("Genera", "Species"), sep = " ") %>%
-  mutate(specjoin = paste0(Genera, ".", Species),
-         specjoin = ifelse(grepl("-", specjoin), gsub("(.*\\..*)\\..*", "\\1", gsub("-", ".", specjoin)), specjoin))
+  mutate(specjoin = gsub(".*s__(.*)", "\\1", Taxonomy),
+         specjoin = make.names(specjoin))
 ```
 
 ```{r}
 exo.gi.forjoin <- exo.gi %>%
   gather(-sample, key = "microbe", value = "exo.ra") %>%
-  separate(microbe, into = c("Genera.gi", "Species.gi"), sep = "\\.", remove = F) %>%
-  mutate(specjoin = paste0(Genera.gi, ".", Species.gi),
-         specjoin = ifelse(grepl("sp$", specjoin), gsub("sp$", "sp.", specjoin), specjoin),
-         specjoin = ifelse(grepl("^X\\.", specjoin), 
-                           paste0(gsub("X\\.", "[", specjoin), "].", gsub(".*\\.(.*)", "\\1", microbe)),
-                           specjoin))
+  mutate(specjoin = microbe)
+
+taxkey.dupsearch <- taxkey
+taxkey.dupsearch$dups <- duplicated(taxkey[, c("Taxonomy", "specjoin")])
+dupres <- unique(filter(exo.gi.dupsearch,dups == TRUE)[, c("microbe", "specjoin")])
 ```
 
 # Join, split taxonomy
@@ -62,10 +66,6 @@ exo.gi.forjoin <- exo.gi %>%
 ```{r}
 exo.gi.testtax <- exo.gi.forjoin %>%
   left_join(taxkey)
-
-# testtax <- unique(exo.gi.testtax[, c("microbe", "specjoin", "Taxonomy")])
-# finderr <- testtax %>% filter(is.na(Taxonomy))
-# exo.gi.subset <- exo.gi.testtax[1:1000,]
 
 
 exo.gi.tax <- exo.gi.testtax %>%
