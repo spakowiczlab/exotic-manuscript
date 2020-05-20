@@ -1,0 +1,47 @@
+---
+title: "gdc-manifest-generation"
+author: "Rebecca Hoyd"
+date: "February 27, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(GenomicDataCommons)
+```
+
+# Load data
+```{r}
+get.case.ids <- read.csv("../data/TCGA-clnical.csv", stringsAsFactors = F) %>%
+  dplyr::filter(source == "tumor")
+
+case.ids <- unique(get.case.ids$case_id)
+```
+
+# Find desired fields
+
+```{r}
+files() %>% facet("data_type") %>% aggregations()
+files() %>% facet("cases.samples.tissue_type") %>% aggregations()
+
+available_fields("files")[grepl("tissue", available_fields("files"))]
+```
+
+# Generate download set
+
+```{r}
+expression.files <- files() %>%
+  GenomicDataCommons::select(c(default_fields("files"), "cases.case_id", "cases.samples.sample_type")) %>%
+  GenomicDataCommons::filter(data_type == "Gene Expression Quantification" &
+                               cases.case_id %in% case.ids &
+                               data_category == "transcriptome profiling" &
+                               cases.samples.sample_type == "primary tumor") %>%
+  results_all()
+```
+
+```{r}
+#I've set my gdc_cache to a box folder so files will automatically go there
+pull.files <- gdcdata(expression.files$file_id)
+```
