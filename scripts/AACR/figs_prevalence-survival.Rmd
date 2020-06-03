@@ -186,3 +186,27 @@ png("../../figures/AACR/mosaicplot_fuso-presence.png")
 mosaicplot(test, main = "Fusobacteria presence across cancers")
 dev.off()
 ```
+
+# Get example curve
+
+```{r}
+#Quick data frame potentially useful for identifying interesting curves
+sig.combos <- loop.output %>%
+  filter(pvalue < 0.05) %>%
+  mutate(canc.sig = 1) %>%
+  spread(key = "cancer", value = 'canc.sig')
+```
+
+```{r}
+loop.tmp <- loop.input %>% 
+  filter(Cancer == "SAR")
+
+example.fit <- surv_fit(Surv(days, vitalstatus) ~ genus_Malassezia, data = loop.tmp)
+example.plot <- ggsurvplot(example.fit, pval = T, risk.table = T, palette = c("royalblue", "firebrick"))
+```
+
+```{r}
+png("../../figures/example-survival-curve.png")
+print(print(example.plot))
+dev.off()
+```
