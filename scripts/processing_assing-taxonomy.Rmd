@@ -104,3 +104,36 @@ write.csv(exo.gi.tax, "../data/exo-ra_gi_tcga-filtered_taxonomy.csv", row.names 
 write.csv(exo.tcga.tax, "../data/exo-ra_tcga-gi_filtered_taxonomy.csv", row.names = F)
 ```
 
+# Repeat for remaining counts - old processing, no TCGA filter
+
+```{r}
+aggcounts <- read.table("../data/agg_exo-ra.txt", header = T, sep = "\t", stringsAsFactors = F)
+
+aggcounts.forjoin <- aggcounts %>%
+  gather(-sample, -cancer, key = "microbe", value = "exo.ra") %>%
+  mutate(specjoin = microbe)
+
+
+
+
+aggcounts.testtax <- aggcounts.forjoin %>%
+  left_join(taxkey)
+
+
+aggcounts.tax <- aggcounts.testtax %>%
+  mutate(domain = gsub("(d__\\w+).*", "\\1", Taxonomy),
+         kingdom = ifelse(grepl("k__", Taxonomy),gsub(".*(k__\\w+).*", "\\1", Taxonomy), NA),
+         phylum = ifelse(grepl("p__", Taxonomy),gsub(".*(p__\\w+).*", "\\1", Taxonomy), NA),
+         order = ifelse(grepl("o__", Taxonomy),gsub(".*(o__\\w+).*", "\\1", Taxonomy), NA),
+         class = ifelse(grepl("c__", Taxonomy),gsub(".*(c__\\w+).*", "\\1", Taxonomy), NA),
+         family = ifelse(grepl("f__", Taxonomy),gsub(".*(f__\\w+).*", "\\1", Taxonomy), NA),
+         genus = ifelse(grepl("g__", Taxonomy),gsub(".*(g__\\w+).*", "\\1", Taxonomy), NA),
+         species = gsub(".*(s__.*)", "\\1", Taxonomy)
+  ) %>%
+  dplyr::select(sample, microbe, Taxonomy, domain, kingdom, phylum, class, order, family, genus, species, exo.ra)
+
+
+
+write.csv(aggcounts.tax, "../data/2020-06-25_exo-ra_taxonomy.csv", row.names = F)
+```
+
