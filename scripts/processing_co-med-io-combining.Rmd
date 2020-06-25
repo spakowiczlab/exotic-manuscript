@@ -8,6 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
+library(dplyr)
 ```
 
 # Load data
@@ -19,11 +20,42 @@ I want to leave an explanation of what these files are and why we're using them.
 3. co-med-io data frame - We are using this to determine which samples we have information on. This is a minimally processed version, with cancer names added, dates calculated and a few other calculations.
 
 ```{r}
-#Break to fix taxonomy assignment!
-aggcounts <- read.csv("../data/agg_exo-ra_taxonomy.csv")
+
+aggcounts <- read.csv("../data/2020-06-25_exo-ra_taxonomy.csv", stringsAsFactors = F)
 #Seems we don't have a taxonomy assigned GI file in this folder, that's why we are using the one in Box
 aggcounts.gi <- read.csv(
-  "C:/Users/hoyd02/Box Sync/2020-05-31_ASCO_PM_exotcc-gi/data/tcc/exo-ra_gi_tcga-filtered_taxonomy.csv")
+  "C:/Users/hoyd02/Box Sync/2020-05-31_ASCO_PM_exotcc-gi/data/tcc/exo-ra_gi_tcga-filtered_taxonomy.csv",
+  stringsAsFactors = F)
+#This is the key for the cancers
+canckey <- read.csv("../exotcc_deidentified-ids.csv", stringsAsFactors = F) %>%
+  rename("sample" = "id")
 
+comed.db <- read.csv("T:/Labs/Spakowicz/data/co-med-io/clindat_2020-05-29.csv", stringsAsFactors = F) %>%
+  select(-X)
+```
 
+# Perform filters
+
+```{r}
+# Keep only those patients that have RNA seq data
+comed.db.filtered <- comed.db %>%
+  filter(tcc_id !="")
+
+# Remove the old gi counts from the TCC data, then add back the new GI data and filter to samples that are in the clinical data
+
+aggcounts.gi$cancer = "GI"
+
+aggcounts.remold <- aggcounts %>%
+  left_join(canckey) %>%
+  filter(cancer != "GI")
+
+aggcounts.update <- bind_rows(aggcounts.remold, aggcounts.gi) %>%
+  filter(sample %in% comed.db.filtered$tcc_id)
+```
+
+# Save
+
+```{r}
+write.csv(comed.db.filtered, "../data/comedio_clinical(2020-06-25).csv", row.names = F)
+write.csv(aggcounts.update, "../data/comedio_exo-ra_taxonomy(2020-06-25).csv", row.names = F)
 ```
