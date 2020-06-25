@@ -39,7 +39,8 @@ comed.db <- read.csv("T:/Labs/Spakowicz/data/co-med-io/clindat_2020-05-29.csv", 
 ```{r}
 # Keep only those patients that have RNA seq data
 comed.db.filtered <- comed.db %>%
-  filter(tcc_id !="")
+  filter(tcc_id !="") %>%
+  select(-"record_id", -"dob", -"lastcontact", -"iostart", -contains("date"))
 
 # Remove the old gi counts from the TCC data, then add back the new GI data and filter to samples that are in the clinical data
 
