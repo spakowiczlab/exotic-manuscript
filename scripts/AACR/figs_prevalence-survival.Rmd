@@ -206,7 +206,7 @@ example.plot <- ggsurvplot(example.fit, pval = T, risk.table = T, palette = c("r
 ```
 
 ```{r}
-png("../../figures/example-survival-curve.png")
+emf("../../figures/example-survival-curve.emf")
 print(print(example.plot))
 dev.off()
 ```

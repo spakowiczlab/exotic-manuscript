@@ -123,13 +123,6 @@ The following function downloads files based on the uuids provided, and automati
 fnames = gdcdata(grab.uids$id[1],progress=FALSE, token = tok)
 ```
 
-
-After this, we will need to make the BAM files fastqs again. It looks like each row of the manifest I generated is referring to a single BAM file, which does simplify things, however I need a way to detect whether the BAM was created from single or paired end reads. We probably only want to continue with files that have paired end data as that matches our own experiment, so that can be built in as an if statement.
-
-At this point, we simply integrate with our loop. We run kraken2, then bracken, then we remove all intermediary files and probably just save bracken output table. This should be possible from Dan's cluster account once he has a bracken conda environment, provided bracken hasn't updated a bunch. All kraken2 code and databases are in PAS1479. 
-
-This should create a job we can use to create an array, which we can then qalter to prevent everything from running at once.
-
 ```{r}
 grab.uids <- read.csv("../data/tcga-gdc-manifest_2020-03-11.csv", stringsAsFactors = F)
 tok <- read.table("~/Documents/gdc.txt", stringsAsFactors = F)[1,1]
@@ -188,3 +181,40 @@ fileOut
 )
 
 ```
+
+# Pull clinical data 
+```{r}
+grab.clinid <- GenomicDataCommons::cases(legacy = F) %>%
+  GenomicDataCommons::select(c(default_fields("cases"), "files.file_id")) %>%
+  filter(files.type == "aligned_reads") %>%
+  filter(project.program.name =='TCGA') %>%
+  filter(samples.sample_type %in% c("primary tumor", "solid tissue normal")) %>%
+  # filter(files.experimental_strategy == "RNA-Seq") %>%
+  filter(project.project_id %in% c("TCGA-LUAD", "TCGA-COAD", "TCGA-READ")) %>%
+  response_all()
+
+for(cid in names(grab.clinid$results$files)){
+  grab.clinid$results$files[[cid]] <- grab.clinid$results$files[[cid]] %>%
+    dplyr::mutate(case_id = cid)
+}
+checkfilepres <- dplyr::bind_rows(grab.clinid$results$files)
+all(grab.uids$id %in% checkfilepres$file_id)
+```
+
+```{r}
+file.case <- checkfilepres %>%
+  dplyr::filter(file_id %in% grab.uids$id)
+choosecases <- unique(file.case$case_id)
+
+addtranslate <- file.case %>%
+  dplyr::mutate(id = file_id) %>%
+  dplyr::left_join(grab.uids) %>%
+  dplyr::select(file_id, case_id, cancer, source)
+
+grab.clindat <- gdc_clinical(choosecases)
+clindat.form <- Reduce(function(dtf1,dtf2) dplyr::full_join(dtf1,dtf2,by="case_id"),
+                       grab.clindat) %>%
+  dplyr::left_join(addtranslate)
+# write.csv(clindat.form, "/fs/scratch/PAS1479/data/TCGA-clnical.csv", row.names = F)
+```
+

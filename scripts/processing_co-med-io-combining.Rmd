@@ -1,0 +1,29 @@
+---
+title: "gdc-manifest-generation"
+author: "Rebecca Hoyd"
+date: "February 27, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+# Load data
+
+I want to leave an explanation of what these files are and why we're using them.
+
+1. aggregated exoTCC counts based on current processing - what it says on the tine
+2. gi counts from exoTCC with alternative TCGA processing - this will replace the GI counts from the main file
+3. co-med-io data frame - We are using this to determine which samples we have information on. This is a minimally processed version, with cancer names added, dates calculated and a few other calculations.
+
+```{r}
+#Break to fix taxonomy assignment!
+aggcounts <- read.csv("../data/agg_exo-ra_taxonomy.csv")
+#Seems we don't have a taxonomy assigned GI file in this folder, that's why we are using the one in Box
+aggcounts.gi <- read.csv(
+  "C:/Users/hoyd02/Box Sync/2020-05-31_ASCO_PM_exotcc-gi/data/tcc/exo-ra_gi_tcga-filtered_taxonomy.csv")
+
+
+```
