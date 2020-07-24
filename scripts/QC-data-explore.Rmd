@@ -1,0 +1,42 @@
+---
+title: "QC-data-explore"
+author: "Dan Spakowicz"
+date: "7/20/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+
+```{r}
+metadata.path <- "/fs/scratch/PAS1695/projects/exoN/data/metadata/raw"
+files <- list.files(path = metadata.path,
+                    full.names = TRUE)
+files
+```
+
+
+```{r}
+cl <- read.csv(files[grepl("Clinical_Specimen_Linkage_Data", files)])
+
+dim(cl)
+head(cl)
+```
+
+There are about a thousand RNA-seq samples.
+
+```{r}
+rnaseq <- 
+  cl %>%
+  filter(!grepl("^$", RNASeq))
+dim(rnaseq)
+```
+
+```{r}
+table(rnaseq$Disease.Type)
+```
+
