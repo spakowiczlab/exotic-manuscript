@@ -24,7 +24,7 @@ library(readxl)
 # Load data
 ```{r}
 exo.ra <- read.csv("../../data/agg_exo-ra_taxonomy.csv", stringsAsFactors = F)
-clindat <- read_excel("T:/Labs/Spakowicz/data2/exoTCC/GI_PatientList_Spakowicz_WithClinicalData_01.2020.xlsx") %>%
+clindat <- read_excel("C:/Users/Leste/Desktop/summer intern 2020/GI Patient list -detailed - PM edit.xlsx") %>%
   rename("Treatment" = '"Treatment"')
 kingphyl <- read.csv("../../data/fix-king-assign_manual-edits.csv", stringsAsFactors = F)
 ```
@@ -88,6 +88,7 @@ exoRAtowideprev <- function(data, taxlev){
   tmp.prev <- bind_rows(lapply(tmp.wide[,-1], function(x) ifelse(x > 0, 1, 0))) %>%
     mutate(sample = tmp.wide$sample) %>%
     select(sample, everything())
+  return(tmp.prev)
 }
 ```
 
@@ -103,9 +104,9 @@ exo.wide <- bind_cols(exo.wide.list)
 
 clindat <- clindat %>%
   rename("sample" = "RNA SL ID") %>%
-  mutate(days = `Overall Survival from Dx (days)`,
+  mutate(D.days = `Overall Survival from Dx (days)`,
+         C.days = `Days from Collection to Last Follow-Up or Death`,
          vitalstatus = ifelse(`Vital Status` == "Deceased", 1, 0))
-
 
 loop.input <-clindat %>%
   left_join(exo.wide)
@@ -115,34 +116,49 @@ loop.input <-clindat %>%
 # Run surv ~ each microbe, in each treatment, at every taxa level
 
 ```{r, error=F, message=F, warning=F}
-# treatments <- unique(loop.input$Treatment)
-# microbes <- make.names(microbes)
-# colnames(loop.input) <- make.names(colnames(loop.input))
-# 
-# treat.res <- list()
-# mic.res <- list()
-# 
-# for(tr in treatments){
-#   loop.tmp <- loop.input %>%
-#     filter(Treatment == tr)
-#   for(m in microbes){
-#     try({
-#       mic.res[[m]] <- coxph(formula = as.formula(paste0("Surv(days, vitalstatus) ~ ", m)), data = loop.tmp) %>%
-#         tidy() %>%
-#         mutate(hazard.ratio = exp(estimate),
-#                pvalue = p.value,
-#                taxa = m,
-#                Treatment = tr) %>%
-#         select(hazard.ratio, pvalue, taxa, Treatment)
-#     })
-#   }
-#   treat.res[[tr]] <- mic.res
-#   mic.res <- list()
-# }
-# 
-# # loop.output <- bind_rows(lapply(treat.res, function(x) bind_rows(x)))
-# 
-# write.csv(loop.output, "../../data/ASCO_survival-microbe-output.csv", row.names = F)
+ treatments <- unique(loop.input$Treatment)
+ microbes <- make.names(microbes)
+ colnames(loop.input) <- make.names(colnames(loop.input))
+ 
+ treat.res.D <- list()
+ treat.res.C <- list()
+ mic.res.D <- list()
+ mic.res.C <- list()
+   for(m in microbes){
+     try({
+       num <- sum(loop.input[[m]])
+       loop.tmp <- loop.input %>%
+         filter(vitalstatus == "1")
+       n.death <- sum(loop.tmp[[m]])
+       mic.res.D[[m]] <- coxph(formula = as.formula(paste0("Surv(D.days, vitalstatus) ~ ", m)), data = loop.input) %>%
+         tidy() %>%
+         mutate(hazard.ratio.D = exp(estimate),
+                pvalue.D = p.value,
+                taxa = m,
+                n.patient = num,
+                n.death = n.death,
+                low.bound.D = exp(conf.low),
+                upper.bound.D = exp(conf.high)) %>%
+         select(hazard.ratio.D, pvalue.D, taxa,n.patient,n.death, low.bound.D, upper.bound.D)
+       mic.res.C[[m]] <- coxph(formula = as.formula(paste0("Surv(C.days, vitalstatus) ~ ", m)), data = loop.input) %>%
+         tidy() %>%
+         mutate(hazard.ratio.C = exp(estimate),
+                pvalue.C = p.value,
+                taxa = m,
+                low.bound.C = exp(conf.low),
+                upper.bound.C = exp(conf.high)) %>%
+         select(hazard.ratio.C, pvalue.C, taxa,low.bound.C, upper.bound.C)
+     })
+   treat.res.D[[m]] <- mic.res.D
+   mic.res.D <- list()
+   treat.res.C[[m]] <- mic.res.C
+   mic.res.C <- list()
+ }
+ 
+loop.output <- cbind(bind_rows(lapply(treat.res.D, function(x) bind_rows(x))),
+                     bind_rows(lapply(treat.res.C, function(x) bind_rows(x))))
+loop.output$taxa.1 <- NULL
+write.csv(loop.output, "../../data/ASCO_survival-microbe-output.csv", row.names = F)
 loop.output <- read.csv("../../data/ASCO_survival-microbe-output.csv", stringsAsFactors = F)
 ```
 
