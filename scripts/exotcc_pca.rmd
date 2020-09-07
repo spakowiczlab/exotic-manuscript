@@ -1,0 +1,54 @@
+---
+title: "EXOTCC FFPE"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyr)
+library(dplyr)
+library(tibble)
+library(devtools)
+library(ggfortify)
+```
+
+## R Markdown
+```{r cars}
+Clinical_SpeciLinkage<- read_csv("C:/Users/Leste/Desktop/OSU_Clinical_Specimen_Linkage_Data_Full_20200526.csv")
+agg_exo_ra_taxonomy <- read_csv("GitHub/exotcc/exoTCC/data/agg_exo-ra_taxonomy.csv")
+```
+
+## shape data frame
+```{r, echo=FALSE}
+linkage <- Clinical_SpeciLinkage %>%
+  mutate(preservation = ifelse(SpecimenType == "FFPE", "FFPE",
+                        ifelse(PreservationMethod == "Snap Frozen", "FF", NA)))%>%
+  filter(!is.na(RNASeq),
+         !is.na(preservation)) %>%
+  select("RNASeq","preservation")
+
+micro <- agg_exo_ra_taxonomy %>%
+  select("spec.join","ra","sample")%>%
+  spread(spec.join, ra) %>% 
+  rename("RNASeq"="sample")%>%
+  inner_join(linkage)%>%
+  select("preservation", everything()) %>%
+  mutate_all(funs(ifelse(is.na(.), 0, .))) %>%
+  select()
+  
+```
+
+
+##PCA
+```{r}
+info <- sapply(colnames(micro)[3:447], function(i) sum(micro[,i])) %>%
+  data.frame()%>%
+  rownames_to_column("micro") %>%
+  filter(.==0) %>%
+  select("micro")%>%
+  t%>%
+  as.character()
+micro <- micro %>%
+select(-info)
+exotcc.pca <- prcomp(micro[,3:440],scale. = TRUE)
+autoplot(exotcc.pca,frame = TRUE, frame.type = 'norm')
+```
