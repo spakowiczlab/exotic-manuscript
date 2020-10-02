@@ -1,0 +1,65 @@
+---
+title: "Figure 1 panels"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Access starting targets
+
+```{r}
+# Counts, before any manipulation
+loadd(raw.tcc.counts)
+loadd(raw.tcga.counts)
+
+# Counts, removing samples that fail to resolve batches (missing info, etc.)
+loadd(tcc.batchres)
+loadd(tcga.batchres)
+
+#Counts,after removing contaminants and all microbes not found in TCGA
+loadd(tcc.counts)
+loadd(tcga.counts)
+
+#Contaminants found in each of the groups
+loadd(tcc.contams)
+loadd(tcga.contams)
+
+# Final counts with taxonomy
+loadd(tcc.exora.taxonomy)
+loadd(tcga.exora.taxonomy)
+```
+
+# 1A - Portion of reads excluded at each step
+
+Steps: start with raw counts. Remove the samples that don't have information required for batches used in decontam, or are in too small batches for decontam to handle. Use decontam to identify contaminant, then adjust by including Poore et. al. blacklist and whitelist information. Contaminants are combined between TCGA and TCC.
+```{r}
+#Start: sum all raw counts
+tcc.startcount = sum(colSums(raw.tcc.counts[, -1]))
+tcga.startcount = sum(colSums(raw.tcga.counts[, -1]))
+
+#How many lost when batches fixed?
+tcc.batchcount <- sum(colSums(tcc.batchres$counts[,-1]))
+tcga.batchcount <- sum(colSums(tcga.batchres$counts[,-1]))
+# Need to split up the contaminant phase, I think
+
+## Remove decontam found contaminants
+
+## After the inclusion of the blacklist (additions and subtractions)
+
+# Remove microbes only found in TCC
+
+```
+
+# 1B - Density plots of common laboratory contaminants
+
+```{r}
+tcc.exora.taxonomy %>%
+  filter(grepl("Abelson", microbe)) %>%
+  ggplot(aes(x = exo.ra)) +
+  geom_density() +
+  theme_bw()
+```
+
+# 1C - Check enrichment in various groupings
