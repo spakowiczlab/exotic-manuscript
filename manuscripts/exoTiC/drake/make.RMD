@@ -22,7 +22,6 @@ make(
   verbose = 2
 )
 
-# loadd(tcga.meta)
 # vis_drake_graph(plan, targets_only = T, file = paste0(files.dstainstamp, "_schema-of-plan.pdf"),
                 # navigationButtons = F)
 drake_ggraph(plan, targets_only = T, main = "exoTiC Manuscripts", label_nodes = T) 

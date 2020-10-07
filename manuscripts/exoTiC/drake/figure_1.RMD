@@ -26,9 +26,10 @@ loadd(tcga.counts)
 loadd(tcc.contams)
 loadd(tcga.contams)
 
+loadd(contaminant.details)
 # Final counts with taxonomy
-loadd(tcc.exora.taxonomy)
-loadd(tcga.exora.taxonomy)
+# loadd(tcc.exora.taxonomy)
+# loadd(tcga.exora.taxonomy)
 ```
 
 # 1A - Portion of reads excluded at each step
@@ -45,10 +46,27 @@ tcga.batchcount <- sum(colSums(tcga.batchres$counts[,-1]))
 # Need to split up the contaminant phase, I think
 
 ## Remove decontam found contaminants
+tcc.rem.decontam <- tcc.batchres$counts %>%
+  select(-contaminant.details$decontam.contaminants$microbe)
+tcga.rem.decontam <- tcga.batchres$counts %>%
+  select(-contaminant.details$decontam.contaminants$microbe)
 
+tcc.rem.decontam.count <- sum(colSums(tcc.rem.decontam[,-1], na.rm = T))
+tcga.rem.decontam.count <- sum(colSums(tcga.rem.decontam[,-1], na.rm = T))
 ## After the inclusion of the blacklist (additions and subtractions)
+tcc.rem.salter <- tcc.batchres$counts %>%
+  select(-contaminant.details$salter.informed.contaminants)
+tcga.rem.salter <- tcga.batchres$counts %>%
+  select(-contaminant.details$salter.informed.contaminants)
 
+tcc.rem.salter.count <- sum(colSums(tcc.rem.salter[,-1], na.rm = T))
+tcga.rem.salter.count <- sum(colSums(tcga.rem.salter[,-1], na.rm = T))
 # Remove microbes only found in TCC
+tcc.fincount <- sum(colSums(tcc.counts[,-1]))
+tcga.fincount <- sum(colSums(tcga.counts[,-1]))
+```
+
+```{r get waterfall counts into ggplotable df}
 
 ```
 
