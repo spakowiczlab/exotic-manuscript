@@ -9,7 +9,7 @@ source_paths <- function(){
   if (!file.exists(jinfo)) stop("Cannot locate file: '", jinfo, "'.\n", sep='')
   ### parse it
   library(rjson)
-  temp <- fromJSON(file = jinfo)
+  temp <- fromJSON(file = file_in(jinfo))
   paths <- temp$paths
   detach("package:rjson")
   ### clean up

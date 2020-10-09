@@ -8,14 +8,13 @@ resolve_contaminants <- function(decontam.contams, threshold){
   decontam.badmics <- decontam.contams %>%
     dplyr::filter(p < threshold)
   decontam.unq <- decontam.badmics[!duplicated(decontam.badmics[ , c("microbe", "Genera")]),]
-  # decontam.rem <- subset(decontam.unq, !(decontam.unq$Genera%in%salter.eval$Genera))
+  decontam.rem <- subset(decontam.unq, !(decontam.unq$Genera%in%salter.eval$Genera))
   
-  salter.eval.rem <- decontam.contams %>%
-    left_join(salter.eval) %>%
-    filter(Category == "LIKELY CONTAMINANT" | (is.na(Category) & (p<threshold)))
-  salter.eval.rem <- unique(salter.eval.rem$microbe) 
+  salter.eval.rem <- salter.eval %>%
+    filter(Category == "LIKELY CONTAMINANT")
+  salter.eval.rem <- unique(salter.eval.rem$Genera) 
   
-  resolved.results <- list(salter.eval.rem, decontam.unq)
-  names(resolved.results) <- c("salter.informed.contaminants", "decontam.contaminants")
+  resolved.results <- list(decontam.unq, decontam.rem, salter.eval.rem)
+  names(resolved.results) <- c("decontam.contaminants", "decontam.remove.salter", "salter.likely.contaminants")
   return(resolved.results) 
 }

@@ -14,7 +14,7 @@ plan <- drake_plan(
   tcc.exora.taxonomy = readRDS(file.path(paths$drakeout, "tcc.exora.taxonomy.RDS")),
   tcga.exora.taxonomy = readRDS(file.path(paths$drakeout, "tcga.exora.taxonomy.RDS")),
   
-  contaminant.details = resolve_contaminants(bind_rows(tcc.contams, tcga.contams), 01)
+  contaminant.details = resolve_contaminants(bind_rows(tcc.contams, tcga.contams), 0.1)
   
   # figure_1 = rmarkdown::render(knitr_in("figure_1.RMD"),
   #                              output_file = file_out("figure_1.html"),

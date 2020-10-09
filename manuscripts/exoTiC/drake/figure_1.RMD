@@ -5,6 +5,8 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyr)
 ```
 
 # Access starting targets
@@ -19,8 +21,8 @@ loadd(tcc.batchres)
 loadd(tcga.batchres)
 
 #Counts,after removing contaminants and all microbes not found in TCGA
-loadd(tcc.counts)
-loadd(tcga.counts)
+# loadd(tcc.counts)
+# loadd(tcga.counts)
 
 #Contaminants found in each of the groups
 loadd(tcc.contams)
@@ -47,27 +49,66 @@ tcga.batchcount <- sum(colSums(tcga.batchres$counts[,-1]))
 
 ## Remove decontam found contaminants
 tcc.rem.decontam <- tcc.batchres$counts %>%
-  select(-contaminant.details$decontam.contaminants$microbe)
+  select(-any_of(contaminant.details$decontam.contaminants$microbe))
 tcga.rem.decontam <- tcga.batchres$counts %>%
-  select(-contaminant.details$decontam.contaminants$microbe)
+  select(-any_of(contaminant.details$decontam.contaminants$microbe))
 
 tcc.rem.decontam.count <- sum(colSums(tcc.rem.decontam[,-1], na.rm = T))
 tcga.rem.decontam.count <- sum(colSums(tcga.rem.decontam[,-1], na.rm = T))
 ## After the inclusion of the blacklist (additions and subtractions)
 tcc.rem.salter <- tcc.batchres$counts %>%
-  select(-contaminant.details$salter.informed.contaminants)
+    tidyr::gather(-sample, key = "microbe", value = "counts") %>%
+    dplyr::filter(!microbe %in% contaminant.details$decontam.remove.salter$microbe) %>%
+    tidyr::separate(microbe, into = c("Genera"), remove = F, sep = "\\.") %>%
+    dplyr::filter(!Genera %in% contaminant.details$salter.likely.contaminants) %>%
+    dplyr::select(-Genera) %>%
+    spread(key = "microbe", value = "counts")
 tcga.rem.salter <- tcga.batchres$counts %>%
-  select(-contaminant.details$salter.informed.contaminants)
+    tidyr::gather(-sample, key = "microbe", value = "counts") %>%
+    dplyr::filter(!microbe %in% contaminant.details$decontam.remove.salter$microbe) %>%
+    tidyr::separate(microbe, into = c("Genera"), remove = F, sep = "\\.") %>%
+    dplyr::filter(!Genera %in% contaminant.details$salter.likely.contaminants) %>%
+    dplyr::select(-Genera) %>%
+    spread(key = "microbe", value = "counts")
+
+good.mics <- colnames(tcga.rem.salter)
 
 tcc.rem.salter.count <- sum(colSums(tcc.rem.salter[,-1], na.rm = T))
 tcga.rem.salter.count <- sum(colSums(tcga.rem.salter[,-1], na.rm = T))
 # Remove microbes only found in TCC
-tcc.fincount <- sum(colSums(tcc.counts[,-1]))
-tcga.fincount <- sum(colSums(tcga.counts[,-1]))
+tcc.finprep <- tcc.rem.salter %>%
+  select(any_of(good.mics))
+tcc.fincount <- sum(colSums(tcc.finprep[,-1]))
+tcga.fincount <- sum(colSums(tcga.rem.salter[,-1]))
 ```
 
 ```{r get waterfall counts into ggplotable df}
+waterfall.df <- as.data.frame(cbind(step = c("start", "batch resolution", "initial decontam",
+                                             "literature altered decontam", "Remove TCC only"),
+                                    tcc = c(tcc.startcount, tcc.batchcount, tcc.rem.decontam.count,
+                                            tcc.rem.salter.count, tcc.fincount),
+                                    tcga = c(tcga.startcount, tcga.batchcount, tcga.rem.decontam.count,
+                                             tcga.rem.salter.count, tcga.fincount)))
+  # 
 
+
+ymin.tcc <- c(0, waterfall.df$tcc[1:4])
+ymin.tcga <- c(0, waterfall.df$tcga[1:4])
+
+waterfall.df <- waterfall.df %>%
+  tidyr::gather(-step, key = "Data.Source", value = "count")
+waterfall.df$y.min <- c(ymin.tcc, ymin.tcga)
+```
+
+```{r}
+waterfall.df %>%
+  mutate(id = rep(1:5, 2),
+         y.min = as.numeric(y.min),
+         count = as.numeric(count)) %>%
+  ggplot() +
+  geom_rect(aes(ymin = y.min, ymax = count, xmin = id - .45 ,
+            xmax = id + .45, x = id)) +
+  facet_wrap(vars(Data.Source), scales = "free_y")
 ```
 
 # 1B - Density plots of common laboratory contaminants
