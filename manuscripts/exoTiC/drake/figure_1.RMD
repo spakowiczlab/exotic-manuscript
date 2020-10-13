@@ -7,6 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyr)
+library(ggplot2)
 ```
 
 # Access starting targets
@@ -92,22 +93,42 @@ waterfall.df <- as.data.frame(cbind(step = c("start", "batch resolution", "initi
   # 
 
 
-ymin.tcc <- c(0, waterfall.df$tcc[1:4])
-ymin.tcga <- c(0, waterfall.df$tcga[1:4])
+ymin.tcc <- c(54700000000, waterfall.df$tcc[1:4])
+ymin.tcga <- c(178000000000, waterfall.df$tcga[1:4])
 
 waterfall.df <- waterfall.df %>%
   tidyr::gather(-step, key = "Data.Source", value = "count")
 waterfall.df$y.min <- c(ymin.tcc, ymin.tcga)
 ```
 
+## Waterfall format
+```{r}
+waterfall.df %>%
+  mutate(id = rep(1:5, 2),
+         y.min = as.numeric(y.min),
+         count = as.numeric(count),
+         changedir = ifelse(y.min < count, "Gain", "Loss"),
+         Data.Source = toupper(Data.Source)) %>%
+  ggplot() +
+  geom_rect(aes(ymin = y.min, ymax = count, xmin = id - .45 ,
+            xmax = id + .45, x = id, fill = changedir)) +
+  scale_fill_manual(breaks = c("Gain", "Loss"), values = c("darkgreen", "darkred"), 
+                    name = "Effect on\nread count") +
+  facet_wrap(vars(Data.Source), scales = "free_y") +
+  labs(x = "") +
+  theme_bw() +
+  ggsave("../figures/1b_waterfall-plot.png")
+```
+
+## Barplot format
+
 ```{r}
 waterfall.df %>%
   mutate(id = rep(1:5, 2),
          y.min = as.numeric(y.min),
          count = as.numeric(count)) %>%
-  ggplot() +
-  geom_rect(aes(ymin = y.min, ymax = count, xmin = id - .45 ,
-            xmax = id + .45, x = id)) +
+  ggplot(aes(x = id, y = count)) +
+  geom_col() +
   facet_wrap(vars(Data.Source), scales = "free_y")
 ```
 
