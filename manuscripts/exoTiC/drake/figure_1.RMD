@@ -117,7 +117,7 @@ waterfall.df %>%
   facet_wrap(vars(Data.Source), scales = "free_y") +
   labs(x = "") +
   theme_bw() +
-  ggsave("../figures/1b_waterfall-plot.png")
+  ggsave("../figures/1A_waterfall-plot.png")
 ```
 
 ## Barplot format
@@ -135,11 +135,59 @@ waterfall.df %>%
 # 1B - Density plots of common laboratory contaminants
 
 ```{r}
-tcc.exora.taxonomy %>%
-  filter(grepl("Abelson", microbe)) %>%
-  ggplot(aes(x = exo.ra)) +
+# Grab counts limited to good batch matches (counts that decontam acted on)
+tcga.batchres.counts <- tcga.batchres$counts
+tcc.batchres.counts <- tcc.batchres$counts
+
+
+```
+
+## Plot contaminant densities
+
+```{r}
+# Grab some contaminant names. I want the contaminants that most look like contaminants to decontam, without being evaluated as probably existing in the samples as fact by subsequent literature review.
+
+most.likely.contams <- contaminant.details$decontam.remove.salter %>%
+  arrange(p)
+
+most.likely.contams <- most.likely.contams$microbe[1:5]
+
+# Get chosen contaminants ready for plotting
+allcounts.for.density <- bind_rows(tcc.batchres.counts, tcga.batchres.counts) %>%
+  select("sample", all_of(most.likely.contams)) %>%
+  mutate(Data.Source = ifelse(grepl("^SL", sample), "TCC", "TCGA")) %>%
+  gather(-sample, -Data.Source, key = "microbe", value = "counts")
+```
+
+```{r}
+allcounts.for.density %>%
+  ggplot(aes(x = counts, color = Data.Source)) +
+  facet_wrap(vars(microbe), scales = "free", nrow = 1) +
   geom_density() +
-  theme_bw()
+  scale_color_manual(breaks = c("TCC", "TCGA"), values = c("orange", "black")) +
+  labs(x = "", y = "") +
+  theme_bw() +
+  ggsave("../figures/1B_contaminant-densities.png", width = 12, height = 4.5)
+```
+## Plot suspicious densities
+
+```{r}
+suspicious.taxa <- c("Abelson.murine.leukemia.virus", "Proteus.phage.VB_PmiS.Isfahan", 
+                     "Pseudomonas.resinovorans")
+
+suspicious.for.density <- bind_rows(tcc.batchres.counts, tcga.batchres.counts) %>%
+  select("sample", all_of(suspicious.taxa)) %>%
+  mutate(Data.Source = ifelse(grepl("^SL", sample), "TCC", "TCGA")) %>%
+  gather(-sample, -Data.Source, key = "microbe", value = "counts")
+
+suspicious.for.density %>%
+  ggplot(aes(x = counts, color = Data.Source)) +
+  facet_wrap(vars(microbe), scales = "free", nrow = 1) +
+  geom_density() +
+  scale_color_manual(breaks = c("TCC", "TCGA"), values = c("orange", "black")) +
+  labs(x = "", y = "") +
+  theme_bw() +
+  ggsave("../figures/1B_suspicious-densities.png", width = 10, height = 4.5)
 ```
 
 # 1C - Check enrichment in various groupings
