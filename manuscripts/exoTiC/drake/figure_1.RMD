@@ -191,3 +191,11 @@ suspicious.for.density %>%
 ```
 
 # 1C - Check enrichment in various groupings
+
+## FF/FFPE
+
+## low/high RNA concentration
+
+## low/high Ribosomal integiryt number
+
+## low/high DIV200
