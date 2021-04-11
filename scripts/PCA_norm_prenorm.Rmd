@@ -1,0 +1,193 @@
+---
+title: "EXOTCC FFPE"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyr)
+library(dplyr)
+library(tibble)
+library(devtools)
+library(ggfortify)
+library(rcompanion)
+library(vegan)
+library(readxl)
+```
+
+## R Markdown
+```{r cars}
+Add <- read_excel("C:/Users/Leste/Desktop/Spakowicz lab/PRE-POST-NORM/Additional Data_Spakowicz_SLids.xlsx")
+tcc.exora <- readRDS("C:/Users/Leste/Desktop/Spakowicz lab/PRE-POST-NORM/tcc.exora.taxonomy.RDS")
+tcc.count <- readRDS("C:/Users/Leste/Desktop/spakowicz lab/PRE-POST-NORM/tcc.counts.RDS")
+pre_norm_Tcc <- read.csv("C:/Users/Leste/Desktop/Spakowicz lab/PRE-POST-NORM/pre_norm_tcc.csv")
+tcga.count <- readRDS("C:/Users/Leste/Desktop/Spakowicz lab/PRE-POST-NORM/tcga.counts.RDS")
+tcga.exora <- readRDS("C:/Users/Leste/Desktop/Spakowicz lab/PRE-POST-NORM/tcga.exora.taxonomy.RDS")
+tcga.meta <- readRDS("C:/Users/Leste/Desktop/Spakowicz lab/PRE-POST-NORM/tcga.meta.RDS")
+tcc.meta <- readRDS("C:/Users/Leste/Desktop/Spakowicz lab/PRE-POST-NORM/tcc.meta.RDS")
+```
+
+
+
+```{r}
+############# saved pre_norm_tcc #################
+pre_norm_tcc <- tcc.count %>%
+  select(-`Homo.sapiens`) %>%
+  mutate(tot_count = rowSums(.[-1])) %>%
+  select(tot_count, everything())
+
+for(i in 1:nrow(pre_norm_tcc)){
+  pre_norm_tcc[i,-c(1:2)] <- pre_norm_tcc[i,-c(1:2)] / pre_norm_tcc$tot_count[i]
+}
+test <- apply(pre_norm_tcc,1,)
+write.csv(pre_norm_tcc, "C:/Users/Leste/Desktop/Spakowicz lab/PRE-POST-NORM/pre_norm_tcc.csv")
+
+#use apply(obj of interest(1 for r, 2 for c), ). save the tot_count as a seperate vector
+```
+
+
+
+## shape data frame _tcc
+```{r, echo=FALSE}
+linkage <- Add %>%
+  filter(!`Tumor Tissue Sequenced Collection Site`=="Blood")%>%
+  mutate(preservation = ifelse(`Tumor Tissue Sequenced Specimen Category` == "Frozen", "FF","FFPE"))%>%
+  select("tcc_id","preservation") %>%
+  filter(!is.na(preservation)) %>%
+  rename("sample"="tcc_id")
+
+desired_species <- intersect(tcc.exora$microbe,colnames(tcc.count[-c(1:2)]))
+
+norm_dat_tcc <- tcc.exora %>%
+  select("microbe","exo.ra","sample")%>%
+  filter(microbe %in% desired_species)%>%
+  spread(microbe, exo.ra) %>% 
+  inner_join(linkage) %>%
+  select("preservation", everything()) %>%
+  mutate_all(funs(ifelse(is.na(.), 0, .)))
+
+pre_norm_tcc <- pre_norm_Tcc %>%
+  select(-X,-tot_count) %>%
+  inner_join(linkage) %>%
+  select("preservation", everything()) %>%
+  mutate_all(funs(ifelse(is.na(.), 0, .)))
+```  
+
+
+##PCA
+```{r}
+info_norm <- sapply(colnames(norm_dat_tcc)[-c(1:2)], function(i) sum(norm_dat_tcc[,i])) %>%
+  unlist() %>%
+  data.frame() %>%
+  rownames_to_column()%>%
+  filter(.==0) %>%
+  select(-.) %>%
+  c() %>%
+  unlist
+
+norm_dat_tcc <- norm_dat_tcc %>%
+  select(-info_norm)
+
+exotcc.pca.norm_tcc <- prcomp(norm_dat_tcc[,-c(1:2)])
+autoplot(exotcc.pca.norm_tcc, data = norm_dat_tcc, colour = 'preservation', frame = TRUE, frame.type = "norm", loadings = TRUE)
+  # ggsave("C:/Users/Leste/Desktop/Spakowicz lab/PRE-POST-NORM/norm_pca_tcc.png")
+
+
+########## pre_norm ##########
+info_pre <- sapply(colnames(pre_norm_tcc)[-c(1:2)], function(i) sum(pre_norm_tcc[,i])) %>%
+  unlist()%>%
+  data.frame() %>%
+  rownames_to_column()%>%
+  filter(.==0) %>%
+  select(-.) %>%
+  c() %>%
+  unlist
+
+pre_norm_tcc <- pre_norm_tcc %>%
+  select(-info_pre)
+  
+
+exotcc.pca.prenorm <- prcomp(pre_norm_tcc[,-c(1:2)])
+autoplot(exotcc.pca.prenorm, data = pre_norm_tcc, colour = 'preservation', frame = TRUE, frame.type = "norm", loadings=TRUE)
+    # ggsave("C:/Users/Leste/Desktop/Spakowicz lab/PRE-POST-NORM/prenorm_pca_tcc.png")
+```
+
+
+```{r}
+pri_tcc <- data.frame(exotcc.pca.norm_tcc$x) %>%
+  cbind(norm_dat_tcc$sample)%>%
+  rename("sample" = "norm_dat_tcc$sample") %>%
+  select(sample,PC1,PC2)
+test_down <- pri_tcc %>%
+  filter(PC2 < -0.2) %>%
+  left_join()
+test_left <- pri_tcc %>%
+  filter(PC1 < -0.5)
+test_right <- pri_tcc %>%
+  filter(PC1 > 0.5)
+```
+
+
+## compare microbiome reading
+```{r}
+tax <- tcc.tax %>%
+  filter(spec.join %in% c("Quercus.lobata","Populus.trichocarpa","Physcomitrella.patens","Papaver.somniferum","Panicum.hallii","Nymphaea.colorata","Nicotiana.attenuata","Medicago.truncatula","Lupinus.angustifolius","Ipomoea.triloba","Gossypium.raimondii","Cynara.cardunculus","Cannabis.sativa","Brachypodium.distachyon","Arabidopsis.thaliana")) %>%
+  rename("RNASeq"="sample") %>%
+  inner_join(linkage) %>%
+  select("spec.join","ra","preservation") %>%
+  group_by(spec.join,preservation) %>%
+  summarise_at(vars(ra), funs(mean(., na.rm=TRUE)))
+
+lalala <- tcc.tax %>%
+  filter(domain == "d__Eukaryota",
+         kingdom == "k__Viridiplantae") %>%
+  dplyr::rename("RNASeq"="sample") %>%
+  inner_join(linkage) %>%
+  select("microbe","exo.ra","preservation") %>%
+  group_by(microbe,preservation)%>%
+  summarise_at(vars(exo.ra), funs(mean(., na.rm=TRUE))) %>%
+  spread(preservation,exo.ra) %>%
+  mutate(type=ifelse(FF>FFPE,"True","False"))
+
+ggplot(data = lalala, aes(x=microbe, y=exo.ra, fill = preservation)) +
+  geom_bar(stat = "identity")+
+  coord_flip()
+```
+
+##Boxplot 
+```{r}
+box_dat <- tcc.tax %>%
+  select("exo.ra","kingdom") %>%
+  filter(!is.na(exo.ra))
+
+
+NA_kingdom <- agg_exo_ra_taxonomy %>%
+  filter(is.na(kingdom),
+         domain == "Eukaryota") %>%
+  select(spec.join)%>%
+  unique()
+  
+
+ggplot(box_dat, aes(x=kingdom, y=exo.ra))+
+  geom_boxplot()
+```
+
+
+#species accumulation
+```{r}
+count <- function(x) (ifelse(x>1,1,0))
+sp <- micro %>%
+  select(-c("preservation","RNASeq")) %>%
+  mutate_all(funs(ifelse(.> 0, 1, 0)))
+data(BCI)
+sp1 <- specaccum(BCI)
+sp2 <- specaccum(ffdf, "random")
+
+lll <- tcc.tax %>%
+  select("microbe","exo.ra","sample")%>%
+  spread(microbe, exo.ra)%>%
+  select(-"sample") %>%
+  mutate_all(funs(ifelse(.> 0, 1, 0))) %>%
+  mutate(sumspec = rowSums(.[1:7035])) %>%
+  select("sumspec",everything())
+```
+

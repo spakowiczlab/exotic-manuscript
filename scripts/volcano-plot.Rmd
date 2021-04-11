@@ -1,0 +1,171 @@
+---
+title: "volcano plot_exotcc"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+library(tidyr)
+library(tibble)
+library(dplyr)
+library(DESeq2)
+library(EnhancedVolcano)
+library(readxl)
+```
+
+## Load data
+```{r cars}
+Add <- read_excel("C:/Users/Leste/Desktop/spakowicz lab/PRE-POST-NORM/Additional Data_Spakowicz_SLids.xlsx")
+tcc.tax <- readRDS("C:/Users/Leste/Desktop/spakowicz lab/tcc.exora.taxonomy.RDS")
+tcc.count <- readRDS("C:/Users/Leste/Desktop/spakowicz lab/PRE-POST-NORM/tcc.counts.RDS")
+```
+
+## shape data frame
+```{r, echo=FALSE}
+linkage <- Add %>%
+  filter(!`Tumor Tissue Sequenced Collection Site`=="Blood")%>%
+  mutate(preservation = ifelse(`Tumor Tissue Sequenced Specimen Category` == "Frozen", "FF","FFPE"))%>%
+  select("tcc_id","preservation") %>%
+  filter(!is.na(preservation)) %>%
+  rename("tcc_id"="sample")
+
+
+micro <- tcc.tax %>%
+  select("microbe","exo.ra","sample")%>%
+  mutate(pre = ifelse(exo.ra*1e6 > 1, 1,0)) %>%
+  select(-"exo.ra") %>%
+  spread(microbe, pre) %>% 
+  inner_join(linkage)%>%
+  select("preservation", everything())
+
+desd <- tcc.tax %>%
+  select("microbe","exo.ra","sample")%>%
+  mutate(count = round(exo.ra*1e6)) %>%
+  select(-"exo.ra") %>%
+  spread(microbe, count) %>% 
+  inner_join(linkage)%>%
+  select("preservation", everything())
+
+ave_pre <- lapply(micro[,3:7037], function(i) mean(i))
+pre <- do.call(cbind,ave_pre) %>%
+  t %>%
+  as.data.frame() %>%
+  rownames_to_column(var="microbe") %>%
+  rename("V1"="preva")
+
+ggplot(pre, aes(preva))+
+  geom_histogram()+
+  ggsave("C:/Users/Leste/Desktop/pre.png")
+
+
+# generate a prevalence curve(histogram where yaxis is percentage) and pick out the value at 10% prvalence as a threshold to filter the data before ploting volcano. 
+# after i got the threshold but they will have different amount of data, should i calculate individualy for volcano plot?
+
+
+#####pre_norm#####
+col <- linkage %>%
+  inner_join(tcc.count) %>%
+  select(sample, preservation)
+
+countd <- tcc.count %>%
+  inner_join(linkage)%>%
+  select(-preservation)%>%
+  column_to_rownames("sample") %>%
+  t
+
+dds <- DESeqDataSetFromMatrix(countData = as.matrix(countd), colData = col, design = ~ preservation)
+dds <- DESeq(dds)
+res <- results(dds)
+pd <- res$log2FoldChange
+
+EnhancedVolcano(res,
+    lab = rownames(res),
+    x = 'log2FoldChange',
+    y = 'pvalue')+
+  ggsave("C:/Users/Leste/Desktop/Spakowicz lab/PRE-POST-NORM/pre_norm_volcano.png")
+
+#########normalized##########
+
+col_n <- linkage %>%
+  inner_join(desd) %>%
+  select(sample, preservation)
+
+countd_n <- desd %>%
+  inner_join(linkage)%>%
+  select(-preservation)%>%
+  column_to_rownames("sample") %>%
+  t
+
+dds_n <- DESeqDataSetFromMatrix(countData = as.matrix(countd_n), colData = col_n, design = ~ preservation)
+dds_n <- DESeq(dds_n)
+res_n <- results(dds_n)
+pd_n <- res_n$log2FoldChange
+
+EnhancedVolcano(res_n,
+    lab = rownames(res_n),
+    x = 'log2FoldChange',
+    y = 'pvalue')+
+  ggsave("C:/Users/Leste/Desktop/Spakowicz lab/PRE-POST-NORM/norm_volcano.png")
+
+```
+
+```{r}
+avector <- as.vector(thresh['microbe'])
+class(avector) 
+
+avector <- thresh[['microbe']]
+class(avector)
+
+avector <- thresh[,1]
+class(avector)
+
+```
+
+
+
+```{r}
+res.dat <- as.data.frame(res)
+com <- tcc.tax %>%
+  group_by(sample) %>%
+  summarise(sum=sum(exo.ra))
+#rarely infectious
+
+x <- sum(com$exo.ra)
+bla <- tcc.tax %>%
+  filter(microbe == "Blastococcus.saxobsidens") #calcarenite in Malta.
+the <- tcc.tax %>%
+  filter(microbe == "Theileria.equi") # parasitic disease affecting red blood cells.
+bac <- tcc.tax %>%
+  filter(microbe == "Bacteroides.dorei") # human gut
+pyr <- tcc.tax %>%
+  filter(microbe == "Pyrobaculum.neutrophilum") # isolated form hot spring
+pse <- tcc.tax %>%
+  filter(microbe == "Pseudomonas.syringae") #plant pathogen
+X <- tcc.tax %>%
+  filter(microbe == "X.Ruminococcus..gnavus") #gut 
+del <- tcc.tax %>%
+  filter(microbe == "Delftia.tsuruhatensis") #was isolated from a domestic wastewater treatment plant in Japan. D. tsuruhatensis is an opportunistic and emergent pathogen.
+bact <- tcc.tax %>%
+  filter(microbe == "Abelson.murine.leukemia.virus") #gut
+
+## make a histogram on relative abundance on extrem taxa. y = count, x = ra; 
+ggplot(bla, aes(x = exo.ra)) + 
+    geom_histogram()
+ggplot(the, aes(x = exo.ra)) + 
+    geom_histogram()
+ggplot(bac, aes(x = exo.ra)) + 
+    geom_histogram()
+ggplot(pyr, aes(x = exo.ra)) + 
+    geom_histogram()
+ggplot(pse, aes(x = exo.ra)) + 
+    geom_histogram()
+ggplot(X, aes(x = exo.ra)) + 
+    geom_histogram()
+ggplot(del, aes(x = exo.ra)) + 
+    geom_histogram()
+ggplot(bact, aes(x = exo.ra)) + 
+    geom_histogram()
+## confidence level: how liklely are you gonna reject null, when you shouldn't; alpha is normally 5%
+
+```
