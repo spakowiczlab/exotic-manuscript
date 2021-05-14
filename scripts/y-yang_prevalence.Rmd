@@ -1,0 +1,67 @@
+---
+title: "y-yang_prevalence"
+author: "Mitchell Muniak"
+date: "5/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readxl)
+library(tidyverse)
+library(stringr)
+source("00-paths.R")
+```
+
+```{r}
+# Load in our data, which includes the presence or absence of a microbe in each of our samples 
+yang <- read_excel(file.path(paths$box.exogieo, "y-yang_sup.xlsx"),
+                                      sheet = 2,
+                                      skip = 1) %>%
+   separate(Taxonomy, sep = "; ", into = c("domain", "phylum", "class", "order", "family", "genus", "species"))
+
+
+```
+
+```{r}
+# You may notice that the columns names in yang (which represent a sample) contain either a 'C' or a 'V'
+  # 'V' represents healthy samples, while 'C' represents CRC samples. In this case, we only want to include CRC
+yang_compatible <- yang %>%
+  select(-contains("V_"), -`OTU ID`) %>%
+  gather(-starts_with("C_"), key = "rank", value = "Taxon") %>%
+  select(-rank) %>%
+  filter(!grepl("unidentified|uncultured|human_gut_metagenome|norank|UCG", Taxon)) %>%
+  mutate(Taxon = gsub("_2_1_59BFAA|_1|_2|_3|_4|_5|_6|_7|_8|_9|_sensu_stricto.*|_clade_CHAB-I-5_lineage", "", Taxon)) %>%
+  mutate(Taxon = gsub("_", " ", Taxon)) %>%
+  mutate(Taxon = gsub("  ", "__", Taxon)) %>%
+  # filter(!is.na(taxon)) %>%
+  gather(-Taxon, key = "sample", value = "present") %>%
+  mutate(present = if_else(present > 0,
+                           true = 1,
+                           false = 0)) %>%
+  group_by(Taxon, sample) %>%
+  summarise(present = if_else(sum(present) > 0,
+                              true = 1,
+                              false = 0)) %>%
+  group_by(Taxon) %>%
+  summarise(Prevalence = sum(present)/n()) %>%
+  filter(!is.na(Taxon))
+
+
+
+# To share with Dan
+  # Search g__Candidatus_Soleaferrea
+  # [
+# Clostridiales as family (this is in the spak data too)
+# Escherichia-Shigella
+```
+
+```{r}
+yang_compatible$Ref <- "Yongzhi_Yang"
+yang_compatible$Reference <- "Yang Y, et al. Theranostics (2019)"
+```
+
+
+```{r}
+# Save as csv
+write.csv(yang_compatible,"../data/y_yang_prev.csv", row.names = F)
+```

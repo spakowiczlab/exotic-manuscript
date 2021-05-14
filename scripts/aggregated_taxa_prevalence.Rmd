@@ -1,0 +1,83 @@
+---
+title: "aggregated_taxa_prevalence"
+author: "Mitchell Muniak"
+date: "5/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readxl)
+library(tidyverse)
+source("00-paths.R")
+```
+
+```{r}
+# Load in our data, which includes the presence or absence of a microbe in each of our samples 
+pre_combined_prevalence <- read.csv(file.path(paths$newdrake, "2021-02-15_combined-prevalence.csv")) %>%
+  mutate(across(.cols=everything(), as.numeric)) %>%
+  select(-sample)
+
+```
+
+```{r}
+# Load taxonomy key
+sample_taxa <- read.csv("../data/sample_taxa.csv")
+```
+
+
+```{r}
+pre_combined_prevalence_2 <- as.data.frame(t(pre_combined_prevalence)) %>%
+  rownames_to_column("microbe") %>%
+  right_join(sample_taxa)
+
+```
+
+
+```{r}
+# Final data frame with prevalence for each taxon
+prevalence_fulltaxa <-  pre_combined_prevalence_2 %>%
+  # Redundant columns removed
+  select(-microbe, -Taxonomy) %>%
+  # Consolidate all taxons into a single column
+  # "rank" column for taxonomic level is used as key
+  # Exclude columns starting with "V" because they do not contain taxonomic information
+  # With this, taxon values span all taxonomic levels (meaning that the taxon column will hold the individual names of species, domains and everything in between). This is needed for aggregation.
+  # For instance, we want to be able to see if a subject--across all their sample information--had an appearance of the phylum proteobacteria. Even one appearance of proteobacteria in a subject shows it to be "present" in that subject, even if other species of proteobacteria are found. The only thing that matters for prevalence is that one species in the proteobacteria phylum appears at all.
+  gather(-starts_with("V"), key = "rank", value = "taxon") %>%
+  filter(!grepl("unclassified", taxon, ignore.case=TRUE)) %>%
+  # Remove "x__unclassified-" suffix
+  # mutate(taxon = gsub(".*__unclassified-", "", taxon)) %>%
+  # Rank information removed
+  select(-rank) %>%
+  # Now we want to consolidate the information from all the "v" columns, which represent individual participants
+  # Values in these column are either 0 (microbe in this row not found in this subject) or 1 (microbe in this row is found in this subject). Via the gather() below, these values are placed in the "present" column.
+  gather(-taxon, key = "sample", value = "present") %>%
+  # We now have three columns: taxon, sample, and present
+  # We will need to check if each taxon in each sample makes an appearance
+  # Group taxon and sample together 
+  group_by(taxon, sample) %>%
+  # Create new present column
+  # If the sum of present (grouped to taxon and sample) is larger than 0, we know that this specific microbe is present for this specific sample. Therefore, we give it a value of 1. 
+  # If the If the sum of present (grouped to taxon and sample) is less than 0, we know that this specific microbe is not present for this specific sample. Therefore, we give it a value of 0. 
+  summarise(present = if_else(sum(present) > 0,
+                              true = 1,
+                              false = 0)) %>%
+  # Each sample will now only have one row corresponding to each taxon. In the "present" column, it will be indicated if the taxon is present (1), or absent (0) from the sample.
+  # To find the prevalence for each taxon, we need to group that data frame by taxon. Then, we can summarise, where we sum the value of present across different samples. Finally, we divide that sum by the number of values used in the sum calculation.
+  # For example, sum(present) may be calculated 1000 values, and be equal to a value of 800. 800 would be divided by 1000, giving use a prevalence of 0.80.
+  group_by(taxon) %>%
+  summarise(prevalence = sum(present)/n())
+
+```
+
+```{r}
+# Add column to mark our data (so we can distinguish it from the literature table (lit_data))
+prevalence_fulltaxa$ref <- "ours"
+prevalence_fulltaxa$Reference <- "ExoTIC TCGA CRC (this study)"
+```
+
+```{r}
+# Save
+write.csv(prevalence_fulltaxa,"../data/prevalence_fulltaxa.csv", row.names = F)
+
+```
