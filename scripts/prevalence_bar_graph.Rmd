@@ -1,0 +1,82 @@
+---
+title: "Prevalence Bar Graph"
+author: "Mitchell Muniak"
+date: "5/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readxl)
+library(ggplot2)
+library(tidyverse)
+library(tidyr)
+library(lubridate)
+```
+
+# Load Data
+
++ Here, I am loading in each excel sheet. Each sheet contains prevalence data from an individual source.
++ Our data and Y. Yang's data are especially interesting because they were both processed based on raw data entries. Because of this, they are much larger and more comprehensive than the other files. In comparison, the other excel sheets were created based on what was shown in the graphs and figures of publication. Very little supplementary information was available for these publications.
+```{r, message=FALSE}
+# Load our prevalence data
+prev_spak <- read_csv("../data/prevalence_fulltaxa.csv")
+```
+```{r, message=FALSE}
+# Load in data frames from my literature search
+prev_kostic <- read_csv("../data/Aleksandar_D._Kostic_prev.csv")
+prev_j_yang <- read_csv("../data/Jinho_Yang_prev.csv")
+prev_castellarin <- read_csv("../data/Mauro_Castellarin_prev.csv")
+prev_long <- read_csv("../data/Shuping_Long_prev.csv")
+prev_eisele <- read_csv("../data/Yannick_Eisele_prev.csv")
+
+```
+```{r, message=FALSE}
+# Load in Y. Yang data
+prev_y_yang <- read_csv("../data/y_yang_prev.csv")
+```
+
+
+# Bar Graphs
+
++ We want to compare the prevalence found in each study. In this section, we represent these differences in simple bar graphs where the prevalence of each microbe taxon in each study is graphed.
+```{r, message=FALSE}
+# Join together all the data frames
+prev_bar <- prev_spak %>%
+  full_join(prev_y_yang) %>%
+  full_join(prev_kostic) %>%
+  full_join(prev_j_yang) %>%
+  full_join(prev_castellarin) %>%
+  full_join(prev_long) %>%
+  full_join(prev_eisele)
+```
+
+```{r}  
+# We want to tally how many times each taxon appears, which will represent how many studies the taxon appeared. We are doing this because graphing a taxon that only appears in one study is not informative.
+taxon_filter <- as.list(tally(group_by(prev_bar, Taxon)) %>%
+                           # Filter for appearances in at least 3 studies
+                           filter(n > 2) %>%
+                           select(-n))
+```
+
+```{r}
+# Data frame for bar graphs
+prev_bar_filter <- prev_bar %>%
+  # Use the taxon list created above to filter our data frame to taxon that appear in at least 3 studies
+  filter(Taxon %in% taxon_filter[["Taxon"]])
+```
+
+```{r}
+# Graph prevalence of each taxon via a bar graph
+taxon_plot <-unique(prev_bar_filter$Taxon)
+for(taxon.type in taxon_plot){
+  # Print outputs
+  print(prev_bar_filter %>%
+          filter(Taxon == taxon.type) %>%
+          # Set each axis
+          ggplot(aes(x = Prevalence, y = Reference)) +
+          ggtitle(taxon.type) +
+          # Color bars based on source
+          geom_bar(position="dodge", stat="identity", fill="steelblue", width=0.5) +
+    theme_bw() +
+        theme(axis.title.y = element_blank()))}
+```
