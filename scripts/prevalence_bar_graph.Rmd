@@ -17,6 +17,7 @@ library(lubridate)
 
 + Here, I am loading in each excel sheet. Each sheet contains prevalence data from an individual source.
 + Our data and Y. Yang's data are especially interesting because they were both processed based on raw data entries. Because of this, they are much larger and more comprehensive than the other files. In comparison, the other excel sheets were created based on what was shown in the graphs and figures of publication. Very little supplementary information was available for these publications.
+
 ```{r, message=FALSE}
 # Load our prevalence data
 prev_spak <- read_csv("../data/prevalence_fulltaxa.csv")
@@ -39,6 +40,7 @@ prev_y_yang <- read_csv("../data/y_yang_prev.csv")
 # Bar Graphs
 
 + We want to compare the prevalence found in each study. In this section, we represent these differences in simple bar graphs where the prevalence of each microbe taxon in each study is graphed.
+
 ```{r, message=FALSE}
 # Join together all the data frames
 prev_bar <- prev_spak %>%

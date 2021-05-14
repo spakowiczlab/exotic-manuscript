@@ -17,6 +17,7 @@ library(lubridate)
 
 + Here, I am loading in each excel sheet. Each sheet contains prevalence data from an individual source.
 + Our data and Y. Yang's data are especially interesting because they were both processed based on raw data entries. Because of this, they are much larger and more comprehensive than the other files. In comparison, the other excel sheets were created based on what was shown in the graphs and figures of publication. Very little supplementary information was available for these publications.
+
 ```{r, message=FALSE}
 # Load our prevalence data
 prev_spak <- read_csv("../data/prevalence_fulltaxa.csv")
@@ -36,6 +37,9 @@ prev_y_yang <- read_csv("../data/y_yang_prev.csv")
 ```
 
 # Create Filter
+
++ We only want to look at taxon that appear in multiple studies (a minimum of 3 times).
++ Below, we join all our data frames together. Then we filter for taxon that appeared in more than 2 studies.
 
 ```{r, message=FALSE}
 # Join together all the data frames
@@ -60,6 +64,7 @@ taxon_filter <- as.list(tally(group_by(prev_join, Taxon)) %>%
 
 + We want to plot as x = prevalence of taxon based on our data and  y = prevalence of taxon based on literature
 + Therefore, for this data frame, we will want a column for our prevalence, and a column for literature prevalence
+
 ```{r, message=FALSE}
 # Here, I join the literature data frames
 prev_scatter_lit <- prev_y_yang %>%
