@@ -1,5 +1,7 @@
 {
   "paths" : {
-      "drakeout"     : "/fs/scratch/PAS1695/exoTiC/drake-output/2020-10-06"
+      "drakeout"     : "/fs/scratch/PAS1695/exoTiC/drake-output/2020-10-06",
+      "box.exogieo" : "C:/Users/muni11/Box/exogieo/data",
+      "newdrake"  : "/fs/ess/PAS1695/projects/exogieo/data/drake-output"
   }
 }
