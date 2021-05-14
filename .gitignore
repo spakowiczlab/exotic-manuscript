@@ -47,3 +47,4 @@ CIB*.csv
 # text files including wget urls
 *.txt
 
+*.json
