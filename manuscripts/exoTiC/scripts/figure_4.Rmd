@@ -1,0 +1,85 @@
+---
+title: 'figure 4: clinical relevance'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(survival)
+library(survminer)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(broom)
+```
+
+
+# Load data
+
+```{r}
+drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2021-03-25"
+# Counts, before any manipulation
+# raw.tcc.counts <- readRDS(file.path(drakedir, "raw.tcc.counts.RDS"))
+# raw.tcga.counts <- readRDS(file.path(drakedir, "raw.tcga.counts.RDS"))
+
+# relative abundances, after normalization
+tcc.ranorm <- readRDS(file.path(drakedir, "tcc.exora.taxonomy.RDS"))
+tcga.ranorm <- readRDS(file.path(drakedir, "tcga.exora.taxonomy.RDS"))
+
+tcga.clin <- readRDS(file.path(drakedir, "tcga.clin.tum.RDS")) %>%
+  filter(file_id.BAM %in% tcga.ranorm$sample)
+tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_aggregated.csv",
+                     stringsAsFactors = F) %>%
+  filter(RNA.SL.ID %in% tcc.ranorm$sample)
+
+```
+
+
+```{r}
+exoRAtowideprev <- function(data, taxlev){
+  tmp <- data
+  tmp$Taxa <- tmp[[taxlev]]
+  tmp.wide<- tmp %>%
+    dplyr::filter(!is.na(Taxa)) %>%
+    # mutate(Taxa = paste(taxlev, Taxa, sep = "_")) %>%
+    group_by(sample, Taxa) %>%
+    summarise(ra = sum(exo.ra, na.rm = T)) %>%
+    spread(key = "Taxa", value = "ra")
+  
+  tmp.wide[is.na(tmp.wide)] <- 0
+  # tmp.prev <- bind_rows(lapply(tmp.wide[,-1], function(x) ifelse(x > 0, 1, 0))) %>%
+  #   mutate(sample = tmp.wide$sample) %>%
+  #   select(sample, everything())
+  return(tmp.wide)
+}
+
+```
+
+# Survival
+```{r}
+phyla.w <- exoRAtowideprev(bind_rows(tcc.ranorm, tcga.ranorm), "phylum") 
+phyl.mics <- colnames(phyla.w[,-1])
+
+tcga.forjoin <- tcga.clin %>%
+  mutate(sample = file_id.BAM,
+         vitalstatus = ifelse(vital_status == "Alive", 0, 1),
+         days = coalesce(days_to_death, days_to_last_follow_up))
+tcc.forjoin <- tcc.clin %>%
+  mutate(sample = RNA.SL.ID,
+         vitalstatus = ifelse(Vital.Status == "Alive", 0, 1),
+         days = Overall.Survival.from.Dx..days.) 
+
+survinput <- bind_rows(tcga.forjoin, tcc.forjoin) %>%
+  left_join(phyla.w)
+```
+
+```{r}
+surv.res <- lapply(phyl.mics, function(x) try({coxph(as.formula(paste0("Surv(days, vitalstatus) ~ `", x, "`")), data = survinput) %>%
+         tidy()}))
+
+surv.df <- bind_rows(surv.res) %>%
+  arrange(p.value)
+
+head(surv.df)
+```

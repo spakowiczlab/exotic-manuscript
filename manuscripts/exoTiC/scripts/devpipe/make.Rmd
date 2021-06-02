@@ -1,0 +1,21 @@
+---
+title: "Run developemental pipeline"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+depfiles <- list.files("R", full.names = T)
+lapply(depfiles, function(x) source(x))
+```
+
+
+
+# Run
+
+```{r}
+make(plan, verbose = 2)
+
+drake_ggraph(plan)
+```
