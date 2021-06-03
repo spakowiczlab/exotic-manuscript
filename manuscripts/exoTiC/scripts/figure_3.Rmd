@@ -7,6 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(dplyr)
+library(tidyr)
 library(tibble)
 library(randomForest)
 library(ROCR)
@@ -472,4 +473,37 @@ confused.results[[4]]
 ```
 
 
+# Metastatic predictions
+
+This is actually going to be a bit more complicated to manage than I initially anticipated. We have been selecting only primary tumors to analyze so far in this process, so of course it makes sense that we don't have any samples labelled as metastatic. One possibile solution would be to intentionally pull and process specifically metastatic samples, narrowed to be from the cancers we are using for this manuscript.
+## Grab metastatic info
+
+```{r}
+library(GenomicDataCommons)
+check.names <- available_fields("files")
+
+check.names[grep("sample", check.names)]
+
+files() %>% facet("cases.samples.sample_type") %>% aggregations()
+
+sampletypes <- files() %>%
+  select(c(default_fields("files"), "cases.samples.sample_type")) %>%
+  filter(file_id %in% tcga.clin$file_id.BAM) %>%
+  results_all()
+
+sampletypes.pulled <- list()
+for(i in tcga.clin$file_id.BAM){
+  sampletypes.pulled[[i]] <- sampletypes$cases[[i]]$samples[[1]][1,1]
+}
+
+test <- unlist(sampletypes.pulled)
+table(test)
+```
+
+
+## Format for new tests
+
+## Test tissue sampled
+
+## Test cancer type
 
