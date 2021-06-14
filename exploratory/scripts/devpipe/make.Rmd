@@ -1,0 +1,36 @@
+---
+title: "Run developemental pipeline"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+depfiles <- list.files("R", full.names = T)
+lapply(depfiles, function(x) source(x))
+```
+
+
+
+# Run
+
+```{r}
+make(plan, verbose = 2)
+
+drake_ggraph(plan)
+```
+
+# Save
+```{r}
+loadd(tcc.exora.taxonomy)
+loadd(tcga.exora.taxonomy)
+```
+
+
+```{r}
+outdir <- "/fs/ess/PAS1695/projects/exotic/data/devout"
+
+saveRDS(tcc.exora.taxonomy, file.path(outdir, "tcc.exora.taxonomy.RDS"))
+saveRDS(tcga.exora.taxonomy, file.path(outdir, "tcga.exora.taxonomy.RDS"))
+
+```

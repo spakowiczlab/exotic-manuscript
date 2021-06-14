@@ -1,0 +1,250 @@
+---
+title: "Exploring contaminants"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(dplyr)
+library(forcats)
+library(tibble)
+library(tidyr)
+```
+
+
+# Load data
+
+```{r}
+drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2021-03-25/"
+# Counts, before any manipulation
+raw.tcga.counts <- readRDS(file.path(drakedir, "raw.tcga.counts.RDS"))
+
+tcga.clin <- readRDS(file.path(drakedir, "tcga.clin.tum.RDS")) %>%
+  filter(file_id.BAM %in% raw.tcga.counts$sample)
+```
+
+```{r}
+relabun <- raw.tcga.counts %>%
+  # select(-Homo.sapiens) %>%
+  gather(-sample, key = "species", value = "counts") %>%
+  mutate(sampnum = as.numeric(as.factor(sample))) %>%
+  group_by(sample) %>%
+  mutate(total = sum(counts),
+         ra = counts/total)
+```
+
+# Defining the pipeline
+
+Wrangling microbial data can be a complicated process, which we are trying to wrap into a pipeline that we can more easily apply to a variety of projects. A simplified set of steps in this process is given below. We are currently working on expanding and improving the third step of this process.
+
+```{r, echo = F}
+library(DiagrammeR)
+grViz("digraph flowchart {
+      # node definitions with substituted label text
+      node [fontname = Helvetica, shape = rectangle]        
+      tab1 [label = '@@1']
+      tab2 [label = '@@2']
+      tab3 [label = '@@3']
+      tab4 [label = '@@4']
+      tab5 [label = '@@5']
+
+      # edge definitions with the node IDs
+      tab1 -> tab2 -> tab3 -> tab4 -> tab5;
+      }
+
+      [1]: 'Collect raw counts and metadata'
+      [2]: 'Group samples into batches'
+      [3]: 'Remove contaminants'
+      [4]: 'Normalize data'
+      [5]: 'Clean up'
+      ")
+# detach(DiagrammeR)
+```
+
+# Discuss contaminant sources
+
+## Bad samples: dropped, badly preserved and more
+
+```{r}
+norm.dist <- rnorm(1000)
+unif.dist <- runif(1000)
+
+dist.examples <- as.data.frame(cbind(vals = c(norm.dist, unif.dist),
+                                     source = c(rep("Null hypothesis", 1000), rep("Bad sample", 1000))),
+                               stringsAsFactors = F) %>%
+  mutate(vals = as.numeric(vals))
+```
+
+```{r}
+dist.examples %>%
+  ggplot(aes(x = vals)) +
+  facet_wrap(vars(fct_relevel(source, "Null hypothesis")), scales = "free_x") + 
+  geom_histogram() +
+  labs(x = "", y = "") +
+  theme_bw()
+```
+
+## Contaminant microbes from sample processing
+
+We can check for contaminants from the sample processing environment by looking at the correlation between each microbe's relative abundance and the RNA concentration. When there is a lower RNA concentration from the sample, nucleic acids from the environment appear to take up a larger portion of the reads, so we exclude microbes with a negative enough correlation. This is handled by the "decontam" package and is currently implemented in the pipeline.
+
+```{r}
+corr.examples <- as.data.frame(cbind(x = 1:100, y.pos = 1:100, y.neg = -1:-100)) %>%
+  mutate(x = as.numeric(x),
+         y.pos = as.numeric(y.pos),
+         y.neg = as.numeric(y.neg)) %>%
+  gather(-x, key = "dir", value = "y")
+
+
+corr.examples %>%
+  ggplot(aes(x = x, y = y, color = dir)) +
+  geom_path() +
+  theme_bw() +
+  scale_color_manual(breaks = c("y.neg", "y.pos"), values = c("firebrick", "royalblue"),
+                     labels = c("Negative", "Positive"), name = "Correlation direction")
+
+```
+
+## Microbe that is only bad in one sample
+
+```{r}
+PC1 <- runif(100)
+PC2 <- runif(100)
+
+pc.example <- as.data.frame(cbind(PC1, PC2))
+
+pc.example %>%
+  add_row(PC1 = 3,PC2 = 3) %>%
+  ggplot(aes(x = PC1, y = PC2)) +
+  geom_point()
+```
+# Addressing the contaminants
+
+## Species richness curves to find bad samples
+
+A paper suggested that microbial communities should have a log normal distribution, that does not bear out in our data.
+
+```{r}
+richnes.input <- raw.tcga.counts %>%
+  select(-Homo.sapiens) %>%
+  gather(-sample, key = "species", value = "counts") %>%
+  mutate(sampnum = as.numeric(as.factor(sample)))
+  # filter(counts > 0)
+
+richnes.input %>%
+  filter(sampnum == 1) %>%
+  ggplot(aes(x = counts)) +
+  geom_histogram()
+
+richnes.input %>%
+  filter(sampnum <= 6& counts > 0) %>%
+  ggplot(aes(x = log(counts))) +
+  facet_wrap(vars(sample), scales = "free") +
+  geom_histogram()
+```
+
+
+Instead, let's find the distributions of some suspicious samples. As a reminder, all of the samples are from human tumors so we expect the overwhelming portion of the data to be human. We can see at least one sample has less than 80% human reads, let's look at it.
+```{r}
+relabun %>%
+  group_by(species) %>%
+  summarise(med.ra = median(ra)) %>%
+  arrange(desc(med.ra)) %>%
+  head()
+
+relabun %>%
+  filter(species == "Homo.sapiens") %>%
+  ggplot(aes(x = ra)) +
+  geom_histogram() +
+  ylim(c(0,100))
+```
+
+```{r}
+relabun %>%
+  filter(species == "Homo.sapiens" & ra < .9)
+
+relabun %>%
+  filter(sampnum %in% c(168,615,792)) %>%
+  ggplot(aes(x = log(counts))) +
+  geom_histogram() +
+  facet_wrap(~sampnum)
+```
+
+Look at how much more extreme the 0 inflation is in the counts of the samples that better follow our expectation of mostly human reads than in the samples with low human content. Does that make sense? Should we be selecting for zero inflation? Should we only believe low human samples if they also have less zero inflation? Concept: Low human abundance driven by a single ridiculous contaminant vs. a greater overall microbial load.
+
+```{r}
+relabun %>%
+  filter(species == "Homo.sapiens" & ra >.99) %>%
+  head()
+
+relabun %>%
+  filter(sampnum %in% c(2,5,7)) %>%
+  ggplot(aes(x = log(counts))) +
+  geom_histogram() +
+  facet_wrap(~sampnum)
+```
+
+## Decontam for consistently bad microbes
+
+```{r}
+readRDS(file.path(drakedir, "tcga.contams.RDS")) %>%
+  head()
+```
+
+## Detecting single microbes for removal from single samples
+
+Here, we are going to borrow some data from the PPIIO project Caroline is working on because I know there are some samples there that are candidates for the circumstance of a single bad microbe in an otherwise good sample.
+
+```{r}
+tcc.sar <- read.table("/fs/ess/PAS1695/generate-inputs/ORIEN-processing/data/brackout/SAR-Sarcoma.txt",
+                      sep = "\t", header = T)
+
+sar.qsamps <- tcc.sar %>%
+  gather(-sample, key = "species",value = "counts") %>%
+  filter(sample %in% c("SL387132", "SL387124", "SL385603"))
+```
+
+```{r}
+sar.qsamps %>%
+  ggplot(aes(x = log(counts))) +
+  geom_histogram() +
+  facet_wrap(~sample)
+```
+
+These are clearly not the same zero-inflated distributions we see from samples that have a more expected number of human data! Removing the first obvious problem microbe will almost certainly not fix it - let's try anyway.
+
+```{r}
+sar.qsamps %>%
+  filter(species != "Salmonella.enterica") %>%
+  ggplot(aes(x = log(counts))) +
+  geom_histogram() +
+  facet_wrap(~sample)
+```
+
+```{r}
+sar.qsamps %>%
+  mutate(lcounts = log(counts+1)) %>%
+  group_by(sample) %>%
+  summarise(normality = shapiro.test(lcounts)$p.value)
+```
+
+# Distribution of Shapiro statistics in good sample
+```{r}
+good.samps <- relabun %>%
+  filter(species == "Homo.sapiens" & ra > .997)
+
+
+shapiro.stats <- relabun %>%
+  filter(sample %in% good.samps$sample &counts > 0)%>%
+  mutate(lcounts = log(counts+1)) %>%
+  group_by(sample) %>%
+  summarise(normality = shapiro.test(lcounts)$statistic) 
+```
+
+```{r}
+alternative.shapstart <- raw.tcga.counts %>%
+  filter(sample %in% good.samps$sample) %>%
+  column_to_rownames(var = "sample")
+```
