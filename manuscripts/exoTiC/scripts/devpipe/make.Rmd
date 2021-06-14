@@ -19,3 +19,18 @@ make(plan, verbose = 2)
 
 drake_ggraph(plan)
 ```
+
+# Save
+```{r}
+loadd(tcc.exora.taxonomy)
+loadd(tcga.exora.taxonomy)
+```
+
+
+```{r}
+outdir <- "/fs/ess/PAS1695/projects/exotic/data/devout"
+
+saveRDS(tcc.exora.taxonomy, file.path(outdir, "tcc.exora.taxonomy.RDS"))
+saveRDS(tcga.exora.taxonomy, file.path(outdir, "tcga.exora.taxonomy.RDS"))
+
+```
