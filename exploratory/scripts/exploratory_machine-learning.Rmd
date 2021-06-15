@@ -1,0 +1,462 @@
+---
+title: "figure 3: machine learning"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(randomForest)
+library(ROCR)
+library(ggplot2)
+```
+
+# Load data
+
+```{r}
+drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2021-03-25/"
+# Counts, before any manipulation
+raw.tcc.counts <- readRDS(file.path(drakedir, "raw.tcc.counts.RDS"))
+raw.tcga.counts <- readRDS(file.path(drakedir, "raw.tcga.counts.RDS"))
+# relative abundances, after normalization
+tcc.ranorm <- readRDS(file.path(drakedir, "tcc.exora.taxonomy.RDS"))
+tcga.ranorm <- readRDS(file.path(drakedir, "tcga.exora.taxonomy.RDS"))
+tcga.clin <- readRDS(file.path(drakedir, "tcga.clin.tum.RDS")) %>%
+  filter(file_id.BAM %in% tcga.ranorm$sample)
+tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_aggregated.csv",
+                     stringsAsFactors = F) %>%
+  filter(RNA.SL.ID %in% tcc.ranorm$sample)
+# tcc.meta.linkage <- readRDS(file.path(drakedir, "tcc.meta.linkage.RDS")) %>%
+#   filter(tcc_id %in% tcc.ranorm$sample)
+# tcga.meta <- readRDS(file.path(drakedir, "tcga.meta.RDS"))
+# tumor.site.resolve <- read.csv("/fs/scratch/PAS1695/exogitx/key_TCC-TCGA-origin-tissues.csv",
+#                                stringsAsFactors = F)
+# tumor.site.resolve$SpecimenSiteOfOrigin[36] <- "Connective, Subcutaneous And Other Soft Tissues, NOS"
+# 
+# tcc.meta <- readRDS(file.path(drakedir, "tcc.meta.RDS"))
+```
+
+#Functions
+
+```{r}
+inputvar_config_test <- function(trainmat, testmat, trainclin, testclin, topredict){
+  model.training <- randomForest(x = trainmat, y = as.factor(trainclin[,topredict]))
+  test.preds <- predict(model.training, testmat)
+  testpred.mat <- table(observed = testclin[,topredict], predicted = test.preds)
+  
+  prediction_for_roc_curve <- predict(model.training,testmat,type="prob")
+  
+  # Use pretty colours:
+  # pretty_colours <- c("#F8766D","#00BA38","#619CFF")
+  # Specify the different classes 
+  classes <- levels(as.factor(testclin[,topredict]))
+  
+  perf.list <- list()
+  auclist <- list()
+  # For each class
+  for (i in 1:length(classes)){
+    # Define which observations belong to class[i]
+    true_values <- ifelse(testclin[,topredict]==classes[i],1,0)
+    # Assess the performance of classifier for class[i]
+    pred <- prediction(prediction_for_roc_curve[,i],true_values)
+    perf <- performance(pred, "tpr", "fpr")
+    perf.list[[i]] <- as.data.frame(cbind(x = perf@x.values[[1]], y = perf@y.values[[1]],
+                                          predicted.var = classes[i]))
+    
+    auc.perf <- performance(pred, measure = "auc")
+    auclist[[i]] <- auc.perf@y.values
+  }
+  
+  return(list(model.training, testpred.mat, bind_rows(perf.list), unlist(auclist)))
+}
+exoRAtowideprev <- function(data, taxlev){
+  tmp <- data
+  tmp$Taxa <- tmp[[taxlev]]
+  tmp.wide<- tmp %>%
+    dplyr::filter(!is.na(Taxa)) %>%
+    # mutate(Taxa = paste(taxlev, Taxa, sep = "_")) %>%
+    group_by(sample, Taxa) %>%
+    summarise(ra = sum(exo.ra, na.rm = T)) %>%
+    spread(key = "Taxa", value = "ra")
+  
+  tmp.wide[is.na(tmp.wide)] <- 0
+  # tmp.prev <- bind_rows(lapply(tmp.wide[,-1], function(x) ifelse(x > 0, 1, 0))) %>%
+  #   mutate(sample = tmp.wide$sample) %>%
+  #   select(sample, everything())
+  return(tmp.wide)
+}
+wide_to_pca <- function(x){
+  check.vars <- unlist(lapply(x[,-1], function(y) var(y) > 0))
+  remvar <- names(subset(check.vars, check.vars == F))
+  tmp <- x %>%
+    column_to_rownames(var = "sample") %>%
+    select(-any_of(remvar))
+  
+  pca.res <- prcomp(tmp, scale. = T)
+  
+  ml.input <- pca.res$x
+  return(ml.input)
+}
+```
+
+# Formatting
+
+## Define train and test clinical data
+```{r split into train and test}
+# Combined data sources
+tcga.forjoin <- tcga.clin %>%
+  mutate(sample = file_id.BAM,
+         Cancer = cancer)
+tcc.forjoin <- tcc.clin %>%
+  mutate(sample = RNA.SL.ID) 
+clindef <- bind_rows(tcc.forjoin, tcga.forjoin) %>%
+  select(sample, Cancer) %>%
+  mutate(cancer = ifelse(Cancer %in% c("GI", "COAD", "READ"), "GI",
+                         ifelse(Cancer %in% c("SKCM", "SAR"), "SAR", "THO")))
+testn <- round(.2 * nrow(clindef))
+set.seed(112358)
+testsamps <- sample(clindef$sample, testn)
+# all clin vars
+clin.train <- clindef %>%
+  dplyr::filter(!sample %in% testsamps) %>%
+  arrange(sample)
+clin.test <- clindef %>%
+  dplyr::filter(sample %in% testsamps) %>%
+  arrange(sample)
+```
+
+## Taxa groups matrices
+```{r}
+taxalevels <- c("domain", "kingdom", "phylum", "class", "order", "family", "genus", "species")
+# normalized RA
+tcga.ls.tx <- lapply(taxalevels, function(x) exoRAtowideprev(tcga.ranorm, x))
+tcc.ls.tx <- lapply(taxalevels, function(x) exoRAtowideprev(tcc.ranorm, x))
+names(tcga.ls.tx) <- taxalevels
+names(tcc.ls.tx) <- taxalevels
+combined.ls.tx <- lapply(taxalevels, function(x) bind_rows(tcga.ls.tx[[x]], tcc.ls.tx[[x]]) %>%
+                           filter(sample %in% clindef$sample))
+names(combined.ls.tx) <- taxalevels
+# Unnormalized counts
+taxkey <- tcga.ranorm %>%
+  select(c(taxalevels, "microbe"))
+taxkey <- taxkey[!duplicated(taxkey),]
+combined.counts <- bind_rows(raw.tcc.counts, raw.tcga.counts) %>%
+  gather(-sample, key = "microbe", value = "exo.ra") %>%
+  mutate(exo.ra = ifelse(is.na(exo.ra), 0, exo.ra)) %>%
+  left_join(taxkey)%>%
+  filter(sample %in% clindef$sample)
+combined.ls.raw <- lapply(taxalevels, function(x) exoRAtowideprev(combined.counts, x))
+names(combined.ls.raw) <- taxalevels
+```
+
+## PCA matrices
+```{r}
+# species.ls <- list(tcga.ls.tx[["species"]], tcc.ls.tx[["species"]])
+# 
+# pca.ls <- lapply(species.ls, function(x) wide_to_pca(x))
+# names(pca.ls) <- c("TCGA", "ORIEN")
+combined.pca <- wide_to_pca(combined.ls.tx[["species"]]) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "sample")
+combined.pca.raw <- wide_to_pca(combined.ls.raw$species) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "sample")
+```
+
+## Make train/test matrix inputs
+
+```{r}
+ranorm.train <- lapply(c(combined.ls.tx, list(combined.pca)), function(x) x %>%
+                         as.data.frame() %>%
+                         right_join(clin.train) %>%
+                         select(-Cancer, -cancer) %>%
+                         column_to_rownames(var = "sample") %>%
+                         as.matrix())
+rawcount.train <- lapply(c(combined.ls.raw, list(combined.pca.raw)), function(x) x %>%
+                           as.data.frame() %>%
+                           right_join(clin.train) %>%
+                           select(-Cancer, -cancer) %>%
+                           column_to_rownames(var = "sample") %>%
+                           as.matrix())
+ranorm.test <- lapply(c(combined.ls.tx, list(combined.pca)), function(x) x %>% 
+                        as.data.frame() %>%
+                        right_join(clin.test) %>%
+                        select(-Cancer, -cancer) %>%
+                        column_to_rownames(var = "sample") %>%
+                        as.matrix())
+rawcount.test <- lapply(c(combined.ls.raw, list(combined.pca.raw)), function(x) x %>% 
+                          as.data.frame() %>%
+                          right_join(clin.test) %>%
+                          select(-Cancer, -cancer) %>%
+                          column_to_rownames(var = "sample") %>%
+                          as.matrix())
+test.levs <- c(taxalevels, "pca")
+names(ranorm.test) <- test.levs
+names(ranorm.train) <- test.levs
+names(rawcount.test) <- test.levs
+names(rawcount.train) <- test.levs
+```
+
+# Run tests
+```{r}
+ranorm.rforest.results <- lapply(test.levs, function(x) inputvar_config_test(ranorm.train[[x]], 
+                                                                             ranorm.test[[x]],
+                                                                             clin.train, clin.test,
+                                                                             "cancer"))
+rawcount.rforest.results <- lapply(test.levs, function(x) inputvar_config_test(rawcount.train[[x]], 
+                                                                             rawcount.test[[x]],
+                                                                             clin.train, clin.test,
+                                                                             "cancer"))
+names(ranorm.rforest.results) <- test.levs
+names(rawcount.rforest.results) <- test.levs
+```
+
+# Check results
+
+## Plot RIC (maybe wrong names)
+
+```{r}
+ra.curves <- lapply(test.levs, function(tl) ranorm.rforest.results[[tl]][[3]] %>%
+                      mutate(tax.lev = tl)) %>%
+  bind_rows() %>%
+  mutate(data.format = "RelativeAbudance")
+rawcount.curves <- lapply(test.levs, function(tl) rawcount.rforest.results[[tl]][[3]] %>%
+                      mutate(tax.lev = tl)) %>%
+  bind_rows() %>%
+  mutate(data.format = "RawCounts")
+all.curves <- bind_rows(ra.curves, rawcount.curves) %>%
+  mutate(x = as.numeric(x),
+         y = as.numeric(y))
+```
+
+```{r}
+ggplot(all.curves, aes(x = x, y = y, color = data.format)) +
+  facet_wrap(vars(tax.lev, predicted.var), ncol = 3) +
+  geom_path() +
+  labs(x = "", y = "") +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank()) +
+  ggsave("../figures/3_check-taxa-predictions.png", height = 14, width = 8)
+```
+
+## Variable importance
+
+### raw counts
+```{r}
+lapply(rawcount.rforest.results, function(x) x[[1]]$importance %>% 
+         as.data.frame() %>%
+         rownames_to_column(var = "Taxa") %>%
+         arrange(desc(MeanDecreaseGini)) %>%
+         head())
+```
+
+### normalized RA
+```{r}
+lapply(ranorm.rforest.results, function(x) x[[1]]$importance %>% 
+         as.data.frame() %>%
+         rownames_to_column(var = "Taxa") %>%
+         arrange(desc(MeanDecreaseGini)) %>%
+         head())
+```
+
+# Testing kingdom inclusion
+
+## Make new inputs
+```{r}
+varsearch.groups <- c("bacteria", "virus", "plant", "fungi")
+bacteria.gen <- combined.counts %>%
+  filter(domain == "d__Bacteria") %>%
+  exoRAtowideprev(.,"genus")
+virus.gen <- combined.counts %>%
+  filter(domain == "d__Viruses") %>%
+  exoRAtowideprev(.,"genus")
+plant.gen <- combined.counts %>%
+  filter(kingdom == "k__Viridiplantae") %>%
+  exoRAtowideprev(.,"genus")
+fungi.gen <- combined.counts %>%
+  filter(kingdom == "k__Fungi") %>%
+  exoRAtowideprev(.,"genus")
+varsearch.train <- lapply(list(bacteria.gen, virus.gen, plant.gen, fungi.gen), function(x) x %>%
+                           as.data.frame() %>%
+                           right_join(clin.train) %>%
+                           select(-Cancer, -cancer) %>%
+                           column_to_rownames(var = "sample") %>%
+                           as.matrix())
+varsearch.test <- lapply(list(bacteria.gen, virus.gen, plant.gen, fungi.gen), function(x) x %>% 
+                          as.data.frame() %>%
+                          right_join(clin.test) %>%
+                          select(-Cancer, -cancer) %>%
+                          column_to_rownames(var = "sample") %>%
+                          as.matrix())
+names(varsearch.train) <- c("bacteria", "virus", "plant", "fungi")
+names(varsearch.test) <- c("bacteria", "virus", "plant", "fungi")
+```
+
+```{r}
+varsearch.rforest.results <- lapply(varsearch.groups, function(x) inputvar_config_test(varsearch.train[[x]], 
+                                                                             varsearch.test[[x]],
+                                                                             clin.train, clin.test,
+                                                                             "cancer"))
+names(varsearch.rforest.results) <- varsearch.groups
+```
+
+## Bacteria
+```{r}
+varsearch.rforest.results$bacteria[[3]] %>%
+  mutate(x = as.numeric(x),
+         y = as.numeric(y)) %>%
+  ggplot(aes(x = x, y = y)) +
+  facet_wrap(vars(predicted.var), ncol = 3) +
+  geom_path() +
+  labs(x = "", y = "", title = paste0()) +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank()) 
+varsearch.rforest.results$bacteria[[4]]
+```
+
+```{r}
+varsearch.rforest.results$bacteria[[1]]$importance %>% 
+         as.data.frame() %>%
+         rownames_to_column(var = "Taxa") %>%
+         arrange(desc(MeanDecreaseGini)) %>%
+         head()
+```
+
+## Plant
+
+```{r}
+varsearch.rforest.results$plant[[3]] %>%
+  mutate(x = as.numeric(x),
+         y = as.numeric(y)) %>%
+  ggplot(aes(x = x, y = y)) +
+  facet_wrap(vars(predicted.var), ncol = 3) +
+  geom_path() +
+  labs(x = "", y = "", title = paste0()) +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank()) 
+varsearch.rforest.results$plant[[4]]
+```
+
+```{r}
+varsearch.rforest.results$plant[[1]]$importance %>% 
+         as.data.frame() %>%
+         rownames_to_column(var = "Taxa") %>%
+         arrange(desc(MeanDecreaseGini)) %>%
+         head()
+```
+
+## Fungi
+
+```{r}
+varsearch.rforest.results$fungi[[3]] %>%
+  mutate(x = as.numeric(x),
+         y = as.numeric(y)) %>%
+  ggplot(aes(x = x, y = y)) +
+  facet_wrap(vars(predicted.var), ncol = 3) +
+  geom_path() +
+  labs(x = "", y = "", title = paste0()) +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank()) 
+varsearch.rforest.results$fungi[[4]]
+```
+
+```{r}
+varsearch.rforest.results$fungi[[1]]$importance %>% 
+         as.data.frame() %>%
+         rownames_to_column(var = "Taxa") %>%
+         arrange(desc(MeanDecreaseGini)) %>%
+         head()
+```
+
+## Virus
+
+```{r}
+varsearch.rforest.results$virus[[3]] %>%
+  mutate(x = as.numeric(x),
+         y = as.numeric(y)) %>%
+  ggplot(aes(x = x, y = y)) +
+  facet_wrap(vars(predicted.var), ncol = 3) +
+  geom_path() +
+  labs(x = "", y = "", title = paste0()) +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank()) 
+varsearch.rforest.results$virus[[4]]
+```
+
+```{r}
+varsearch.rforest.results$virus[[1]]$importance %>% 
+         as.data.frame() %>%
+         rownames_to_column(var = "Taxa") %>%
+         arrange(desc(MeanDecreaseGini)) %>%
+         head()
+```
+
+# Confuse the labels
+
+
+```{r}
+train.samps.n <- nrow(clin.train)
+test.samps.n <- nrow(clin.test)
+set.seed(112358)
+clin.train$confused.cancer <- sample(clin.train$cancer, train.samps.n, replace = F)
+# clin.train$confused.cancer <- clin.train$cancer
+clin.test$confused.cancer <- sample(clin.test$cancer, test.samps.n, replace = F)
+# clin.test$confused.cancer <- clin.test$cancer
+```
+
+```{r}
+confused.results <- inputvar_config_test(rawcount.train$genus, rawcount.test$genus, 
+                                         clin.train, clin.test, 
+                                         "confused.cancer")
+```
+
+```{r}
+confused.results[[3]] %>%
+  mutate(x = as.numeric(x),
+         y = as.numeric(y)) %>%
+  ggplot(aes(x = x, y = y)) +
+  facet_wrap(vars(predicted.var), ncol = 3) +
+  geom_path() +
+  labs(x = "", y = "", title = paste0()) +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank()) 
+confused.results[[4]]
+```
+
+
+# Metastatic predictions
+
+This is actually going to be a bit more complicated to manage than I initially anticipated. We have been selecting only primary tumors to analyze so far in this process, so of course it makes sense that we don't have any samples labelled as metastatic. One possibile solution would be to intentionally pull and process specifically metastatic samples, narrowed to be from the cancers we are using for this manuscript.
+## Grab metastatic info
+
+```{r}
+library(GenomicDataCommons)
+check.names <- available_fields("files")
+check.names[grep("sample", check.names)]
+files() %>% facet("cases.samples.sample_type") %>% aggregations()
+sampletypes <- files() %>%
+  select(c(default_fields("files"), "cases.samples.sample_type")) %>%
+  filter(file_id %in% tcga.clin$file_id.BAM) %>%
+  results_all()
+sampletypes.pulled <- list()
+for(i in tcga.clin$file_id.BAM){
+  sampletypes.pulled[[i]] <- sampletypes$cases[[i]]$samples[[1]][1,1]
+}
+test <- unlist(sampletypes.pulled)
+table(test)
+```
+
+
+## Format for new tests
+
+## Test tissue sampled
+
+## Test cancer type

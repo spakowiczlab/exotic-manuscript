@@ -12,6 +12,9 @@ library(survival)
 library(ggplot2)
 library(tidyr)
 library(broom)
+library(randomForest)
+library(ROCR)
+library(tibble)
 ```
 
 # Load data
@@ -20,9 +23,13 @@ tcc.exora <- readRDS("/fs/ess/PAS1695/projects/exotic/data/devout/tcc.exora.taxo
 tcga.exora <- readRDS("/fs/ess/PAS1695/projects/exotic/data/devout/tcga.exora.taxonomy.RDS")
 
 tcga.clinical <- readRDS("/fs/ess/PAS1695/projects/exotic/data/drake-output/2021-03-25/tcga.clin.tum.RDS")
+tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_aggregated.csv",
+                     stringsAsFactors = F) 
 ```
 
-# Format
+# Traditional coxph with cutoff
+
+## Format
 ```{r}
 tcga.ra.g <- tcga.exora %>%
   group_by(sample, genus) %>%
@@ -44,7 +51,7 @@ tcga.survin <- tcga.clinical %>%
 
 ```
 
-# Run survival analysis
+## Run survival analysis
 
 ```{r}
 cancers <- unique(tcga.survin$cancer)
@@ -66,7 +73,7 @@ for(canc in cancers){
 }
 ```
 
-# Plot
+## Plot
 
 ```{r}
 tcga.survres.df <- bind_rows(tcga.survres)
@@ -88,4 +95,173 @@ tcga.survres.df %>%
   theme_bw() +
   theme(axis.text.x = element_blank(),
         axis.ticks.x = element_blank())
+```
+
+# Machine learning
+
+## Functions
+
+```{r}
+inputvar_config_test <- function(trainmat, testmat, trainclin, testclin, topredict){
+  model.training <- randomForest(x = trainmat, y = as.factor(trainclin[[topredict]]))
+  test.preds <- predict(model.training, testmat)
+  testpred.mat <- table(observed = testclin[[topredict]], predicted = test.preds)
+  
+  prediction_for_roc_curve <- predict(model.training,testmat,type="prob")
+  
+  # Use pretty colours:
+  # pretty_colours <- c("#F8766D","#00BA38","#619CFF")
+  # Specify the different classes 
+  classes <- levels(as.factor(testclin[[topredict]]))
+  
+  perf.list <- list()
+  auclist <- list()
+  # For each class
+  for (i in 1:length(classes)){
+    # Define which observations belong to class[i]
+    true_values <- ifelse(testclin[[topredict]]==classes[i],1,0)
+    # Assess the performance of classifier for class[i]
+    pred <- prediction(prediction_for_roc_curve[,i],true_values)
+    perf <- performance(pred, "tpr", "fpr")
+    perf.list[[i]] <- as.data.frame(cbind(x = perf@x.values[[1]], y = perf@y.values[[1]],
+                                          predicted.var = classes[i]))
+    
+    auc.perf <- performance(pred, measure = "auc")
+    auclist[[i]] <- auc.perf@y.values
+  }
+  
+  return(list(model.training, testpred.mat, bind_rows(perf.list), unlist(auclist)))
+}
+
+exoRAtowideprev <- function(data, taxlev){
+  tmp <- data
+  tmp$Taxa <- tmp[[taxlev]]
+  tmp.wide<- tmp %>%
+    dplyr::filter(!is.na(Taxa)) %>%
+    # mutate(Taxa = paste(taxlev, Taxa, sep = "_")) %>%
+    group_by(sample, Taxa) %>%
+    summarise(ra = sum(exo.ra, na.rm = T)) %>%
+    spread(key = "Taxa", value = "ra")
+  
+  tmp.wide[is.na(tmp.wide)] <- 0
+  # tmp.prev <- bind_rows(lapply(tmp.wide[,-1], function(x) ifelse(x > 0, 1, 0))) %>%
+  #   mutate(sample = tmp.wide$sample) %>%
+  #   select(sample, everything())
+  return(tmp.wide)
+}
+```
+
+## Format
+
+Let's start with the relative abundances. We choose the genus level because exploring the ML capabilities at all levels showed no great advantage to using any given taxa level, and genus seems to be a commonly used level in other studies. This can always be expanded.
+
+```{r combine relative abundances}
+genus.ra.tcc <- exoRAtowideprev(tcc.exora, "genus")
+genus.ra.tcga <- exoRAtowideprev(tcga.exora, "genus")
+
+genus.ra <- bind_rows(genus.ra.tcc, genus.ra.tcga)
+```
+
+It looks like neither of our datasets report progression information, even though TCGA has the columns for it. I will be using overall survival instead.
+
+```{r check available survival}
+colnames(tcc.clin)
+sort(colnames(tcga.clinical))
+
+table(tcga.clinical$days_to_last_known_disease_status)
+table(tcga.clinical$progression_or_recurrence)
+```
+
+```{r combine clinical data}
+osbin.clin.tcc <- tcc.clin %>%
+  mutate(sample = RNA.SL.ID,
+         months.os = Overall.Survival.from.Dx..days./30.5,
+         sixmonth.outcome = ifelse(months.os < 6 & Vital.Status == "Deceased", "dead", "alive")) %>%
+  select(sample, Cancer, sixmonth.outcome)
+
+tcga.cancers <- unique(tcga.clinical$cancer)
+tcga.to.tcc.cancers <- c("THO", "THO", "GI", "GI", "CUT")
+cancer.key <- as.data.frame(cbind(cancer = tcga.cancers,
+                                  Cancer = tcga.to.tcc.cancers), stringsAsFactors = F)
+osbin.clin.tcga <- tcga.clinical %>%
+  mutate(days = coalesce(days_to_death, days_to_last_follow_up),
+         months = days/30.1,
+         sixmonth.outcome = ifelse(months < 6 & vital_status == "Dead", "dead", "alive"),
+         sample = file_id.BAM) %>%
+  left_join(cancer.key) %>%
+  select(sample, Cancer, sixmonth.outcome)
+
+osbin.clin.large <- bind_rows(osbin.clin.tcc, osbin.clin.tcga)
+
+osbin.clin <- genus.ra %>%
+  select(sample) %>%
+  left_join(osbin.clin.large) %>%
+  mutate(sixmonth.outcome = as.factor(sixmonth.outcome)) %>%
+  drop_na(sixmonth.outcome)
+
+# Not a lot of people die in the first six months, this may need adjusted
+table(osbin.clin$sixmonth.outcome)
+```
+
+```{r split to train and test}
+nsamps <- nrow(osbin.clin)
+ntest <- round(nsamps*.2)
+
+set.seed(112358)
+testsamps <- sample(osbin.clin$sample, ntest)
+trainsamps <- setdiff(osbin.clin$sample, testsamps)
+
+
+clin.test <- osbin.clin %>%
+  filter(sample %in% testsamps) %>%
+  ungroup()
+clin.train <- osbin.clin %>%
+  filter(sample %in% trainsamps) %>%
+  ungroup()
+
+# Looks like this seed gives an ok split in the ones between the train and test groups
+table(clin.test$sixmonth.outcome)
+table(clin.train$sixmonth.outcome)
+
+genus.test <- genus.ra %>%
+  filter(sample %in% testsamps) %>%
+  column_to_rownames(var = "sample") %>%
+  as.matrix()
+genus.train <- genus.ra %>%
+  filter(sample %in% trainsamps) %>%
+  column_to_rownames(var = "sample") %>%
+  as.matrix()
+```
+
+## run ML
+
+```{r}
+genus.6mo.res <- inputvar_config_test(genus.train, genus.test, clin.train, clin.test, "sixmonth.outcome")
+```
+
+
+
+## Investigate
+
+```{r}
+genus.6mo.res[[1]]$importance %>% 
+         as.data.frame() %>%
+         rownames_to_column(var = "Taxa") %>%
+         arrange(desc(MeanDecreaseGini)) %>%
+         head()
+```
+
+```{r}
+genus.6mo.res[[3]] %>%
+  mutate(x = as.numeric(x),
+         y = as.numeric(y)) %>%
+  ggplot(aes(x = x, y = y)) +
+  facet_wrap(vars(predicted.var), ncol = 3) +
+  geom_path() +
+  labs(x = "", y = "", title = paste0()) +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank()) +
+  ggsave("../figures/ROC_6mo-survival-by-genus.png")
+genus.6mo.res[[4]]
 ```
