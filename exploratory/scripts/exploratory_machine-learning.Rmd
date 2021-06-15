@@ -28,14 +28,11 @@ tcga.clin <- readRDS(file.path(drakedir, "tcga.clin.tum.RDS")) %>%
 tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_aggregated.csv",
                      stringsAsFactors = F) %>%
   filter(RNA.SL.ID %in% tcc.ranorm$sample)
-# tcc.meta.linkage <- readRDS(file.path(drakedir, "tcc.meta.linkage.RDS")) %>%
-#   filter(tcc_id %in% tcc.ranorm$sample)
-# tcga.meta <- readRDS(file.path(drakedir, "tcga.meta.RDS"))
-# tumor.site.resolve <- read.csv("/fs/scratch/PAS1695/exogitx/key_TCC-TCGA-origin-tissues.csv",
-#                                stringsAsFactors = F)
-# tumor.site.resolve$SpecimenSiteOfOrigin[36] <- "Connective, Subcutaneous And Other Soft Tissues, NOS"
-# 
-# tcc.meta <- readRDS(file.path(drakedir, "tcc.meta.RDS"))
+
+
+tcc.expr <- readRDS(file.path(drakedir, "tcc.expr.norm.RDS"))
+tcga.expr <- readRDS(file.path(drakedir, "tcga.expr.norm.RDS"))
+
 ```
 
 #Functions
@@ -460,3 +457,114 @@ table(test)
 ## Test tissue sampled
 
 ## Test cancer type
+
+# Expression predictions
+
+## Format inputs
+```{r format clinical}
+fix.tcga.sampnames <- tcga.clin %>%
+  select(file_id.BAM, file_id.expression) %>%
+  rename(sample = "file_id.BAM")
+
+clin.test.exp <- clin.test %>%
+  left_join(fix.tcga.sampnames) %>%
+  mutate(sample.exp = ifelse(is.na(file_id.expression), sample, file_id.expression))
+
+clin.train.exp <- clin.train %>%
+  left_join(fix.tcga.sampnames) %>%
+  mutate(sample.exp = ifelse(is.na(file_id.expression), sample, file_id.expression))
+
+```
+
+```{r format expression counts}
+goodgenes <- intersect(colnames(tcc.expr), colnames(tcga.expr))
+
+full.expr <- bind_rows(tcc.expr, tcga.expr) %>%
+  select(all_of(goodgenes)) %>%
+  rename(sample.exp = sample)
+
+genevar <- unlist(lapply(full.expr[,-1], function(x) var(x)))
+cutoff <- summary(genevar)[3]
+genevarpass <- names(subset(genevar, genevar>cutoff))
+
+
+expmat.train <- clin.train.exp %>%
+  select(sample.exp) %>%
+  left_join(full.expr) %>%
+  select(c("sample.exp", genevarpass)) %>%
+  column_to_rownames(var = "sample.exp") %>%
+  as.matrix()
+
+expmat.test <- clin.test.exp %>%
+  select(sample.exp) %>%
+  left_join(full.expr) %>%
+  select(c("sample.exp", genevarpass)) %>%
+  column_to_rownames(var = "sample.exp") %>%
+  as.matrix()
+  
+```
+
+## Run
+```{r}
+exp.as.input <- inputvar_config_test(expmat.train, expmat.test, clin.train.exp, clin.test.exp, "cancer")
+```
+
+## Investigate
+
+```{r}
+exp.as.input[[1]]$importance %>% 
+         as.data.frame() %>%
+         rownames_to_column(var = "Taxa") %>%
+         arrange(desc(MeanDecreaseGini)) %>%
+         head()
+
+exp.as.input[[3]] %>%
+  mutate(x = as.numeric(x),
+         y = as.numeric(y)) %>%
+  ggplot(aes(x = x, y = y)) +
+  facet_wrap(vars(predicted.var), ncol = 3) +
+  geom_path() +
+  labs(x = "", y = "", title = paste0()) +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank()) +
+  ggsave("../figures/ROC_cancer-by-expression.png")
+exp.as.input[[4]]
+```
+
+## Confused labels? 
+
+```{r}
+train.samps.n <- nrow(clin.train.exp)
+test.samps.n <- nrow(clin.test.exp)
+set.seed(112358)
+clin.train.exp$confused.cancer <- sample(clin.train.exp$cancer, train.samps.n, replace = F)
+# clin.train$confused.cancer <- clin.train$cancer
+clin.test.exp$confused.cancer <- sample(clin.test.exp$cancer, test.samps.n, replace = F)
+# clin.test$confused.cancer <- clin.test$cancer
+```
+
+```{r}
+exp.as.input.confused <- inputvar_config_test(expmat.train, expmat.test,
+                                     clin.train.exp, clin.test.exp,
+                                     "confused.cancer")
+
+exp.as.input.confused[[1]]$importance %>% 
+         as.data.frame() %>%
+         rownames_to_column(var = "Taxa") %>%
+         arrange(desc(MeanDecreaseGini)) %>%
+         head()
+
+exp.as.input.confused[[3]] %>%
+  mutate(x = as.numeric(x),
+         y = as.numeric(y)) %>%
+  ggplot(aes(x = x, y = y)) +
+  facet_wrap(vars(predicted.var), ncol = 3) +
+  geom_path() +
+  labs(x = "", y = "", title = paste0()) +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank()) +
+  ggsave("../figures/ROC_cancer-by-expression_confused.png")
+exp.as.input.confused[[4]]
+```
