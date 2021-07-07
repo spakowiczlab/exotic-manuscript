@@ -1,28 +1,133 @@
 ---
-title: "exploratory_correlations"
+title: "exotic_correlations"
+author: "Caroline Wheeler"
+date: "5/10/2021"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library("tidyverse")
+library("ggplot2")
+library("dplyr")
+library("tidyr")
+library("broom")
+library("ggbeeswarm")
+library("ggrepel")
 ```
 
-## R Markdown
+# Load data
+## data from the dev-pipeline results
+```{r include=FALSE}
+tcc.exora <- readRDS("/fs/ess/PAS1695/projects/exotic/data/devout/tcc.exora.taxonomy.RDS")
+tcga.exora <- readRDS("/fs/ess/PAS1695/projects/exotic/data/devout/tcga.exora.taxonomy.RDS")
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+tcga.clin <- readRDS("/fs/ess/PAS1695/projects/exotic/data/drake-output/2021-03-25/tcga.clin.tum.RDS")
+tcc.clin <- tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_aggregated.csv")
 ```
 
-## Including Plots
+# format data
+```{r include=FALSE}
+colnames(tcc.clin)[2] <- "sample"
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+tcga.clin <- tcga.clin %>%
+  select(file_id.BAM, age_at_index, race)
+colnames(tcga.clin)[1] <- "sample"
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+# combine data
+```{r include=FALSE}
+exora <- rbind(tcc.exora, tcga.exora)
+
+tcc.age <- select(tcc.clin, RNA.SL.ID, Age.at.Collection)
+colnames(tcc.age)[2] <- "age_at_index"
+colnames(tcc.age)[1] <- "sample"
+tcga.age <- select(tcga.clin, sample, age_at_index)
+
+# tcc clin lists age as a double
+# tcga clin lists age as an int
+# Need to truncate so tcc age isn't rounded up
+tcc.age$age_at_index <- trunc(tcc.age$age_at_index, 0)
+
+age <- rbind(tcc.age, tcga.age)
+remove(tcc.age, tcga.age)
+```
+
+# remove bad samples
+```{r include=FALSE}
+bad <- exora[exora$microbe == "Homo.sapiens" | exora$microbe == "Abelson.murine.leukemia.virus",]
+
+unq <- select(exora, sample)
+unq <- unq %>% distinct()
+
+counts <- data.frame(matrix(ncol=2,nrow=0))
+
+x=1
+for (i in unq$sample){
+  #abs <- bad[x, 12])
+  hom <- bad[x+2599, 12]
+  mic <- 1 - hom
+  new_row = c(i, as.double(mic))
+  counts <- rbind(counts, new_row)
+  x = x + 1
+}
+
+colnames(counts) <- c("sample", "total_microbes")
+counts$total_microbes <- as.double(counts$total_microbes)
+```
+
+# clean up
+```{r}
+remove(mic, i, new_row, x, bad, unq, hom)
+``` 
+
+# remove salmonella samples
+```{r include=FALSE}
+counts <- counts[counts$sample != "SL387132" & counts$sample !="SL387124" & 
+                 counts$sample !="SL243551" & counts$sample !="SL385603",]
+```
+
+# age correlation
+```{r include=FALSE}
+age_exora <- merge(age, counts, by="sample") 
+```
+
+# plot 
+```{r}
+ggplot(age_exora, aes(x=age_at_index, y=total_microbes)) +
+  geom_point() +
+  geom_smooth(method=lm)
+
+plot(x=age_exora$age_at_index, y=age_exora$total_microbes,
+     main="Correlation of Total Mircobes with Age", ylab="Relative Abundance of Microbes",
+     xlab="Age at Sample Collection", abline(lm(age_exora$total_microbes ~ age_exora$age_at_index, data = age_exora), col = "blue"))
+```
+
+# race correlation
+## prep data
+```{r include=FALSE}
+race_exora <- merge(counts, tcga.clin, by="sample")
+
+race_exora <- race_exora[!is.na(race_exora$race),]
+
+race <- select(race_exora, race) %>%
+  distinct()
+
+
+```
+
+## plot
+```{r}
+ggplot(race_exora, aes(race, total_microbes, col = race)) + geom_beeswarm(groupOnX = FALSE)
+
+# prepare a special xlab with the number of obs for each group
+my_xlab <- paste(levels(race_exora$race),"\n(N=",table(race_exora$race),")",sep="")
+ 
+# plot
+ggplot(race_exora, aes(x=race, y=total_microbes, fill=race)) +
+    geom_boxplot(varwidth = TRUE, alpha=0.2) +
+    theme(legend.position="none") +
+    scale_x_discrete(labels=my_xlab)
+```
