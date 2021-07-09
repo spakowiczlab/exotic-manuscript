@@ -1,0 +1,216 @@
+---
+title: "ExoTIC Vignette"
+author: "Caroline Wheeler"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+*"Exogenous reads within Tissue with Immune Cells"*
+
+This is a tool created to process RNAseq samples heavily dominated by human reads for the identification of exogenous sequences.
+
+
+```{r echo=FALSE}
+DiagrammeR::grViz("digraph {
+  graph [layout = dot, rankdir = LR]
+  node[shape = rectangle, style = filled]
+  
+  node[fillcolor = Mistyrose, margin = 0.2]
+  a [label = 'fastQs']
+  
+  subgraph cluster_0 {
+    graph[shape = rectangle]
+    style = rounded
+    bgcolor = Gold
+    
+    label = 'Step 1'
+    node[shape = rectangle, fillcolor = LemonChiffon, margin = 0.25]
+    b [label = 'get raw counts']
+    c [label = 'resolve batches']
+  }
+  
+  subgraph cluster_1 {
+    graph[shape = rectangle]
+    style = rounded
+    bgcolor = DarkSeaGreen
+    
+    label = 'Step 2'
+    node[shape = rectangle, fillcolor = Honeydew, margin = 0.25]
+    d [label = 'get contaminants']
+    e [label = 'resolve contaminants']
+  }
+  
+  subgraph cluster_2 {
+    graph[shape = rectangle]
+    style = rounded
+    bgcolor = PowderBlue
+    
+    label = 'Step 3'
+    node[shape = rectangle, fillcolor = Azure, margin = 0.25]
+    f [label = 'format for normalization']
+    g [label = 'normalize (voom_snm']
+  }
+  
+  node[fillcolor = DarkSalmon, margin = 0.2, ]
+  h [label = 'calculate relative abundances']
+  
+  node[fillcolor = CornFlowerBlue, margin = 0.2]
+  i [label = 'assign taxonomy']
+
+  # edge definitions with the node IDs
+  a -> b
+  c -> d
+  e -> f
+  g -> h
+  h -> i
+  
+  }",
+  height = 300,
+  width = 750)
+```
+
+
+## Usage
+### Installing the package
+[insert instructions here]
+
+### Set up
+
+To run the exoTIC pipeline you will need to install the packages listed below:
+
+```{r eval=FALSE}
+install.packages("tidyr")
+install.packages("stringr")
+install.packages("dplyr")
+install.packages("doMC")
+install.packages("gbm")
+install.packages("purrr")
+install.packages("readxl")
+install.packages("tibble")
+```
+
+You will also need the following packages which are available through Bioconductor. You will first need to install BiocManager with the following command. 
+
+```{r eval=FALSE}
+install.packages("BiocManager")
+```
+
+Install the following packages via BiocManager as shown below. 
+
+```{r eval=FALSE}
+BiocManager::install("limma")
+BiocManager::install("edgeR")
+BiocManager::install("snm")
+BiocManager::install("GenomicDataCommons")
+BiocManager::install("decontam")
+```
+
+### Input data
+Input to the pipeline needs to be in the form of a folder containing fastQ files. If you are beginning with CRAM or BAM files please see [Starting from CRAM or BAM files](#starting-from-cram-or-bam-files). 
+
+### Starting from CRAM or BAM files
+```{r echo=FALSE}
+DiagrammeR::grViz("digraph {
+  graph [layout = dot, rankdir = LR]
+  
+  node [shape = oval, color=lightsteelblue, style=filled]        
+  rec1 [label = 'Cram']
+  rec2 [label = 'Bam']
+  rec3 [label =  'Sorted Bam']
+  rec4 [label = 'FastQ']
+  
+  # edge definitions with the node IDs
+  rec1 -> rec2 -> rec3 -> rec4
+  }",
+  height = 100)
+```
+
+CRAM and BAM files are compressed versions of mapped sequence data formats. For use of the pipeline, they will need to be converted to the fastQ file format which is the decompressed version. Using [SAMtools](http://www.htslib.org/), CRAM files can be converted to BAM files, and BAM files can be converted to fastQ files. 
+
+Install SAMtools in your UNIX environment following these [directions](http://www.htslib.org/download/). 
+
+Convert single CRAM->BAM
+```{bash eval=FALSE}
+samtools view -b -o output_filename.bam input_filename.cram
+```
+
+Sort single BAM file
+```{bash eval=FALSE}
+
+```
+
+Convert single sorted BAM->fastQ
+```{bash eval=FALSE}
+
+```
+
+
+Convert CRAM -> BAM in batch
+```{bash eval=FALSE}
+module load samtools
+cd /this/is/a/path/crams
+for i in *.cram; do
+filename=$(basename "$i")
+fname="${filename%.*}"
+if ! test -f $fname".bam"; then
+samtools view -b -o $fname".bam" $i
+fi
+done
+```
+
+Sort the BAM files in a batch
+```{bash eval=FALSE}
+module load samtools
+cd /this/is/a/path/bams
+for i in *.bam; do
+filename=$(basename "$i")
+fname="${filename%.*}"
+if ! test -f $fname"_sorted.bam"; then
+samtools sort -n $i -o $fname"_sorted.bam"
+fi
+done
+```
+
+convert BAM -> fastq in batch
+```{bash eval=FALSE}
+module load samtools
+cd /fs/ess/PAS1695/generate-inputs/ORIEN-processing/scripts/download_scripts/",cancer,"/sorted_bams/
+samtools fastq -@ 8 ",i," \\
+                 paste0("-1 ",s,"_1.fastq.gz \\"),
+                 paste0("-2 ",s,"_2.fastq.gz \\"),
+                 paste0("-0 /dev/null -s /dev/null -n"),
+```
+
+
+### Running an analysis
+
+### Output
+
+### Using the ouput
+
+Example: Stacked Bar Plot of Microbe Abundance
+![Stacked bar plot showing microbe abundance.](/Users/wheeler.1017/Documents/projects_rando/rccio/Screen Shot 2021-06-17 at 12.40.14 PM.png){width=70%}
+
+(note: I'd like to make an example dataset that I run through the whole process with)
+(note: will need to change file path once image is on github)
+
+Example: Volcano Plot 
+
+
+## About
+### Raw counts
+### Contaminants
+### Normalization 
+### Calculate relative abundance
+### Assign taxonomy
+
+## FAQ
+## Related resources
