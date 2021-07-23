@@ -1,0 +1,184 @@
+---
+title: "Effects of error rates in tumor fastq"
+author: "Rebecca Hoyd"
+date: "7/9/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(stringr)
+library(ggplot2)
+# library(ShortRead)
+
+source("/fs/ess/PAS1695/exoticpipe/R/assign_taxonomy.R")
+```
+
+
+# Make the data from TCGA
+
+
+## Remake files from TCGA start point
+
+```{r, eval=FALSE}
+man <- read.csv("/fs/ess/PAS1695/generate-inputs/TCGA-processing/data/LUAD/manifest.csv")
+library(GenomicDataCommons)
+gdc_set_cache("/fs/ess/PAS1695/projects/exotic/data/error_fastqs/TCGA_bam")
+gdctok <- read.table("/fs/scratch/PAS1479/controlled_TCGA/gdc-user-token.2021-07-14T02_28_49.540Z.txt")[1,1]
+gdcdata(uuids = man$file_id.BAM[1], token = gdctok)
+```
+
+## CuReSim for varied error rates
+
+CuReSim is a java tool that will add varying levels of errors to the fastq files. We can then put our new files through the k2b pipeline to check for varying amounts of microbes, and whether those microbes look like what we find in our tumor samples.
+
+```{r, eval=FALSE}
+substitution.rates <- c(1e-5, 1e-4, seq(.001, .01, .001), seq(.01,.1,.01))
+sr.names <- gsub("0\\.", "_", as.character(substitution.rates))
+sr.names <- gsub("^1", "_1", sr.names)
+
+curesim.command.r1 <- paste0("java -jar ~/Documents/src/CuReSim/CuReSim.jar -i 0 -d 0 -s ", substitution.rates,
+                         " -f aligned_reads_1.fastq -o fq_with_errors/R1", sr.names, ".fastq")
+curesim.command.r2 <- paste0("java -jar ~/Documents/src/CuReSim/CuReSim.jar -i 0 -d 0 -s ", substitution.rates,
+                         " -f aligned_reads_2.fastq -o fq_with_errors/R2", sr.names, ".fastq")
+
+writeLines(c("#PBS -N CuReSim_TCGA-LUAD",
+             "#PBS -A PAS1695",
+             "#PBS -l walltime=10:00:00",
+             "#PBS -l nodes=1:ppn=28",
+             "#PBS -j oe",
+             "",
+             "cd /fs/ess/PAS1695/projects/exotic/data/error_fastqs/TCGA_bam",
+             "module load java",
+             paste(curesim.command.r1, sep = "\n"),
+             "",
+             paste(curesim.command.r2, sep = "\n")),
+           "/fs/ess/PAS1695/projects/exotic/scripts/batch/CuReSim_TCGA-LUAD.pbs")
+
+```
+
+## Run k2b on the error samples
+
+```{r, eval=FALSE}
+for(i in sr.names){
+writeLines(c(paste0("#PBS -N errors", i),
+             "#PBS -A PAS1695",
+             "#PBS -l walltime=10:00:00",
+             "#PBS -l nodes=1:ppn=28",
+             "#PBS -j oe",
+             "",
+             "module load python/3.6-conda5.2",
+             "cd /fs/ess/PAS1695/projects/exotic/data/error_fastqs/TCGA_bam/kreports",
+             "",
+             paste0("/fs/ess/PAS1695/src/kraken2/kraken2 --db /fs/ess/PAS1695/db/kraken2-db",
+                    " --threads 48 --minimum-base-quality 20 --output kout", i, ".txt --report kreport", i, ".txt",
+                    " --confidence 0.1 --paired ../fq_with_errors/R1", i,
+                    ".fastq ../fq_with_errors/R2", i, ".fastq"),
+             "source activate kraken2",
+             paste0("bracken -d /fs/ess/PAS1695/db/kraken2-db -l S -i kreport",i , ".txt",
+                    " -o /fs/ess/PAS1695/projects/exotic/data/error_fastqs/TCGA_bam/bracken-out/",
+                    "testerrs", i, ".txt")),
+           paste0("/fs/ess/PAS1695/projects/exotic/scripts/batch/k2b_TCGA-sample-errors", i, ".pbs"))
+}
+
+```
+
+# Test some visualizations
+
+## Format
+
+```{r}
+k2b <- read.delim("/fs/ess/PAS1695/projects/exotic/data/error_fastqs/TCGA_bam/k2b_with_errors.txt",
+                  sep = "\t", header = T)
+krakenmet <- read.delim("/fs/ess/PAS1695/exoticpipe/external-data/kraken2-metaphlan-taxonomy.txt",
+                        sep = "\t", header = F) %>%
+  rename("V1" = "Taxonomy")
+
+k2b.long <- k2b %>%
+  gather(-sample, key = "microbe", value = "counts") %>%
+  group_by(sample) %>%
+  mutate(tot.count = sum(counts)) %>%
+  ungroup() %>%
+  mutate(ra = counts/tot.count) %>%
+  separate(sample, remove = F, into = c("er", "subrate"), sep = "_") %>%
+  mutate(subrate = ifelse(grepl("^0", subrate) | subrate == "1", paste0("0.", subrate), subrate),
+         subrate = as.numeric(subrate))
+
+k2b.long %>%
+  filter(microbe == "Abelson.murine.leukemia.virus")
+
+test <- lapply(k2b[,-1], function(x) var(x))
+
+summary(unlist(test))
+```
+
+```{r}
+allmic <- unlist(lapply(k2b[,-1], function(x) mean(x)))
+allmic <- subset(allmic, names(allmic)!="Homo.sapiens")
+hist(allmic)
+summary(allmic)
+
+highcounts <- sort(subset(allmic, allmic > 100))
+
+highcounts
+```
+
+```{r}
+testorig <- read.delim("/fs/ess/PAS1695/projects/exotic/data/error_fastqs/TCGA_bam/bracken-out/testerrs_orig.txt")
+# names(testorig) <- make.names(names(testorig))
+testorig.form <- testorig %>%
+  select(name, new_est_reads) %>%
+  rename("microbe" = "name",
+          "counts" = "new_est_reads") %>%
+  mutate(microbe = make.names(microbe),
+         sample = "Orig") %>%
+  spread(key = microbe, value = counts)
+
+testorig.tax <- assign_taxonomy(krakenmet, testorig.form) %>%
+  mutate(counts = exo.ra) %>%
+  select(-exo.ra)
+
+testorig.tax %>%
+  filter(microbe %in% names(highcounts)) %>%
+  select(microbe, counts) %>%
+  arrange(desc(counts))
+```
+
+```{r}
+testorig.tax %>%
+  filter(microbe != "Homo.sapiens") %>%
+  mutate(domain = ifelse(kingdom == "k__Viridiplantae" | kingdom == "k__Fungi", kingdom, domain)) %>%
+  ggplot(aes(x = sample, y = counts, fill = domain)) +
+  geom_col()
+```
+
+```{r}
+check.pipeline.taxa <- read.csv("/fs/ess/PAS1695/projects/exotho/data/drake-output/2021-03-15/2021-03-15_tcga_exora-with-taxonomy.csv", stringsAsFactors = F)
+
+testorig.join <- testorig.tax %>%
+  select(microbe, counts)
+pipeline.props <- check.pipeline.taxa %>%
+  filter(sample.microbe == "00ac4e10-9bbe-4b6a-94d1-70c49dfffeb7" & microbe != "Homo.sapiens") %>%
+  select(microbe, domain, kingdom) %>%
+  left_join(testorig.join) %>%
+  mutate(presence = ifelse(is.na(counts), 0, 1),
+         domain = ifelse(kingdom == "k__Viridiplantae" | kingdom == "k__Fungi", kingdom, domain))
+
+pipeline.props %>%
+  group_by(domain) %>%
+  summarise(presence = mean(presence),
+            avg.count = mean(counts, na.rm = T),
+            med.counts = median(counts, na.rm = T),
+            min.counts = min(counts, na.rm = T),
+            max.counts = max(counts, na.rm = T))
+
+pipeline.props %>%
+  ggplot(aes(x = counts)) +
+  facet_wrap(vars(domain), scales = "free") +
+  geom_histogram()
+```
+
