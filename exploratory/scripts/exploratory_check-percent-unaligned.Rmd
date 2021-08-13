@@ -30,7 +30,7 @@ pull_unclassified_percent <- function(krep.dir, sum.name){
   dir.files <- list.files(krep.dir, full.names = T)
   dir.krep <- subset(dir.files, !grepl("bracken", dir.files) & !grepl("core", dir.files))
   
-  krep.ls <- lapply(dir.krep, function(x) try(read.table(x, sep = "\t", header = F)))
+  krep.ls <- lapply(dir.krep, function(x) try(read.table(x, sep = "\t", header = F, nrows = 5)))
   unc.perc <- unlist(lapply(krep.ls, function(x) try(x$V1[1])))
   unc.perc.clean <- as.numeric(subset(unc.perc, !grepl("Error", unc.perc)))
   unc.sum <- summary(unc.perc.clean) %>%
@@ -47,7 +47,14 @@ tcc.cancers <- list.files("/fs/ess/PAS1695/generate-inputs/ORIEN-processing/data
 tcc.dirs <- paste0("/fs/ess/PAS1695/generate-inputs/ORIEN-processing/data/kreports/", tcc.cancers)
 names(tcc.dirs) <- tcc.cancers
 
-summarize.percent.UC <- lapply(tcc.cancers, function(x) pull_unclassified_percent(tcc.dirs[x], x))
+summarize.percent.UC <- lapply(tcc.cancers, function(x) pull_unclassified_percent(tcc.dirs[x], x)) %>%
+  bind_rows()
+```
+
+```{r}
+summarize.percent.UC
+
+write.csv(summarize.percent.UC, "../data/check-kraken2-unclassified.csv", row.names = F)
 ```
 
 

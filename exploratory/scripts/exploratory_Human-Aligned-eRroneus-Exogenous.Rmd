@@ -1,0 +1,181 @@
+---
+title: "exploratory_Human-Aligned-eRroneus-Exogenous"
+author: "Rebecca Hoyd"
+date: "7/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+# Prepare 100 LUAD, COAD samples for aligned read k2b
+
+```{r}
+luad <- read.csv("/fs/ess/PAS1695/generate-inputs/TCGA-processing/data/LUAD/manifest.csv",
+                 stringsAsFactors = F)
+coad <- read.csv("/fs/ess/PAS1695/generate-inputs/TCGA-processing/data/COAD/manifest.csv",
+                 stringsAsFactors = F)
+```
+
+```{r}
+make.k2b.batch <- function(filemanifest, cname){
+  
+  filemanifest.condense <- unique(filemanifest[, c("file_id.BAM", "file_name.BAM")])[1:100,]
+  
+  fileOut<-file(paste0("batch/TCGA-", cname, "_k2b_aligned.pbs"))
+  
+  #Try running on Pitzer exp?
+  writeLines(c(paste0("#PBS -N ", cname, "_kraken2-bracken"),
+               "#PBS -l walltime=8:00:00",
+               "#PBS -l nodes=2:ppn=28",
+               "#PBS -j oe",
+               "#PBS -m ae",
+               "#PBS -A PAS1695",
+               "",
+               #List our important info in a way that can be indexed
+               paste0("uuids=('", paste(filemanifest.condense$file_id.BAM, collapse = "' '"), "')"),
+               paste0("bnams=('", paste(filemanifest.condense$file_name.BAM, collapse = "' '"), "')"),
+               "",
+               #BAM download and test
+               "",
+               "module load python/3.6-conda5.2",
+               "module load bam2fastq",
+               "module load samtools",
+               "",
+               "cd $TMPDIR",
+               paste0("/fs/ess/PAS1695/generate-inputs/TCGA-processing/scripts/gdc-client download",
+                      " -t /fs/scratch/PAS1479/controlled_TCGA/gdc-user-token.2021-07-14T02_28_49.540Z.txt",
+                      " ${uuids[$PBS_ARRAY_INDEX]}"),
+               
+               # # Create our working direcory
+               # "mkdir $TMPDIR/intermediate/",
+               
+               # Manipulate to fastqs.
+               paste0("samtools view -b -F 4 --threads 48 ",
+                      "$TMPDIR/${uuids[$PBS_ARRAY_INDEX]}/${bnams[$PBS_ARRAY_INDEX]} >",
+                      " $TMPDIR/${uuids[$PBS_ARRAY_INDEX]}_mapped.BAM"), 
+               paste0("samtools sort -n --output-fmt BAM --threads 48 -o",
+                      " $TMPDIR/${uuids[$PBS_ARRAY_INDEX]}.qsort",
+                      " $TMPDIR/${uuids[$PBS_ARRAY_INDEX]}_mapped.BAM"),                     
+               paste0("bam2fastq -o $TMPDIR/${uuids[$PBS_ARRAY_INDEX]}#.fastq",
+                      " $TMPDIR/${uuids[$PBS_ARRAY_INDEX]}.qsort"),
+               "",
+               
+               # Run kraken2/bracken
+               "cd $TMPDIR/intermediate/",
+               "ls",
+               paste0('if [ -f "${uuids[$PBS_ARRAY_INDEX]}.fastq" ];', 
+                      "then /fs/scratch/PAS1479/src/kraken2/kraken2 --db",
+                      " /fs/ess/PAS1695/db/kraken2-db --threads 48 --minimum-base-quality 20",
+                      " --output tmp.txt --report ${uuids[$PBS_ARRAY_INDEX]}.txt --confidence 0.1",
+                      " $TMPDIR/${uuids[$PBS_ARRAY_INDEX]}.fastq;fi"), 
+               paste0('if [ -f "${uuids[$PBS_ARRAY_INDEX]}_1.fastq" ];',
+                      'then /fs/ess/PAS1695/src/kraken2/kraken2 --db',
+                      " /fs/ess/PAS1695/db/kraken2-db --threads 48 --minimum-base-quality 20",
+                      " --output tmp.txt --report ${uuids[$PBS_ARRAY_INDEX]}.txt --confidence 0.1 --paired",
+                      " $TMPDIR/${uuids[$PBS_ARRAY_INDEX]}_1.fastq",
+                      " $TMPDIR/${uuids[$PBS_ARRAY_INDEX]}_2.fastq;fi"),
+               "",
+               "source activate kraken2",
+               paste0("bracken -d /fs/ess/PAS1695/db/kraken2-db -l S -i ${uuids[$PBS_ARRAY_INDEX]}.txt",
+                      " -o /fs/ess/PAS1695/projects/exotic/data/HARE/", cname,
+                      "/${uuids[$PBS_ARRAY_INDEX]}.txt"),
+               ""
+               
+  ),
+  
+  fileOut
+  )
+  
+}
+```
+
+```{r}
+make.k2b.batch(luad, "LUAD")
+make.k2b.batch(coad, "COAD")
+```
+
+# Look at LUAD distributions
+
+Let's read in the counts and quickly check how many microbes we are possible looking at.
+
+```{r}
+luad.hare <- read.table("/fs/ess/PAS1695/projects/exotic/data/HARE/LUAD.txt", header = T, sep = "\t")
+luad.counts <- read.table("/fs/ess/PAS1695/generate-inputs/TCGA-processing/data/LUAD/k2bout.txt",
+                          header = T, sep = "\t")
+
+dim(luad.hare)
+```
+
+From earlier analyses, we know that some large groups of taxa are consistently bad - namely plants. If we're going to extend the blacklist, we need further consensus between the microbes that are part of taxa that generally seem to have a better rate of non-contaminants. We're looking for a list of bad microbes. 
+
+```{r}
+test <- unlist(lapply(luad.hare[,-1], function(x) median(x)))
+rev(sort(test))[1:10]
+```
+
+## Do contaminants behave consistently? Is the variance low?
+
+```{r}
+var.check <- unlist(lapply(luad.hare[,-1], function(x) var(x)))
+
+hist(var.check)
+summary(var.check)
+
+highvar <- names(rev(sort(var.check[var.check > 100])))
+```
+
+## Let's grab summaries of the distributions
+
+This looks pretty encouraging - the highest variance microbes seem to have high medians
+```{r}
+summarize.microbes <- luad.hare %>%
+  gather(-sample, key = "microbe", value = "counts") %>%
+  group_by(microbe) %>%
+  summarise(Minimun = min(counts),
+            Median = median(counts),
+            Maximum = max(counts),
+            Variance = var(counts)) %>%
+  arrange(desc(Variance))
+
+summarize.microbes %>%
+  head()
+```
+
+I looked further into the summary table and there's a problem, we definitely do have oddly behaved microbes - things with low medians and high variance. It needs more looking into.
+
+## Test brute force results
+
+I think I can limit how many of the microbes I need to look at for the next step, I am most worried about high variance + low minimum microbes : Microbes that may only sometimes be contaminants. I want to test the brute force method to see what the after-correction values of these microbes might be. There's only a few microbes in this category but  think it will be enough to get an idea what we're looking at.
+
+```{r}
+concerning.mics <- summarize.microbes %>%
+  filter(Median == 0 & Variance > 100)
+concerning.mics <- concerning.mics$microbe
+```
+
+```{r}
+luad.hare.l <- luad.hare %>%
+  gather(-sample, key = "microbe", value = "HARE.counts") %>%
+  filter(microbe %in% concerning.mics)
+
+luad.bf <- luad.counts %>%
+  gather(-sample, key = "microbe", value = "all.counts") %>%
+  right_join(luad.hare.l) %>%
+  mutate(counts = all.counts - HARE.counts) %>%
+  group_by(microbe) %>%
+  summarise(Minimun.all = min(all.counts),
+            Median.all = median(all.counts),
+            Maximum.all = max(all.counts),
+            Variance.all = var(all.counts),
+            Minimun.bf = min(counts),
+            Median.bf = median(counts),
+            Maximum.bf = max(counts),
+            Variance.bf = var(counts)) %>%
+  left_join(summarize.microbes)
+```
