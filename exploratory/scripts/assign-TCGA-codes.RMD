@@ -1,0 +1,82 @@
+---
+title: "Untitled"
+author: "Rebecca Hoyd"
+date: "12/16/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(readxl)
+```
+
+# Load data
+```{r}
+basevals <- read_excel("/fs/ess/PAS1695/exoticpipe/external-data/Spakowicz - Exotic -Avatar RNASeq Ids with Sites 2021.11.17.xlsx")
+```
+
+# Set up groups
+
+```{r}
+category.reqs <- basevals %>%
+  group_by(`Avatar Disease Group`, `ICD-O Cancer Primary Site Description`, `ICD-O Cancer Histology Description`) %>%
+  tally()
+```
+
+
+## split into list
+
+This is mostly to make it easier for me to look at the different main groups
+```{r}
+category.ls <- list()
+for(g in unique(category.reqs$`Avatar Disease Group`)) {
+  category.ls[[g]] <- category.reqs %>%
+    filter(`Avatar Disease Group` == g)
+}
+```
+
+
+# Assign to TCGA codes
+
+```{r}
+tcga.coded.groups <- category.reqs %>%
+  mutate(TCGA.code = NA,
+         TCGA.code = ifelse(`Avatar Disease Group` == "THO - Lung Cancer" & 
+                                     grepl("squamous", `ICD-O Cancer Histology Description`, 
+                                           ignore.case = T), "LUSC",
+                                   ifelse(`Avatar Disease Group` == "THO - Lung Cancer" &
+                                            grepl("adeno", `ICD-O Cancer Histology Description`,
+                                                  ignore.case = T), "LUAD", TCGA.code)),
+         TCGA.code = ifelse(`Avatar Disease Group` == "THO - Lung Cancer" &
+                              grepl("^Non", `ICD-O Cancer Histology Description`), "NSCLC",
+                            ifelse(`Avatar Disease Group` == "THO - Lung Cancer" & 
+                                     grepl("small", `ICD-O Cancer Histology Description`, 
+                                           ignore.case = T), "SCLC",
+                                   ifelse(`Avatar Disease Group` == "THO - Lung Cancer" &
+                                            is.na(TCGA.code),
+                                          "OtherLung", TCGA.code))),
+         TCGA.code = ifelse(`Avatar Disease Group` == "GI - Colorectal Cancer" & 
+                              `ICD-O Cancer Primary Site Description` == "Rectum, NOS", "READ", 
+                            ifelse(`Avatar Disease Group` == "GI - Colorectal Cancer" &
+                                     grepl("adeno", `ICD-O Cancer Histology Description`, 
+                                           ignore.case = T), "COAD",
+                                   ifelse(`Avatar Disease Group` == "GI - Colorectal Cancer", "OtherCR",
+                                          TCGA.code))),
+         TCGA.code = ifelse(`Avatar Disease Group` == "GI - Other GI Cancer", "OtherGI", TCGA.code),
+         TCGA.code = ifelse(`Avatar Disease Group` == "GU - Bladder Cancer", "BLCA", TCGA.code),
+         TCGA.code = ifelse(`Avatar Disease Group` == "GU - Kidney Cancer", "KIRC", TCGA.code),
+         TCGA.code = ifelse(`Avatar Disease Group` == "GYN - Endometrial Cancer", "UCEC", TCGA.code),
+         TCGA.code = ifelse(`Avatar Disease Group` == "SAR - Sarcoma", "SARC", TCGA.code),
+         TCGA.code = ifelse(`Avatar Disease Group` == "END - Thyroid Cancer", "THCA", TCGA.code),
+TCGA.code = ifelse(`Avatar Disease Group` == "CUT - Melanoma", "SKCM", TCGA.code)
+         )
+
+write.csv(tcga.coded.groups, "../data/members-of-TCGA-groups.csv", row.names = F)
+
+tcga.coded.groups %>%
+  group_by(TCGA.code) %>% 
+  summarise(n = sum(n)) %>%
+  write.csv("../data/TCGA-code-group-sizes.csv", row.names = F)
+```

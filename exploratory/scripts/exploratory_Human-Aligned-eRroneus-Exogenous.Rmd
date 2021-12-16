@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
+library(broom)
 ```
 
 # Prepare 100 LUAD, COAD samples for aligned read k2b
@@ -93,11 +94,63 @@ make.k2b.batch <- function(filemanifest, cname){
   )
   
 }
+
+grab_tcga_qualities <- function(filemanifest, cname){
+  
+  filemanifest.condense <- unique(filemanifest[, c("file_id.BAM", "file_name.BAM")])[1:100,]
+  
+  fileOut<-file(paste0("batch/TCGA-", cname, "_fastqc.pbs"))
+  
+  #Try running on Pitzer exp?
+  writeLines(c(paste0("#PBS -N ", cname, "_fastqc"),
+               "#PBS -l walltime=8:00:00",
+               "#PBS -l nodes=2:ppn=28",
+               "#PBS -j oe",
+               "#PBS -m ae",
+               "#PBS -A PAS1695",
+               "",
+               #List our important info in a way that can be indexed
+               paste0("uuids=('", paste(filemanifest.condense$file_id.BAM, collapse = "' '"), "')"),
+               paste0("bnams=('", paste(filemanifest.condense$file_name.BAM, collapse = "' '"), "')"),
+               "",
+               #BAM download and test
+               "",
+               "module load python/3.6-conda5.2",
+               "module load bam2fastq",
+               "module load samtools",
+               "",
+               "cd $TMPDIR",
+               paste0("/fs/ess/PAS1695/generate-inputs/TCGA-processing/scripts/gdc-client download",
+                      " -t /fs/scratch/PAS1479/controlled_TCGA/gdc-user-token.2021-08-17T17_08_23.455Z.txt",
+                      " ${uuids[$PBS_ARRAY_INDEX]}"),
+               
+               # # Create our working direcory
+               # "mkdir $TMPDIR/intermediate/",
+               
+               # Manipulate to fastqs.
+               paste0("samtools sort -n --output-fmt BAM --threads 48 -o",
+                      " $TMPDIR/${uuids[$PBS_ARRAY_INDEX]}.qsort",
+                      " $TMPDIR/${uuids[$PBS_ARRAY_INDEX]}/${bnams[$PBS_ARRAY_INDEX]}"),                     
+               paste0("bam2fastq -o $TMPDIR/${uuids[$PBS_ARRAY_INDEX]}#.fastq",
+                      " $TMPDIR/${uuids[$PBS_ARRAY_INDEX]}.qsort"),
+               "",
+               "module load fastqc",
+               paste0("fastqc -o /fs/ess/PAS1695/projects/exotic/data/HARE/fastqc/", cname, " *.fastq")
+               
+  ),
+  
+  fileOut
+  )
+  
+}
 ```
 
 ```{r}
 make.k2b.batch(luad, "LUAD")
 make.k2b.batch(coad, "COAD")
+
+grab_tcga_qualities(luad, "LUAD")
+grab_tcga_qualities(coad, "COAD")
 ```
 
 # Look at LUAD distributions
@@ -147,6 +200,8 @@ summarize.microbes %>%
   head()
 ```
 
+
+
 I looked further into the summary table and there's a problem, we definitely do have oddly behaved microbes - things with low medians and high variance. It needs more looking into.
 
 ## Test brute force results
@@ -161,8 +216,8 @@ concerning.mics <- concerning.mics$microbe
 
 ```{r}
 luad.hare.l <- luad.hare %>%
-  gather(-sample, key = "microbe", value = "HARE.counts") %>%
-  filter(microbe %in% concerning.mics)
+  gather(-sample, key = "microbe", value = "HARE.counts")
+  # filter(microbe %in% concerning.mics)
 
 luad.bf <- luad.counts %>%
   gather(-sample, key = "microbe", value = "all.counts") %>%
@@ -178,4 +233,79 @@ luad.bf <- luad.counts %>%
             Maximum.bf = max(counts),
             Variance.bf = var(counts)) %>%
   left_join(summarize.microbes)
+```
+
+# Sequence quality correlations
+
+I think this is the right file - this should be connected to a plot that shows how many sequences show each mean quality score for each sample. Similar to a histogram. I should be able to get a single value for each fastq now. I have decided to use the forward reads only here.
+```{r}
+test <- list.files("/fs/ess/PAS1695/projects/exotic/data/HARE/fastqc/LUAD/multiqc_data/")
+
+luad.qscores <- read.table("/fs/ess/PAS1695/projects/exotic/data/HARE/fastqc/LUAD/multiqc_data/mqc_fastqc_per_sequence_quality_scores_plot_1.txt", header = T) %>%
+  gather(-Sample, key = "quality", value = "count") %>%
+  mutate(quality = as.numeric(gsub("^X", "", quality))) %>%
+  group_by(Sample) %>%
+  # mutate(total.counts = sum(count)) %>%
+  summarise(avg.qual = sum(quality * count)/sum(count)) %>%
+  filter(grepl("_1$", Sample)) %>%
+  mutate(sample = gsub("_1$", "", Sample)) %>%
+  select(sample, avg.qual)
+```
+
+```{r}
+luad.hare.qc <- luad.hare %>%
+  left_join(luad.qscores)
+
+luad.counts.qc <- luad.counts %>%
+  right_join(luad.qscores)
+
+mics.lh <- colnames(luad.hare[,-1])
+mics.lc <- colnames(luad.counts[,-1])
+```
+
+```{r}
+mass_correlate <- function(inputdf, names1, lab1){
+  cor.out <- lapply(names1, function(m) try(cor.test(inputdf[[m]],
+                                                           inputdf$avg.qual,
+                                                           method = "spearman") %>%
+                                                                       tidy() %>%
+                                                                       mutate(names1 = m)))
+  
+  # test <- lapply(cor.out, function(x) lapply(x, function(y) bind_rows(y)))
+  test2 <- lapply(cor.out, function(x) bind_rows(x))
+  cor.out.df <- bind_rows(test2) %>%
+    rename(!!lab1 := names1)
+  
+  return(cor.out.df)
+}
+```
+
+```{r}
+hare.corrs <- mass_correlate(luad.hare.qc, mics.lh, "microbe") %>%
+  mutate(hare.estimate = estimate,
+         hare.pval = p.value) %>%
+  select(microbe, hare.estimate, hare.pval)
+counts.corrs <- mass_correlate(luad.counts.qc, mics.lc, "microbe") %>%
+  mutate(counts.estimate = estimate,
+         counts.pval = p.value) %>%
+  select(microbe, counts.estimate, counts.pval)
+```
+
+```{r}
+summarize.mics.q <- luad.bf %>%
+  left_join(hare.corrs) %>%
+  left_join(counts.corrs)
+```
+
+```{r}
+test <- setdiff(mics.lc, mics.lh)
+check <- counts.corrs %>%
+  filter(microbe %in% test)
+
+
+check2 <- summarize.mics.q %>%
+  filter(hare.pval > 0.05 | hare.estimate > 0)
+
+check3 <- summarize.mics.q %>%
+  filter(hare.pval < 0.05 & hare.estimate < 0)
 ```
