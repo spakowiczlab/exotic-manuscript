@@ -6,28 +6,37 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-library(tidyr)
-library(ggplot2)
+library(readxl)
+library(tidyverse)
 ```
 
 # Access starting targets
 
 ```{r}
-drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2021-03-25/"
+drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-01-13/"
 # Counts, before any manipulation
-raw.tcc.counts <- readRDS(file.path(drakedir, "raw.tcc.counts.RDS"))
-raw.tcga.counts <- readRDS(file.path(drakedir, "raw.tcga.counts.RDS"))
+raw.tcc.counts <- readRDS(file.path(drakedir, "raw.tcc.counts.RDS")) %>%
+  select(-Homo.sapiens)
+raw.tcga.counts <- readRDS(file.path(drakedir, "raw.tcga.counts.RDS")) %>%
+  select(-Homo.sapiens)
 
 
 # Counts, removing samples that fail to resolve batches (missing info, etc.)
 tcc.batchres <- readRDS(file.path(drakedir, "tcc.batchres.RDS"))
 tcga.batchres <- readRDS(file.path(drakedir, "tcga.batchres.RDS"))
 
+tcc.batchres[[1]] <- tcc.batchres[[1]] %>%
+  select(-Homo.sapiens)
+tcga.batchres[[1]] <- tcga.batchres[[1]] %>%
+  select(-Homo.sapiens)
+
 #Counts,after removing contaminants and all microbes not found in TCGA
 # loadd(tcc.counts)
 # loadd(tcga.counts)
-tcc.counts <- readRDS(file.path(drakedir, "tcc.counts.RDS"))
-tcga.counts <- readRDS(file.path(drakedir, "tcga.counts.RDS"))
+tcc.counts <- readRDS(file.path(drakedir, "tcc.counts.RDS")) %>%
+  select(-Homo.sapiens)
+tcga.counts <- readRDS(file.path(drakedir, "tcga.counts.RDS")) %>%
+  select(-Homo.sapiens)
 
 #Contaminants found in each of the groups
 tcc.contams <- readRDS(file.path(drakedir, "tcc.contams.RDS"))
@@ -121,17 +130,19 @@ tcga.fincount <- sum(colSums(tcga.counts[,-1]))
 ```
 
 ```{r get waterfall counts into ggplotable df}
-waterfall.df <- as.data.frame(cbind(step = c("start", "batch resolution", "initial decontam",
-                                             "literature altered decontam", "Remove TCC only"),
-                                    tcc = c(tcc.startcount, tcc.batchcount, tcc.rem.decontam.count,
+waterfall.df <- as.data.frame(cbind(step = c("start", "batch resolution",
+                                             "initial decontam",
+                                             "literature altered decontam", 
+                                             "Remove TCC only"),
+                                    tcc = c(tcc.startcount, tcc.batchcount,
+                                            tcc.rem.decontam.count,
                                             tcc.rem.salter.count, tcc.fincount),
-                                    tcga = c(tcga.startcount, tcga.batchcount, tcga.rem.decontam.count,
+                                    tcga = c(tcga.startcount, tcga.batchcount,
+                                             tcga.rem.decontam.count,
                                              tcga.rem.salter.count, tcga.fincount)))
-  # 
 
-
-ymin.tcc <- c(4.218e10, waterfall.df$tcc[1:4])
-ymin.tcga <- c(1.13e11, waterfall.df$tcga[1:4])
+ymin.tcc <- c(2.8e7, waterfall.df$tcc[1:4])
+ymin.tcga <- c(9e8, waterfall.df$tcga[1:4])
 
 waterfall.df <- waterfall.df %>%
   tidyr::gather(-step, key = "Data.Source", value = "count")
@@ -155,8 +166,8 @@ waterfall.df %>%
   # scale_x_discrete(breaks = 1:5, labels = c("start", "batch resolution", "initial decontam",
   #                                            "literature altered decontam", "Remove TCC only")) +
   labs(x = "") +
-  theme_bw() +
-  ggsave("../figures/1A_waterfall-plot.png")
+  theme_bw() 
+ggsave("../figures/1A_waterfall-plot.png")
 ```
 
 ## Barplot format
@@ -168,7 +179,9 @@ waterfall.df %>%
          count = as.numeric(count)) %>%
   ggplot(aes(x = id, y = count)) +
   geom_col() +
-  facet_wrap(vars(Data.Source), scales = "free_y")
+  facet_wrap(vars(Data.Source), scales = "free_y") +
+  theme_bw()
+ggsave("../figures/fig1_waterfall_barplot.png")
 ```
 
 # 1B - Density plots of common laboratory contaminants
@@ -207,7 +220,7 @@ allcounts.for.density %>%
   geom_density() +
   scale_color_manual(breaks = c("TCC", "TCGA"), values = c("orange", "black")) +
   labs(x = "", y = "") +
-  theme_bw() +
+  theme_bw() 
   ggsave("../figures/1B_contaminant-densities.png", width = 12, height = 4.5)
 ```
 ## Plot suspicious densities
@@ -217,7 +230,7 @@ suspicious.taxa <- c("Abelson.murine.leukemia.virus", "Proteus.phage.VB_PmiS.Isf
                      "Pseudomonas.resinovorans")
 
 suspicious.for.density <- bind_rows(tcc.batchres.counts, tcga.batchres.counts) %>%
-  select("sample", all_of(suspicious.taxa)) %>%
+  select("sample", any_of(suspicious.taxa)) %>%
   mutate(Data.Source = ifelse(grepl("^SL", sample), "TCC", "TCGA")) %>%
   gather(-sample, -Data.Source, key = "microbe", value = "counts")
 
@@ -227,8 +240,8 @@ suspicious.for.density %>%
   geom_density() +
   scale_color_manual(breaks = c("TCC", "TCGA"), values = c("orange", "black")) +
   labs(x = "", y = "") +
-  theme_bw() +
-  ggsave("../figures/1B_suspicious-densities.png", width = 10, height = 4.5)
+  theme_bw() 
+  # ggsave("../figures/1B_suspicious-densities.png", width = 10, height = 4.5)
 ```
 
 # 1C - Check enrichment in various groupings
