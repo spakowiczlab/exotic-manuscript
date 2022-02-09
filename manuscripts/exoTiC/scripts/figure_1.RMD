@@ -246,10 +246,109 @@ suspicious.for.density %>%
 
 # 1C - Check enrichment in various groupings
 
+```{r identify contams from each step}
+contams.decontam <- tcc.contams %>%
+  filter(prev > 100 & !(Genera %in% salter.eval$Genera)) %>%
+  arrange(p)
+contams.decontam <- contams.decontam$microbe[1:5]
+
+mic.prev <- tcc.contams %>%
+  group_by(Genera) %>%
+  summarize(prev = sum(prev))
+contams.salter <- salter.eval %>%
+  left_join(mic.prev) %>%
+  filter(Category == "LIKELY CONTAMINANT") %>%
+  arrange(desc(prev))
+contams.salter <- unique(contams.salter$Genera[1:6])
+```
+
+```{r pull into convenient plotting format}
+decontam.inputs <- raw.tcc.counts %>%
+  select(c(sample, contams.decontam)) %>%
+  gather(-sample, key = "microbe", value = "counts") %>%
+  mutate(contam.source = "Decontam")
+
+salter.inputs <- raw.tcc.counts %>%
+  gather(-sample, key = "microbe", value = "counts") %>%
+  separate(microbe, into = "microbe") %>%
+  filter(microbe %in% contams.salter) %>%
+  group_by(sample, microbe) %>%
+  summarise(counts = sum(counts)) %>%
+  mutate(contam.source = "Salter")
+```
+
+```{r grab meta info for plots}
+tcc.meta <- readRDS(file.path(drakedir, "tcc.meta.RDS"))
+tcc.meta.linkage <- readRDS(file.path(drakedir, "tcc.meta.linkage.RDS"))
+
+tcc.ml.box <- tcc.meta.linkage %>%
+  mutate(FFPE = ifelse(`Tissue Preservation Method` == "FormalinFixed", "Yes", "No"),
+         sample = LibraryID) %>%
+  select(FFPE, sample)
+
+tcc.meta.box <- tcc.meta %>%
+  mutate(Concentration = ifelse(Concentration < median(Concentration), "Low", "High"),
+         RIN = ifelse(RIN < median(RIN), "Low", "High"),
+         DV200 = ifelse(DV200 < median(DV200), "Low", "High"),
+         sample = LibraryID) %>%
+  select(sample, Concentration, RIN, DV200) %>%
+  left_join(tcc.ml.box) %>%
+  filter(sample %in% decontam.inputs$sample)
+```
+
+```{r make boxplot object}
+box.dat <- bind_rows(decontam.inputs, salter.inputs) %>%
+  left_join(tcc.meta.box)
+```
+
 ## FF/FFPE
+
+```{r}
+ggplot(box.dat, aes(x = microbe, y = counts, fill = FFPE)) +
+  facet_wrap(vars(contam.source), scales = "free") +
+  geom_boxplot() +
+  labs(x = "", y = "") +
+  scale_fill_viridis_d(option = "mako") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggsave("../figures/boxplots_contaminant_FFPE.png")
+```
 
 ## low/high RNA concentration
 
+```{r}
+ggplot(box.dat, aes(x = microbe, y = counts, fill = Concentration)) +
+  facet_wrap(vars(contam.source), scales = "free") +
+  geom_boxplot() +
+  labs(x = "", y = "") +
+  scale_fill_viridis_d(option = "mako") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggsave("../figures/boxplots_contaminant_RNA-conc.png")
+```
+
 ## low/high Ribosomal integrity number
 
+```{r}
+ggplot(box.dat, aes(x = microbe, y = counts, fill = RIN)) +
+  facet_wrap(vars(contam.source), scales = "free") +
+  geom_boxplot() +
+  labs(x = "", y = "") +
+  scale_fill_viridis_d(option = "mako") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggsave("../figures/boxplots_contaminant_RIN.png")
+```
+
 ## low/high DIV200
+
+```{r}
+ggplot(box.dat, aes(x = microbe, y = counts, fill = DV200)) +
+  facet_wrap(vars(contam.source), scales = "free") +
+  geom_boxplot() +
+  labs(x = "", y = "") +
+  scale_fill_viridis_d(option = "mako") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggsave("../figures/boxplots_contaminant_DV200.png")
+```
