@@ -149,7 +149,7 @@ waterfall.df <- waterfall.df %>%
 waterfall.df$y.min <- c(ymin.tcc, ymin.tcga)
 ```
 
-## Waterfall format
+## Waterfall format - both datasets
 ```{r}
 waterfall.df %>%
   mutate(id = rep(1:5, 2),
@@ -182,5 +182,40 @@ waterfall.df %>%
   facet_wrap(vars(Data.Source), scales = "free_y") +
   theme_bw()
 ggsave("../figures/fig1_waterfall_barplot.png")
+```
+
+## Waterfall format - only TCGA
+
+I think I can combine the two plot types to make something really nice here ...
+```{r}
+tcga.waterfall.df <- waterfall.df %>%
+  mutate(id = rep(1:5, 2),
+         y.min = as.numeric(y.min),
+         count = as.numeric(count),
+         changedir = ifelse(y.min < count, "Gain", "Loss"),
+         Data.Source = toupper(Data.Source)) %>%
+  filter(id != 5 & Data.Source == "TCGA")
+```
+
+```{r}
+tcga.waterfall.df %>%
+  mutate(id = 5-id,
+         y.min = ifelse(id == 4, 0, y.min)) %>%
+  ggplot(aes(x = id, y = count)) +
+  geom_rect(aes(ymin = 0, ymax = count, xmin = id - .45 ,
+            xmax = id + .45)) +
+  geom_rect(aes(ymin = y.min, ymax = count, xmin = id - .45 ,
+            xmax = id + .45, fill = changedir)) +
+  scale_fill_manual(breaks = c("Gain", "Loss"), values = c("darkgreen", "darkred"), 
+                    name = "Effect on\nread count") +
+  labs(x = "", y = "") +
+  scale_x_continuous(breaks = c(4,3,2,1), 
+                     labels = c("Initial read count",
+                                "Remove samples \nfrom small batches",
+                                "Remove contaminants \nfrom decontam",
+                                "Adjust contaminants \nwith literature review")) +
+  coord_flip() +
+  theme_bw() 
+ggsave("../figures/waterfall_TCGA-combine-types.png")
 ```
 
