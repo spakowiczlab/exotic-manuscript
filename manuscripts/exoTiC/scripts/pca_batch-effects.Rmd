@@ -1,0 +1,30 @@
+---
+title: "PCAs for batch effects"
+author: "Rebecca Hoyd"
+date: "2/9/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(readxl)
+```
+
+# Load data
+
+```{r}
+drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-01-13"
+
+tcc.batchres <- readRDS(file.path(drakedir, "tcc.batchres.RDS"))
+tcga.batchres <- readRDS(file.path(drakedir, "tcga.batchres.RDS"))
+
+tcc.norm <- readRDS(file.path(drakedir, "tcc.exora.RDS"))
+tcga.norm <-readRDS(file.path(drakedir, "tcga.exora.RDS"))
+
+tcga.meta <- readRDS(file.path(drakedir, "tcga.meta.RDS"))
+tcc.meta <- readRDS(file.path(drakedir, "tcc.meta.linkage.RDS"))
+```
+
+
