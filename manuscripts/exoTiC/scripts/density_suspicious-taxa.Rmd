@@ -1,0 +1,101 @@
+---
+title: "densities_suspicous-taxa"
+author: "Rebecca Hoyd"
+date: "2/9/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load data
+
+```{r}
+drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-01-13/"
+
+# Counts, removing samples that fail to resolve batches (missing info, etc.)
+tcc.batchres <- readRDS(file.path(drakedir, "tcc.batchres.RDS"))
+tcga.batchres <- readRDS(file.path(drakedir, "tcga.batchres.RDS"))
+
+#Contaminants found in each of the groups
+tcc.contams <- readRDS(file.path(drakedir, "tcc.contams.RDS"))
+tcga.contams <-readRDS(file.path(drakedir, "tcga.contams.RDS"))
+
+salter.decontam <- read_excel("/fs/ess/PAS1695/exoticpipe/external-data/41586_2020_2095_MOESM2_ESM.xlsx",
+                              sheet = 6, skip = 1)
+salter.blanks <- read_excel("/fs/ess/PAS1695/exoticpipe/external-data/41586_2020_2095_MOESM2_ESM.xlsx", 
+                            sheet = 7, skip = 1)
+
+salter.eval <- bind_rows(salter.decontam, salter.blanks)
+
+salter.eval.rem <- salter.eval %>%
+  dplyr::filter(Category == "LIKELY CONTAMINANT")
+salter.eval.rem <- unique(salter.eval.rem$Genera) 
+
+```
+# 1B - Density plots of common laboratory contaminants
+
+```{r}
+# Grab counts limited to good batch matches (counts that decontam acted on)
+tcga.batchres.counts <- tcga.batchres$counts
+tcc.batchres.counts <- tcc.batchres$counts
+
+
+```
+
+## Plot contaminant densities
+
+```{r}
+# Grab some contaminant names. I want the contaminants that most look like contaminants to decontam, without being evaluated as probably existing in the samples as fact by subsequent literature review.
+removed.genera <- salter.eval %>%
+  filter(Category != "LIKELY CONTAMINANT")
+most.likely.contams <- bind_rows(tcc.contams, tcga.contams) %>%
+  filter(!Genera %in% removed.genera$Genera) %>%
+  arrange(p)
+
+most.likely.contams <- most.likely.contams$microbe[1:5]
+
+# Get chosen contaminants ready for plotting
+allcounts.for.density <- bind_rows(tcc.batchres.counts, tcga.batchres.counts) %>%
+  select("sample", all_of(most.likely.contams)) %>%
+  mutate(Data.Source = ifelse(grepl("^SL", sample), "TCC", "TCGA")) %>%
+  gather(-sample, -Data.Source, key = "microbe", value = "counts")
+```
+
+```{r}
+allcounts.for.density %>%
+  ggplot(aes(x = counts, color = Data.Source)) +
+  facet_wrap(vars(microbe), scales = "free", nrow = 1) +
+  geom_density() +
+  scale_color_manual(breaks = c("TCC", "TCGA"), values = c("orange", "black")) +
+  labs(x = "", y = "") +
+  theme_bw() 
+  ggsave("../figures/1B_contaminant-densities.png", width = 12, height = 4.5)
+```
+## Plot suspicious densities
+
+```{r}
+suspicious.taxa <- c("Abelson.murine.leukemia.virus", "Proteus.phage.VB_PmiS.Isfahan", 
+                     "Pseudomonas.resinovorans")
+
+suspicious.for.density <- bind_rows(tcc.batchres.counts, tcga.batchres.counts) %>%
+  select("sample", any_of(suspicious.taxa)) %>%
+  mutate(Data.Source = ifelse(grepl("^SL", sample), "TCC", "TCGA")) %>%
+  gather(-sample, -Data.Source, key = "microbe", value = "counts")
+
+suspicious.for.density %>%
+  ggplot(aes(x = counts, color = Data.Source)) +
+  facet_wrap(vars(microbe), scales = "free", nrow = 1) +
+  geom_density() +
+  scale_color_manual(breaks = c("TCC", "TCGA"), values = c("orange", "black")) +
+  labs(x = "", y = "") +
+  theme_bw() 
+  # ggsave("../figures/1B_suspicious-densities.png", width = 10, height = 4.5)
+```
+
+
+
+
+
+
