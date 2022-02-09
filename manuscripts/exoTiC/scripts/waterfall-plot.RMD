@@ -199,21 +199,22 @@ tcga.waterfall.df <- waterfall.df %>%
 
 ```{r}
 tcga.waterfall.df %>%
-  mutate(id = 5-id,
-         y.min = ifelse(id == 4, 0, y.min)) %>%
+  mutate(id = 6-id,
+         y.min = ifelse(id == 5, 0, y.min)) %>%
   ggplot(aes(x = id, y = count)) +
-  geom_rect(aes(ymin = 0, ymax = count, xmin = id - .45 ,
-            xmax = id + .45)) +
+  geom_rect(aes(ymin = 0, ymax = 906768141, xmin = 1 - .45 ,
+            xmax = 1 + .45)) +
   geom_rect(aes(ymin = y.min, ymax = count, xmin = id - .45 ,
             xmax = id + .45, fill = changedir)) +
   scale_fill_manual(breaks = c("Gain", "Loss"), values = c("darkgreen", "darkred"), 
                     name = "Effect on\nread count") +
   labs(x = "", y = "") +
-  scale_x_continuous(breaks = c(4,3,2,1), 
+  scale_x_continuous(breaks = c(5,4,3,2,1), 
                      labels = c("Initial read count",
                                 "Remove samples \nfrom small batches",
                                 "Remove contaminants \nfrom decontam",
-                                "Adjust contaminants \nwith literature review")) +
+                                "Adjust contaminants \nwith literature review",
+                                "Final read count")) +
   coord_flip() +
   theme_bw() 
 ggsave("../figures/waterfall_TCGA-combine-types.png")

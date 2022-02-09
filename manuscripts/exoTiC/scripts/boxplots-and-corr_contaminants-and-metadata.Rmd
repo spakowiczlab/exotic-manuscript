@@ -1,0 +1,216 @@
+---
+title: "Contaminants and quality"
+author: "Rebecca Hoyd"
+date: "2/9/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl)
+library(tidyverse)
+library(broom)
+```
+
+# Load data
+
+```{r}
+drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-01-13/"
+
+# Counts, removing samples that fail to resolve batches (missing info, etc.)
+tcc.batchres <- readRDS(file.path(drakedir, "tcc.batchres.RDS"))
+
+#Contaminants found in each of the groups
+tcc.contams <- readRDS(file.path(drakedir, "tcc.contams.RDS"))
+
+# Meta data including sequencing QC and technical sample details
+tcc.meta <- readRDS(file.path(drakedir, "tcc.meta.RDS"))
+tcc.meta.linkage <- readRDS(file.path(drakedir, "tcc.meta.linkage.RDS"))
+
+# Literature contaminants
+salter.decontam <- read_excel("/fs/ess/PAS1695/exoticpipe/external-data/41586_2020_2095_MOESM2_ESM.xlsx",
+                              sheet = 6, skip = 1)
+salter.blanks <- read_excel("/fs/ess/PAS1695/exoticpipe/external-data/41586_2020_2095_MOESM2_ESM.xlsx", 
+                            sheet = 7, skip = 1)
+```
+
+# Formatting
+
+## Boxplot formatting
+
+```{r formatting literature contaminants}
+salter.eval <- bind_rows(salter.decontam, salter.blanks)
+
+salter.eval.rem <- salter.eval %>%
+  dplyr::filter(Category == "LIKELY CONTAMINANT")
+salter.eval.rem <- unique(salter.eval.rem$Genera) 
+
+```
+
+```{r identify contams from each step}
+contams.decontam <- tcc.contams %>%
+  filter(prev > 100 & !(Genera %in% salter.eval$Genera)) %>%
+  arrange(p)
+contams.decontam <- contams.decontam$microbe[1:5]
+
+mic.prev <- tcc.contams %>%
+  group_by(Genera) %>%
+  summarize(prev = sum(prev))
+contams.salter <- salter.eval %>%
+  left_join(mic.prev) %>%
+  filter(Category == "LIKELY CONTAMINANT") %>%
+  arrange(desc(prev))
+contams.salter <- unique(contams.salter$Genera[1:6])
+```
+
+```{r pull into convenient plotting format}
+decontam.inputs <- tcc.batchres[[1]]%>%
+  select(c(sample, contams.decontam)) %>%
+  gather(-sample, key = "microbe", value = "counts") %>%
+  mutate(contam.source = "Decontam")
+
+salter.inputs <- tcc.batchres[[1]] %>%
+  gather(-sample, key = "microbe", value = "counts") %>%
+  separate(microbe, into = "microbe") %>%
+  filter(microbe %in% contams.salter) %>%
+  group_by(sample, microbe) %>%
+  summarise(counts = sum(counts)) %>%
+  mutate(contam.source = "Salter")
+```
+
+```{r grab meta info for plots}
+tcc.meta.box <- tcc.meta.linkage %>%
+  mutate(FFPE = ifelse(`Tissue Preservation Method` == "FormalinFixed", "Yes", "No"),
+         sample = LibraryID) %>%
+  select(FFPE, sample) %>%
+  filter(sample %in% decontam.inputs$sample)
+
+```
+
+```{r make boxplot object}
+box.dat <- bind_rows(decontam.inputs, salter.inputs) %>%
+  left_join(tcc.meta.box)
+```
+
+## Correlation formatting
+
+```{r get lists of contaminants}
+# Decontam
+contams.decontam.all <- tcc.contams %>%
+  filter(p < 0.1 |is.na(p))
+contams.decontam.all <- contams.decontam.all$microbe
+
+# Salter
+contams.salter.all <- salter.eval %>%
+  filter(Category == "LIKELY CONTAMINANT")
+contams.salter.all <- contams.salter.all$Genera
+
+salter.affected.mics<- tcc.batchres[[1]] %>%
+  gather(-sample, key = "microbe", value = "counts") %>%
+  separate(microbe, into = c("Genera"), remove = F) %>%
+  filter(Genera %in% contams.salter.all) 
+
+salter.affected.mics <- salter.affected.mics$microbe
+```
+
+```{r prepare microbe df for corrs}
+tcc.meta.corr <- tcc.meta %>%
+  mutate(sample = LibraryID) %>%
+  select(sample, Concentration, RIN, DV200) 
+
+corr.in <- tcc.batchres[[1]] %>%
+  left_join(tcc.meta.corr)
+  
+all.mics <- colnames(tcc.batchres[[1]][,-1])
+```
+
+
+# Boxplot for categoricals
+
+## FF/FFPE
+
+```{r}
+ggplot(box.dat, aes(x = microbe, y = counts, fill = FFPE)) +
+  facet_wrap(vars(contam.source), scales = "free") +
+  geom_boxplot() +
+  labs(x = "", y = "") +
+  scale_fill_viridis_d(option = "mako") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggsave("../figures/boxplots_contaminant_FFPE.png")
+```
+
+# Correlations for continuous
+
+## Functions
+
+```{r}
+grab_many_corrs <- function(mics, outcome, df){
+  corr.res <- lapply(mics, function(m) cor.test(df[,m], df[,outcome], 
+                                                method = "spearman") %>%
+                       tidy() %>%
+                       mutate(microbe = m)) 
+  corr.res.df <- bind_rows(corr.res)
+  return(corr.res.df)
+}
+
+plot.many.corrs <- function(corr.res, des.outcome){
+  plot.dat <- corr.res %>%
+  filter(outcome == des.outcome) %>%
+  mutate(microbe = fct_reorder(microbe,estimate))
+
+plot.dat %>%
+  ggplot(aes(x = microbe, y = estimate, fill = contam.group)) +
+  geom_col() +
+  geom_hline(yintercept = 0) +
+  scale_fill_brewer(palette = "Spectral", na.value = "grey50",
+                    name = "Contaminant\nsource") +
+  coord_flip() +
+  labs(x = "", y = "") +
+  theme_void() +
+  theme(axis.text.y = element_blank())
+}
+```
+
+## Run correlations
+
+```{r actually run correlations, warning=FALSE}
+RIN.corr <- grab_many_corrs(all.mics, "RIN", corr.in) %>%
+  mutate(outcome = "RIN")
+DV200.corr <- grab_many_corrs(all.mics, "DV200", corr.in) %>%
+  mutate(outcome = "DV200")
+RNAconc.corr <- grab_many_corrs(all.mics, "Concentration", corr.in) %>%
+  mutate(outcome = "RNA")
+
+all.corrs <- bind_rows(RIN.corr, DV200.corr, RNAconc.corr)
+```
+
+```{r annotate with contaminant source}
+all.corrs.anno <- all.corrs %>%
+  mutate(decontam = ifelse(microbe %in% contams.decontam.all, 1, 0),
+         salter = ifelse(microbe %in% salter.affected.mics, 1, 0),
+         contam.group = case_when(decontam == 1 & salter == 1 ~ "Both",
+                                  decontam == 1 & salter == 0 ~ "Decontam",
+                                  decontam == 0 & salter == 1 ~ "Literature"))
+```
+
+## Plot results
+
+### RIN
+```{r}
+plot.many.corrs(all.corrs.anno, "RIN")
+ggsave("../figures/barplot_corrs-with-contam_RIN.png")
+```
+
+### DV200
+```{r}
+plot.many.corrs(all.corrs.anno, "DV200")
+ggsave("../figures/barplot_corrs-with-contam_DV200.png")
+```
+### Concentration
+
+```{r}
+plot.many.corrs(all.corrs.anno, "RNA")
+ggsave("../figures/barplot_corrs-with-contam_RNA.png")
+```
