@@ -27,4 +27,50 @@ tcga.meta <- readRDS(file.path(drakedir, "tcga.meta.RDS"))
 tcc.meta <- readRDS(file.path(drakedir, "tcc.meta.linkage.RDS"))
 ```
 
+# PCAs
+
+## Format
+
+```{r}
+tcga.counts.pc <- tcga.batchres[[1]] %>%
+  column_to_rownames(var = "sample") 
+
+counts.res  <- prcomp(tcga.counts.pc)$x%>%
+  as.data.frame() %>%
+  rownames_to_column(var = "sample") %>%
+  select(sample, PC1, PC2) %>%
+  mutate(datset = "counts")
+
+tcga.norm.pc <- tcga.norm %>%
+  column_to_rownames(var = "sample") 
+
+norm.res  <- prcomp(tcga.norm.pc)$x%>%
+  as.data.frame() %>%
+  rownames_to_column(var = "sample") %>%
+  select(sample, PC1, PC2) %>%
+  mutate(datset = "normalized")
+```
+
+## Plot
+
+```{r}
+pcs.res <- bind_rows(counts.res, norm.res) %>%
+  left_join(tcga.meta)
+
+pcs.res %>%
+  ggplot(aes(x = PC1, y = PC2, color = ffpe.status, fill = ffpe.status)) +
+  facet_wrap(vars(datset), scales = "free") +
+  geom_point(alpha = .4) +
+  stat_ellipse(geom = "polygon", alpha = .2) +
+  scale_fill_viridis_d(aesthetics = c("color", "fill")) +
+  theme_bw()
+ggsave("../figures/pca_compare-FFPE.png")
+```
+
+# Volcano
+
+```{r}
+
+```
+
 
