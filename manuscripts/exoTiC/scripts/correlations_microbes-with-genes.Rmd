@@ -1,0 +1,77 @@
+---
+title: "correlate with age"
+author: "Rebecca Hoyd"
+date: "2/16/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+# Load data
+
+```{r}
+data.dir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-16"
+tcc.exo.ra <- readRDS(file.path(data.dir, "tcc.exora.taxonomy.RDS"))
+tcga.exo.ra <- readRDS(file.path(data.dir, "tcga.exora.taxonomy.RDS"))
+
+tcc.expr <- readRDS(file.path(data.dir, "tcc.expr.norm.RDS"))
+tcga.expr <- readRDS(file.path(data.dir, "tcga.expr.norm.RDS"))
+
+tcga.clin <- readRDS(file.path(data.dir, "tcga.clin.tum.RDS"))
+```
+
+# Functions
+
+```{r}
+
+exoRAtowide <- function(data, taxlev){
+  tmp <- data
+  tmp$Taxa <- tmp[[taxlev]]
+  tmp.wide<- tmp %>%
+    dplyr::filter(!is.na(Taxa)) %>%
+    group_by(sample, Taxa) %>%
+    summarise(ra = sum(exo.ra, na.rm = T)) %>%
+    spread(key = "Taxa", value = "ra")
+  
+  tmp.wide[is.na(tmp.wide)] <- 0
+  return(tmp.wide)
+}
+
+exoToDF <- function(taxalevels = c("domain", "kingdom", "phylum", "class", 
+                                    "order", "family", "genus", "species"), 
+                     data){
+  w.ls <- lapply(taxalevels, function(x) exoRAtowide(data, x))
+  w.df <- reduce(w.ls, function(x,y) left_join(x,y)) 
+  return(w.df)
+}
+```
+
+```{r}
+correlate_mics_genes <- function(mics, genes, data, datalab){
+  cor.res <- lapply(mics, function(m) lapply(genes, function(i)
+    try(cor.test(data[[m]], data[[i]],
+                 method = "spearman") %>%
+          tidy() %>%
+          mutate(Gene = i, microbe = m, datset = datalab))))
+  
+  
+  test <- lapply(cor.res, function(x) bind_rows(x))
+  cor.df <- bind_rows(test)
+  return(cor.df)
+}
+```
+
+# Formatting
+
+```{r}
+tcc.w <- exoToDF(data = tcc.exo.ra)
+tcga.w <- exoToDF(data = tcga.exo.ra)
+```
+
+# Run correlations
+
+# Display, save
