@@ -1,0 +1,122 @@
+---
+title: "Survival by microbes"
+author: "Rebecca Hoyd"
+date: "2/18/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(survival)
+```
+
+# Load data
+
+```{r}
+data.dir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-16"
+tcc.exo.ra <- readRDS(file.path(data.dir, "tcc.exora.taxonomy.RDS"))
+tcga.exo.ra <- readRDS(file.path(data.dir, "tcga.exora.taxonomy.RDS"))
+
+tcga.clin <- readRDS(file.path(data.dir, "tcga.clin.tum.RDS"))
+tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_aggregated.csv")
+
+```
+
+# Functions
+```{r}
+exoRAtowideprev <- function(data, taxlev){
+  tmp <- data
+  tmp$Taxa <- tmp[[taxlev]]
+  tmp.wide<- tmp %>%
+    filter(!is.na(Taxa)) %>%
+    group_by(sample, Taxa) %>%
+    summarise(ra = sum(exo.ra, na.rm = T)) %>%
+    mutate(ra = ifelse(ra > 2.5e-9, 1, 0)) %>%
+    spread(key = "Taxa", value = "ra")
+
+  return(tmp.wide)
+}
+
+exoToDF <- function(taxalevels = c("domain", "kingdom", "phylum", "class", 
+                                    "order", "family", "genus", "species"), 
+                     data){
+  w.ls <- lapply(taxalevels, function(x) exoRAtowideprev(data, x))
+  w.df <- reduce(w.ls, function(x,y) left_join(x,y)) 
+  return(w.df)
+}
+```
+
+```{r}
+extract_coxph_results <- function(cp.form, int.term.name, dattab){
+    tmp <- coxph(as.formula(cp.form), data = dattab) %>%
+      summary()
+  pvals <- tmp$coefficients %>%
+    as.data.frame() %>%
+    rownames_to_column(var = "term") %>%
+    mutate(p.value = `Pr(>|z|)`) %>%
+    select(term, p.value)
+  conf.int <- tmp$conf.int %>%
+    as.data.frame() %>%
+    rownames_to_column(var = "term") %>%
+    mutate(hazard.ratio = `exp(coef)`,
+           confint.low = `lower .95`,
+           confint.high = `upper .95`) %>%
+    select(term, hazard.ratio, confint.low, confint.high) %>%
+    left_join(pvals) %>%
+    filter(term == int.term.name)
+  return(conf.int)
+}
+
+run_many_coxph <- function(mics, datset, datlab){
+  tally.prevs <- datset %>%
+    select(c("sample", mics)) %>%
+    gather(-sample, key = "microbe", value = "prevalence") %>%
+    group_by(microbe, prevalence) %>%
+    tally() %>%
+    mutate(prevalence = paste0("prevalence.", prevalence)) %>%
+    spread(key = prevalence, value = n)
+  
+  surv.forms <- paste0("Surv(days, vitalstatus) ~ `", mics, "`")
+  names(surv.forms) <- mics
+  
+  model.results <- lapply(mics, function(x) extract_coxph_results(surv.forms[[x]],
+                                                                  x,
+                                                                  datset)) %>%
+    bind_rows() %>%
+    mutate(microbe = term) %>%
+    select(-term) %>%
+    left_join(tally.prevs)
+  
+  return(model.results)
+}
+```
+
+# Formatting
+
+```{r wide microbe data}
+tcc.w <- exoToDF(data = tcc.exo.ra)
+tcga.w <- exoToDF(data = tcga.exo.ra)
+
+microbes <- colnames(tcc.w)[-1]
+```
+
+```{r combine with clinical data}
+tcc.modin <- tcc.clin %>%
+  mutate(days = Overall.Survival.from.Dx..days.,
+         vitalstatus = ifelse(Vital.Status == "Deceased", 1, 0),
+         sample = RNA.SL.ID) %>%
+  select(sample,days,vitalstatus) %>%
+  inner_join(tcc.w)
+```
+
+# Survival test
+
+```{r}
+run_many_coxph(microbes[600:620], tcc.modin, "TCC")
+```
+
+
+
+
