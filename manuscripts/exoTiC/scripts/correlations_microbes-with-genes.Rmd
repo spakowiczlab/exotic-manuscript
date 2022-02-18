@@ -24,6 +24,12 @@ tcga.expr <- readRDS(file.path(data.dir, "tcga.expr.norm.RDS"))
 tcga.clin <- readRDS(file.path(data.dir, "tcga.clin.tum.RDS"))
 ```
 
+```{r control genes chosen}
+nlr.genes <- colnames(tcc.expr)[grepl("^NLR", colnames(tcc.expr))]
+tlr.genes <- colnames(tcc.expr)[grepl("^TLR", colnames(tcc.expr))]
+genes.corr <- c("CGAS", "DDX58", nlr.genes, tlr.genes)
+```
+
 # Functions
 
 ```{r}
@@ -67,9 +73,13 @@ correlate_mics_genes <- function(mics, genes, data, datalab){
 
 # Formatting
 
-```{r}
+```{r wide microbe data}
 tcc.w <- exoToDF(data = tcc.exo.ra)
 tcga.w <- exoToDF(data = tcga.exo.ra)
+```
+
+```{r combine with expression}
+
 ```
 
 # Run correlations
