@@ -1,0 +1,113 @@
+---
+title: "H2O machine learning"
+author: "Rebecca Hoyd"
+date: "2/21/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(h2o)
+library(lares)
+```
+
+# Load data
+
+```{r}
+datadir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-16"
+
+tcc.exora.taxonomy <- readRDS(file.path(datadir, "tcc.exora.taxonomy.RDS"))
+tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_aggregated.csv")
+```
+
+# Functions
+
+```{r}
+exoRAtowide <- function(data, taxlev){
+  tmp <- data
+  tmp$Taxa <- tmp[[taxlev]]
+  tmp.wide<- tmp %>%
+    dplyr::filter(!is.na(Taxa)) %>%
+    group_by(sample, Taxa) %>%
+    summarise(ra = sum(exo.ra, na.rm = T)) %>%
+    spread(key = "Taxa", value = "ra")
+  
+  tmp.wide[is.na(tmp.wide)] <- 0
+  return(tmp.wide)
+}
+
+exoToDF <- function(taxalevels = c("domain", "kingdom", "phylum", "class", 
+                                    "order", "family", "genus", "species"), 
+                     data){
+  w.ls <- lapply(taxalevels, function(x) exoRAtowide(data, x))
+  w.df <- reduce(w.ls, function(x,y) left_join(x,y)) 
+  return(w.df)
+}
+```
+
+```{r}
+# Stolen from Lester's mitox code
+runh2o <- function(s,m) {
+    r <- h2o_automl(tcc.modin, y = Cancer, max_models = m, impute = FALSE, 
+                    target = "True", split = 0.7, seed = s, start_clean = TRUE)
+    
+    #store input parameters and auc
+    eva <- data.frame(seeds = s,
+                      max_model = m,
+                      auc = r$metrics$metrics[,1])
+    
+    return(eva)
+}
+```
+
+# Formatting
+
+```{r wide microbe data}
+tcc.w <- exoRAtowide(tcc.exora.taxonomy, "species")
+
+tcc.modin <- tcc.clin %>%
+  mutate(sample = RNA.SL.ID) %>%
+  select(sample, Cancer) %>%
+  inner_join(tcc.w) %>%
+  select(-sample)
+```
+
+# Select best model
+
+```{r}
+# Create a table with every combination between s and m
+s <- 12345
+
+m <- 15
+
+var <- expand.grid(s,m) %>%
+  rename("s" = "Var1", "m" ="Var2")
+
+# use for loop to run function above with every combination between s and m 
+h2ores <- list()
+for (i in 1:nrow(var)){
+  f <- var[i,]
+  h2ores[[i]] <- do.call(runh2o,f)
+}
+
+bind_rows(h2ores) %>%
+  arrange(desc(auc))
+```
+
+# Show best model
+
+```{r}
+r <- h2o_automl(tcc.modin, 
+                y = Cancer, 
+                max_models = 15, 
+                impute = FALSE, 
+                target = "True",
+                split = 0.7, 
+                seed = 12345, 
+                start_clean = TRUE)
+
+r
+
+```
