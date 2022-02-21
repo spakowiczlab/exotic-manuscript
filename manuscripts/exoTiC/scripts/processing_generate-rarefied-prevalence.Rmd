@@ -1,0 +1,56 @@
+---
+title: "generate rarefied prevalence with taxonomy"
+author: "Rebecca Hoyd"
+date: "2/21/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+source("/fs/ess/PAS1695/exoticpipe/R/counts-to-rarefied-prevalence.R")
+source("/fs/ess/PAS1695/exoticpipe/R/assign_taxonomy.R")
+```
+
+# Load data
+
+```{r}
+datadir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-16"
+
+tcc.counts <- readRDS(file.path(datadir, "tcc.counts.RDS"))
+tcga.counts <- readRDS(file.path(datadir, "tcga.counts.RDS"))
+
+krakenmet <- readRDS(file.path(datadir, "krakenmet.RDS"))
+```
+
+# Format 
+
+# Run prevalence
+
+```{r}
+unnorm.tcga <- tcga.counts %>%
+  column_to_rownames(var = "sample")
+unnorm.tcc <- tcc.counts %>%
+  column_to_rownames(var = "sample")
+
+prev.tcga <- counts_to_rarefied_prevalenc(unnorm.tcga)
+prev.tcc <- counts_to_rarefied_prevalenc(unnorm.tcc)
+```
+# Run taxonomy
+
+```{r}
+prev.tax.tcc <- assign_taxonomy(krakenmet, prev.tcc) %>%
+  mutate(prev = exo.ra) %>%
+  dplyr::select(-exo.ra)
+prev.tax.tcga <- assign_taxonomy(krakenmet, prev.tcga) %>%
+  mutate(prev = exo.ra) %>%
+  dplyr::select(-exo.ra)
+```
+
+# Save
+
+```{r}
+saveRDS(prev.tax.tcc, paste0(datadir, "/tcc_prevalence-taxonomy.RDS"))
+saveRDS(prev.tax.tcga, paste0(datadir, "/tcga_prevalence-taxonomy.RDS"))
+```
