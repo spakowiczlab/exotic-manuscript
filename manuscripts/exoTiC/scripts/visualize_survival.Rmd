@@ -15,8 +15,10 @@ library(ggforce)
 # Load
 
 ```{r}
-tcc.all <- readRDS("../data/survival_tcc_all-cancers.RDS")
-tcga.all <- readRDS("../data/survival_tcga_all-cancers.RDS")
+tcc.all <- readRDS("../data/survival_tcc_all-cancers.RDS") %>%
+  bind_rows()
+tcga.all <- readRDS("../data/survival_tcga_all-cancers.RDS") %>%
+  bind_rows()
 tcc.split <- readRDS("../data/survival_tcc_split-cancers.RDS")
 tcga.split <- readRDS("../data/survival_tcga_split-cancers.RDS")
 ```
