@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(survival)
+library(rlist)
 ```
 
 # Load data
@@ -22,6 +23,8 @@ tcga.prev <- readRDS(file.path(data.dir, "tcga_prevalence-taxonomy.RDS"))
 tcga.clin <- readRDS(file.path(data.dir, "tcga.clin.tum.RDS"))
 tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_aggregated.csv")
 
+tcc.cancer.labs <- read.csv("../../../exploratory/data/members-of-TCGA-groups.csv")
+tcc.meta.linkage <- readRDS(file.path(data.dir, "tcc.meta.linkage.RDS"))
 ```
 
 # Functions
@@ -64,8 +67,8 @@ extract_coxph_results <- function(cp.form, int.term.name, dattab){
            confint.low = `lower .95`,
            confint.high = `upper .95`) %>%
     select(term, hazard.ratio, confint.low, confint.high) %>%
-    left_join(pvals) %>%
-    filter(term == int.term.name)
+    suppressMessages(left_join(pvals)) 
+    # filter(term == int.term.name)
   return(conf.int)
 }
 
@@ -81,14 +84,14 @@ run_many_coxph <- function(mics, datset, datlab){
   surv.forms <- paste0("Surv(days, vitalstatus) ~ `", mics, "`")
   names(surv.forms) <- mics
   
-  model.results <- lapply(mics, function(x) extract_coxph_results(surv.forms[[x]],
+  model.results <- lapply(mics, function(x) try(extract_coxph_results(surv.forms[[x]],
                                                                   x,
-                                                                  datset)) %>%
+                                                                  datset) %>%
     bind_rows() %>%
     mutate(microbe = term) %>%
     select(-term) %>%
-    left_join(tally.prevs) %>%
-    mutate(datset = datlab)
+    suppressMessages(left_join(tally.prevs)) %>%
+    mutate(datset = datlab)))
   
   return(model.results)
 }
@@ -104,11 +107,17 @@ microbes <- colnames(tcc.w)[-1]
 ```
 
 ```{r combine with clinical data}
+names(tcc.meta.linkage) <- make.names(names(tcc.meta.linkage))
+tcc.samp.cancers <- tcc.meta.linkage %>%
+  left_join(tcc.cancer.labs) %>%
+  mutate(sample = LibraryID) %>%
+  select(sample, TCGA.code)
 tcc.modin <- tcc.clin %>%
   mutate(days = Overall.Survival.from.Dx..days.,
          vitalstatus = ifelse(Vital.Status == "Deceased", 1, 0),
          sample = RNA.SL.ID) %>%
   select(sample,days,vitalstatus, Cancer) %>%
+  left_join(tcc.samp.cancers) %>%
   inner_join(tcc.w)
 
 tcga.modin <- tcga.clin %>%
@@ -122,18 +131,19 @@ tcga.modin <- tcga.clin %>%
 
 # Survival test
 
-```{r run for all cancers together}
+```{r run for all cancers together, warning=FALSE, message=FALSE}
 tcc.cph <- run_many_coxph(microbes, tcc.modin, "TCC")
 tcga.cph <- run_many_coxph(microbes, tcga.modin, "TCGA")
 ```
 
 ```{r split out cancers}
-tcc.cancers <- unique(tcc.modin$Cancer)
+tcc.cancers <- unique(tcc.modin$TCGA.code)
 tcga.cancers <- unique(tcga.modin$cancer)
 
 tcc.cph.cancer <- lapply(tcc.cancers, function(y) run_many_coxph(microbes, 
                                                                  filter(tcc.modin,
-                                                                        Cancer == y),
+                                                                        TCGA.code ==
+                                                                          y),
                                                                  y))
 tcga.cph.cancer <- lapply(tcga.cancers, function(y) run_many_coxph(microbes, 
                                                                  filter(tcga.modin,
@@ -142,7 +152,9 @@ tcga.cph.cancer <- lapply(tcga.cancers, function(y) run_many_coxph(microbes,
 ```
 
 ```{r format split cancer results}
-tcc.cph.cancer.form <- bind_rows(tcc.cph.cancer) %>%
+tcc.cph.cancer.form <- bind_rows(list.clean(tcc.cph.cancer, 
+                                            function(x) any(grepl("Error", x)),
+                                            recursive = T)) %>%
   mutate(cancer = datset,
          datset = "TCC") 
 tcga.cph.cancer.form <- bind_rows(tcga.cph.cancer) %>%

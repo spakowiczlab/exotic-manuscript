@@ -1,0 +1,37 @@
+---
+title: "visualize survival results"
+author: "Rebecca Hoyd"
+date: "2/23/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(ggforce)
+```
+
+# Load
+
+```{r}
+tcc.all <- readRDS("../data/survival_tcc_all-cancers.RDS")
+tcga.all <- readRDS("../data/survival_tcga_all-cancers.RDS")
+tcc.split <- readRDS("../data/survival_tcc_split-cancers.RDS")
+tcga.split <- readRDS("../data/survival_tcga_split-cancers.RDS")
+```
+
+# Format
+
+```{r}
+tcc.all.join <- tcc.all %>%
+  mutate(cancer = "All")
+tcga.all.join <- tcga.all %>%
+  mutate(cancer = "All")
+
+surv.res <- bind_rows(tcc.all.join, tcga.all.join, tcc.split, tcga.split)
+```
+
+# Plot
+
+
