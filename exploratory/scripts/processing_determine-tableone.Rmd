@@ -46,7 +46,14 @@ allvars <- c("BMI.at.Collection", "Age.at.Collection", "Gender",
 catvars <- c("Gender", "Cancer.Stage.at.Collection", "Chemotherapy", "I.O.Drug.Name", "Radiation",
              "Surgery", "Vital.Status", "ffpe.stat", "tumor.location")
 
-CreateTableOne(allvars, strata = "Cancer", data = combined.metdat.form)
+t1 <- CreateTableOne(allvars, strata = "Cancer", data = combined.metdat.form)
   
 ```
 
+# Write to csv
+
+```{r write csv}
+t1prnt <- print(t1, noSpaces = TRUE, printToggle = FALSE, quote = FALSE)
+
+write.csv(t1prnt, "../data/ORIEN_demographics-table.csv")
+```
