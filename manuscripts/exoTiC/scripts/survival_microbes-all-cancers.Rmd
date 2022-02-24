@@ -84,14 +84,15 @@ run_many_coxph <- function(mics, datset, datlab){
   surv.forms <- paste0("Surv(days, vitalstatus) ~ `", mics, "`")
   names(surv.forms) <- mics
   
-  model.results <- lapply(mics, function(x) extract_coxph_results(surv.forms[[x]],
+  model.results <- lapply(mics, function(x) try(extract_coxph_results(surv.forms[[x]],
                                                                       x,
                                                                       datset) %>%
-                                                  mutate(microbe = x)) %>%
-                            bind_rows() %>%
-                            select(-term) %>%
-                            left_join(tally.prevs) %>%
-                            mutate(datset = datlab)
+                                                  mutate(microbe = x))) %>%
+    list.clean(., function(x) any(grepl("Error", x))) %>%
+    bind_rows() %>%
+    # select(-term) %>%
+    left_join(tally.prevs) %>%
+    mutate(datset = datlab)
   
   return(model.results)
 }

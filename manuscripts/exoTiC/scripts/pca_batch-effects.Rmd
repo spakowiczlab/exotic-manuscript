@@ -15,7 +15,7 @@ library(readxl)
 # Load data
 
 ```{r}
-drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-16/"
+drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-23/"
 
 # tcc.batchres <- readRDS(file.path(drakedir, "tcc.batchres.RDS"))
 # tcga.batchres <- readRDS(file.path(drakedir, "tcga.batchres.RDS"))
@@ -55,12 +55,19 @@ counts.res  <- prcomp(tcga.counts.pc, scale. = T)$x %>%
 
 tcga.norm.pc <- tcga.norm %>%
   column_to_rownames(var = "sample") 
+  # select(-Vibrio.phage.ValB1MD.2, -Staphylococcus.virus.Andhra)
 
 norm.res  <- prcomp(tcga.norm.pc, scale. = T)$x%>%
   as.data.frame() %>%
   rownames_to_column(var = "sample") %>%
   select(sample, PC1, PC2) %>%
   mutate(datset = "normalized")
+```
+
+```{r}
+norm.prc <- prcomp(tcga.norm.pc, scale. = T)
+autoplot(norm.prc, loadings = T, loadings.label = T)
+ggsave("../figures/pca_norm-loadings.png", width = 15)
 ```
 
 ## Plot
@@ -79,13 +86,102 @@ pcs.res %>%
 ggsave("../figures/pca_compare-FFPE.png")
 ```
 
+## Repeat for TCC
+
+## Format
+
+```{r}
+counts.lowvar <- unlist(lapply(tcc.counts[,-1], function(x) var(x)))
+summary(counts.lowvar)
+counts.higvar <- names(subset(counts.lowvar, counts.lowvar > 0))
+
+
+```
+
+```{r}
+tcc.counts.pc <- tcc.counts %>%
+  select(c("sample", counts.higvar)) %>%
+  column_to_rownames(var = "sample") 
+
+counts.res.tcc  <- prcomp(tcc.counts.pc, scale. = T)$x %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "sample") %>%
+  select(sample, PC1, PC2) %>%
+  mutate(datset = "counts")
+
+tcc.norm.pc <- tcc.norm %>%
+  column_to_rownames(var = "sample")
+
+norm.res.tcc  <- prcomp(tcc.norm.pc, scale. = T)$x%>%
+  as.data.frame() %>%
+  rownames_to_column(var = "sample") %>%
+  select(sample, PC1, PC2) %>%
+  mutate(datset = "normalized")
+```
+
+```{r}
+pcs.res.tcc <- bind_rows(counts.res.tcc, norm.res.tcc) %>%
+  mutate(LibraryID = sample) %>%
+  left_join(tcc.meta) %>%
+  mutate(ffpe.status = `Tissue Preservation Method`)
+
+pcs.res.tcc %>%
+  ggplot(aes(x = PC1, y = PC2, color = ffpe.status, fill = ffpe.status)) +
+  facet_wrap(vars(datset), scales = "free") +
+  geom_point(alpha = .4) +
+  stat_ellipse(geom = "polygon", alpha = .2) +
+  scale_fill_viridis_d(aesthetics = c("color", "fill")) +
+  theme_bw()
+ggsave("../figures/pca_compare-FFPE_tcc.png")
+```
+
+## Repeat for combined
+
+```{r}
+all.counts <- bind_rows(tcc.counts.pc, tcga.counts.pc)
+all.counts[is.na(all.counts)] <- 0
+all.norm <- bind_rows(tcc.norm.pc, tcga.norm.pc)
+
+counts.res.all  <- prcomp(all.counts, scale. = T)$x %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "sample") %>%
+  select(sample, PC1, PC2) %>%
+  mutate(datset = "counts")
+
+norm.res.all  <- prcomp(all.norm, scale. = T)$x%>%
+  as.data.frame() %>%
+  rownames_to_column(var = "sample") %>%
+  select(sample, PC1, PC2) %>%
+  mutate(datset = "normalized")
+```
+
+```{r}
+all.meta <- tcc.meta %>%
+  mutate(sample = LibraryID,
+         ffpe.status = ifelse(`Tissue Preservation Method` == "Frozen",
+                              FALSE, TRUE)) %>%
+  select(sample, ffpe.status) %>%
+  bind_rows(tcga.meta)
+pcs.res.all <- bind_rows(counts.res.all, norm.res.all) %>%
+  left_join(all.meta)  
+
+pcs.res.all %>%
+  ggplot(aes(x = PC1, y = PC2, color = ffpe.status, fill = ffpe.status)) +
+  facet_wrap(vars(datset), scales = "free") +
+  geom_point(alpha = .4) +
+  stat_ellipse(geom = "polygon", alpha = .2) +
+  scale_fill_viridis_d(aesthetics = c("color", "fill")) +
+  theme_bw()
+ggsave("../figures/pca_compare-FFPE_all.png")
+```
+
 # What are those groups?
 
 ```{r}
-pcs.grouplab <- pcs.res %>%
+pcs.grouplab <- pcs.res.all %>%
   filter(datset == "normalized") %>%
   mutate(pc.group = ifelse(PC1 < -200, "ClusterA",
-                           ifelse(PC1 < -60, "ClusterB",
+                           ifelse(PC1 < -50, "ClusterB",
                                   ifelse(PC2 > 200, "Outlier",
                                          "main.group"))))
 
