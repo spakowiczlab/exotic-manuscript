@@ -8,9 +8,11 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
+library(caret)
 library(tidyverse)
 library(h2o)
 library(lares)
+
 ```
 
 # Load data
@@ -47,20 +49,6 @@ exoToDF <- function(taxalevels = c("domain", "kingdom", "phylum", "class",
 }
 ```
 
-```{r}
-# Stolen from Lester's mitox code
-runh2o <- function(s,m) {
-    r <- h2o_automl(tcc.modin, y = Cancer, max_models = m, impute = FALSE, 
-                    target = "True", split = 0.7, seed = s, start_clean = TRUE)
-    
-    #store input parameters and auc
-    eva <- data.frame(seeds = s,
-                      max_model = m,
-                      auc = r$metrics$metrics[,1])
-    
-    return(eva)
-}
-```
 
 # Formatting
 
@@ -74,34 +62,12 @@ tcc.modin <- tcc.clin %>%
   select(-sample)
 ```
 
-# Select best model
-
-```{r}
-# Create a table with every combination between s and m
-s <- 12345
-
-m <- 15
-
-var <- expand.grid(s,m) %>%
-  rename("s" = "Var1", "m" ="Var2")
-
-# use for loop to run function above with every combination between s and m 
-h2ores <- list()
-for (i in 1:nrow(var)){
-  f <- var[i,]
-  h2ores[[i]] <- do.call(runh2o,f)
-}
-
-bind_rows(h2ores) %>%
-  arrange(desc(auc))
-```
-
-# Show best model
+# Generate
 
 ```{r}
 r <- h2o_automl(tcc.modin, 
                 y = Cancer, 
-                max_models = 15, 
+                max_models = 40, 
                 impute = FALSE, 
                 target = "True",
                 split = 0.7, 
@@ -110,4 +76,91 @@ r <- h2o_automl(tcc.modin,
 
 r
 
+```
+
+```{r}
+r$model@algorithm
+r$model@parameters
+```
+
+# Remake specific model
+
+```{r}
+datset.test <- r$datasets$test[,1:4093]
+datset.all <- r$datasets$global[,1:4093]
+datset.train <- setdiff(datset.all,datset.test) %>%
+  mutate(Cancer = as.factor(Cancer)) %>%
+  select(Cancer, everything())
+datset.train.labs <- datset.train$Cancer
+
+# datset.train <- datset.train %>%
+#   select(-Cancer)
+
+datset.test.pred <- datset.test %>%
+  select(-Cancer)
+```
+
+```{r}
+set.seed(12351)
+# gbm.mod <- train(data = datset.train,
+#                  formula = Cancer ~ .,
+#                  x = datset.train,
+#                  y = datset.train.labs,
+#                  method = "gbm",
+#                # col_sample_rate = 0.8,
+#                # col_sample_per_tree =0.8,
+#                # sample_rate = 0.8,
+#                n.trees = 19,
+#                interaction.depth = 8,
+#                shrinkage = 0.1,
+#                distribution = "multinomial")
+
+gbm.carfit <- train(datset.train[,-1], datset.train$Cancer,
+                    method = "gbm",
+                    tuneGrid=expand.grid(
+                      n.trees=19,
+                      interaction.depth=8,
+                      shrinkage=.1,
+                       n.minobsinnode=1
+                    ),
+                    distribution = "multinomial")
+
+car.pred <- predict(gbm.carfit, datset.test[,-1])
+print(gbm.carfit)
+pROC::multiclass.roc(as.numeric(datset.test$Cancer), as.numeric(car.pred))
+```
+
+```{r}
+library(gbm)
+varImp(gbm.carfit, scale = F)
+```
+
+```{r}
+# summary(
+#   gbm.mod, 
+#   cBars = 10,
+#   method = relative.influence, # also can use permutation.test.gbm
+#   las = 2
+#   )
+```
+
+```{r}
+# gbm.pred <- predict.gbm(gbm.mod, datset.test, n.trees = gbm.mod$n.trees,
+#                         type = "response")
+# 
+# gbm.bestpred <- gbm.pred %>%
+#   as.data.frame() %>%
+#   rownames_to_column(var = "idord") %>%
+#   gather(-idord, key = "cancer", value = "prob") %>%
+#   group_by(idord) %>%
+#   mutate(maxprob = max(prob)) %>%
+#   ungroup() %>%
+#   filter(prob == maxprob) %>%
+#   arrange(idord) %>%
+#   mutate(Cancer = gsub("\\.19", "", cancer))
+```
+
+```{r}
+# library(pROC)
+# multiclass.roc(as.numeric(as.factor(datset.test$Cancer)), as.numeric(as.factor(gbm.bestpred$Cancer)))
 ```
