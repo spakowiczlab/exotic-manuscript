@@ -170,12 +170,12 @@ write.csv(caret.imp, "../data/gbm_variable-importance.csv")
 # Binarize
 
 ```{r}
-datset.all.bin <- datset.all %>%
+datset.all.bin <- datset.train %>%
   mutate(Cancer = ifelse(Cancer == "GI", "1","0")) %>%
   select(Cancer, everything())
-# datset.test.bin <- datset.test %>%
-#   mutate(Cancer = ifelse(Cancer == "SAR", "SAR", "NotSAR")) %>%
-#   select(Cancer, everything())
+datset.test.bin <- datset.test %>%
+  mutate(Cancer = ifelse(Cancer == "GI", "1", "0")) %>%
+  select(Cancer, everything())
 
 set.seed(12351)
 ctrl <- trainControl(savePredictions = T)
@@ -192,9 +192,18 @@ gbm.carfit.bin <- train(datset.all.bin[,-1], datset.all.bin$Cancer,
 ```
 
 ```{r}
-indices <- gbm.carfit.bin$pred$Resample == "Resample25"
+# indices <- gbm.carfit.bin$pred$Resample == "Resample25"
+# png("../figures/roc_gbm-bin.png")
+# pROC::plot.roc(as.numeric(gbm.carfit.bin$pred$obs[indices]),
+#                as.numeric(gbm.carfit.bin$pred$pred[indices]))
+# dev.off()
+```
+
+```{r}
+bin.preds <- predict(gbm.carfit.bin, datset.test.bin[,-1], type = "prob")
+pROC::roc(as.numeric(datset.test.bin$Cancer), bin.preds$`1`)
+
 png("../figures/roc_gbm-bin.png")
-pROC::plot.roc(as.numeric(gbm.carfit.bin$pred$obs[indices]),
-               as.numeric(gbm.carfit.bin$pred$pred[indices]))
+pROC::plot.roc(as.numeric(datset.test.bin$Cancer), bin.preds$`1`)
 dev.off()
 ```
