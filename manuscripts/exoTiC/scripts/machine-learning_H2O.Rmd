@@ -132,7 +132,9 @@ pROC::multiclass.roc(as.numeric(datset.test$Cancer), as.numeric(car.pred))
 
 ```{r}
 library(gbm)
-varImp(gbm.carfit, scale = F)
+caret.imp <- varImp(gbm.carfit, scale = F) $importance
+caret.imp
+write.csv(caret.imp, "../data/gbm_variable-importance.csv")
 ```
 
 ```{r}
@@ -163,4 +165,11 @@ varImp(gbm.carfit, scale = F)
 ```{r}
 # library(pROC)
 # multiclass.roc(as.numeric(as.factor(datset.test$Cancer)), as.numeric(as.factor(gbm.bestpred$Cancer)))
+```
+
+# Binarize
+
+```{r}
+datset.tran.bin <- datset.train %>%
+  mutate(Cancer = ifelse(Cancer == "SARC"))
 ```
