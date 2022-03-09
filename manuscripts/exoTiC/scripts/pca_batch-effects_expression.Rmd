@@ -16,7 +16,7 @@ library(readxl)
 
 ```{r}
 drakedir.old <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-16/"
-drakedir.new <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-23/"
+drakedir.new <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/"
 
 norm.inputs.old <- readRDS(file.path(drakedir.old, "normalization.inputs.expr.RDS"))
 norm.result.old <- readRDS(file.path(drakedir.old, "normalized.expr.RDS"))

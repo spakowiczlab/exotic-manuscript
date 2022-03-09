@@ -15,7 +15,7 @@ library(readxl)
 # Load data
 
 ```{r}
-drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-23/"
+drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/"
 
 # tcc.batchres <- readRDS(file.path(drakedir, "tcc.batchres.RDS"))
 # tcga.batchres <- readRDS(file.path(drakedir, "tcga.batchres.RDS"))
@@ -163,10 +163,11 @@ all.meta <- tcc.meta %>%
   select(sample, ffpe.status) %>%
   bind_rows(tcga.meta)
 pcs.res.all <- bind_rows(counts.res.all, norm.res.all) %>%
-  left_join(all.meta)  
+  left_join(all.meta)  %>%
+  mutate(SequencingCenter = ifelse(is.na(SequencingCenter), "TCC", SequencingCenter))
 
 pcs.res.all %>%
-  ggplot(aes(x = PC1, y = PC2, color = ffpe.status, fill = ffpe.status)) +
+  ggplot(aes(x = PC1, y = PC2, color = SequencingCenter, fill = SequencingCenter)) +
   facet_wrap(vars(datset), scales = "free") +
   geom_point(alpha = .4) +
   stat_ellipse(geom = "polygon", alpha = .2) +
@@ -180,13 +181,13 @@ ggsave("../figures/pca_compare-FFPE_all.png")
 ```{r}
 pcs.grouplab <- pcs.res.all %>%
   filter(datset == "normalized") %>%
-  mutate(pc.group = ifelse(PC1 < -200, "ClusterA",
+  mutate(pc.group = ifelse(PC1 < -150, "ClusterA",
                            ifelse(PC1 < -50, "ClusterB",
                                   ifelse(PC2 > 200, "Outlier",
                                          "main.group"))))
 
 pcs.grouplab %>% 
-  group_by(pc.group, tissue_source_site) %>%
+  group_by(pc.group) %>%
   tally()
 ```
 
