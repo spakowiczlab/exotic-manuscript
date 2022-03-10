@@ -15,7 +15,7 @@ library(tmesig)
 # Load data
 
 ```{r}
-datadir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-16"
+datadir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08"
 
 expr.tcga <- readRDS(file.path(datadir, "tcga.expr.norm.RDS"))
 expr.tcc <- readRDS(file.path(datadir, "tcc.expr.norm.RDS"))
@@ -75,8 +75,8 @@ tmesig.tcga <- buffa.tcga %>%
 tmesig.tcc <- buffa.tcc %>%
   left_join(mito.tcc)
 
-write.csv(tmesig.tcga, "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-16/tcga_tmesig1.csv", row.names = F)
-write.csv(tmesig.tcc, "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-16/tcc_tmesig1.csv", row.names = F)
+write.csv(tmesig.tcga, "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/tcga_tmesig1.csv", row.names = F)
+write.csv(tmesig.tcc, "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/tcc_tmesig1.csv", row.names = F)
 ```
 
 

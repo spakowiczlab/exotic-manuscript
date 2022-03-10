@@ -34,6 +34,10 @@ tcga.all.join <- tcga.all %>%
 surv.res <- bind_rows(tcc.all.join, tcga.all.join, tcc.split, tcga.split)
 ```
 
+
+```{r}
+
+```
 # Plot
 
 

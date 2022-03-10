@@ -15,7 +15,7 @@ library(broom)
 # Load data
 
 ```{r}
-data.dir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-16"
+data.dir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08"
 tcc.exo.ra <- readRDS(file.path(data.dir, "tcc.exora.taxonomy.RDS"))
 tcga.exo.ra <- readRDS(file.path(data.dir, "tcga.exora.taxonomy.RDS"))
 
