@@ -16,7 +16,7 @@ source("/fs/ess/PAS1695/exoticpipe/R/assign_taxonomy.R")
 # Load data
 
 ```{r}
-datadir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-16"
+datadir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08"
 
 tcc.counts <- readRDS(file.path(datadir, "tcc.counts.RDS"))
 tcga.counts <- readRDS(file.path(datadir, "tcga.counts.RDS"))

@@ -16,7 +16,7 @@ library(rlist)
 # Load data
 
 ```{r}
-data.dir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-16"
+data.dir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08"
 tcc.prev <- readRDS(file.path(data.dir, "tcc_prevalence-taxonomy.RDS"))
 tcga.prev <- readRDS(file.path(data.dir, "tcga_prevalence-taxonomy.RDS"))
 
@@ -119,7 +119,8 @@ tcc.modin <- tcc.clin %>%
          sample = RNA.SL.ID) %>%
   select(sample,days,vitalstatus, Cancer) %>%
   left_join(tcc.samp.cancers) %>%
-  inner_join(tcc.w)
+  inner_join(tcc.w) %>%
+  filter(!is.na(TCGA.code))
 
 tcga.modin <- tcga.clin %>%
    mutate(days = days_to_death,
