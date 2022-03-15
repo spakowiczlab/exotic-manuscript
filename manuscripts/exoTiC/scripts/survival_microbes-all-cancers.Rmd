@@ -67,7 +67,7 @@ extract_coxph_results <- function(cp.form, int.term.name, dattab){
            confint.low = `lower .95`,
            confint.high = `upper .95`) %>%
     select(term, hazard.ratio, confint.low, confint.high) %>%
-    suppressMessages(left_join(pvals)) 
+    left_join(pvals)
     # filter(term == int.term.name)
   return(conf.int)
 }

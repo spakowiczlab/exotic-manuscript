@@ -26,6 +26,43 @@ tcga.split <- readRDS("../data/survival_tcga_split-cancers.RDS")
 # Format
 
 ```{r}
+formForForest <- function(cname, resdf){
+  tmp <- resdf %>%
+    filter(cancer == cname) %>%
+    group_by(microbe) %>%
+    mutate(choosemic = any(p.value < 0.05)) %>%
+    ungroup() %>%
+    filter(choosemic == TRUE)
+  
+  micord <- tmp %>%
+    filter(datset == "TCC") %>%
+    arrange(hazard.ratio)
+  micord <- micord$microbe
+  
+  tmp2 <- tmp %>%
+    mutate(confint.high = ifelse(confint.high == Inf, NA, confint.high),
+           confint.low = ifelse(confint.low == 0, NA, confint.low),
+           microbe = fct_relevel(microbe, micord)) 
+}
+
+plotForest <- function(df){
+  p <- df %>%
+    ggplot(aes(x = microbe, y = log(hazard.ratio) 
+               # ymin = confint.low, ymax = confint.high
+    )) +
+    facet_wrap(vars(datset), ncol = 1) +
+    geom_point() +
+    geom_hline(yintercept = 0, lty = 2) +
+    labs(x = "", y = "") +
+    theme_bw() +
+    theme(axis.text.x = element_blank(),
+          axis.ticks.x = element_blank())
+  
+  return(p)
+}
+```
+
+```{r}
 tcc.all.join <- tcc.all %>%
   mutate(cancer = "All")
 tcga.all.join <- tcga.all %>%
@@ -36,8 +73,24 @@ surv.res <- bind_rows(tcc.all.join, tcga.all.join, tcc.split, tcga.split)
 
 
 ```{r}
-
+matched.cancers <- unique(subset(surv.res, surv.res$datset == "TCGA")$cancer)
+plotdat.ls <- lapply(matched.cancers, function(x) formForForest(x, surv.res))
+names(plotdat.ls) <- matched.cancers
 ```
+
 # Plot
+
+```{r}
+fplots.ls <- lapply(plotdat.ls, function(x) plotForest(x))
+
+fplots.ls
+```
+
+```{r}
+lapply(matched.cancers, function(x) ggsave(plot = fplots.ls[[x]],
+                                           filename = paste0("../figures/forest_", 
+                                                             x, ".png"), 
+                                           device = "png"))
+```
 
 
