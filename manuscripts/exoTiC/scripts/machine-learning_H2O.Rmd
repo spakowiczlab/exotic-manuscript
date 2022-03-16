@@ -8,17 +8,17 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-library(caret)
+# library(caret)
 library(tidyverse)
 library(h2o)
-library(lares)
+# library(lares)
 
 ```
 
 # Load data
 
 ```{r}
-datadir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-02-16"
+datadir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08"
 
 tcc.exora.taxonomy <- readRDS(file.path(datadir, "tcc.exora.taxonomy.RDS"))
 tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_aggregated.csv")
@@ -56,15 +56,17 @@ exoToDF <- function(taxalevels = c("domain", "kingdom", "phylum", "class",
 tcc.w <- exoRAtowide(tcc.exora.taxonomy, "species")
 
 tcc.modin <- tcc.clin %>%
-  mutate(sample = RNA.SL.ID) %>%
+  mutate(sample = RNA.SL.ID,
+         Cancer = as.factor(Cancer)) %>%
   select(sample, Cancer) %>%
   inner_join(tcc.w) %>%
   select(-sample)
 ```
+# Old 
 
-# Generate
+## Generate
 
-```{r}
+```{r, eval=FALSE}
 r <- h2o_automl(tcc.modin, 
                 y = Cancer, 
                 max_models = 40, 
@@ -78,14 +80,14 @@ r
 
 ```
 
-```{r}
+```{r, eval=FALSE}
 r$model@algorithm
 r$model@parameters
 ```
 
-# Remake specific model
+## Remake specific model
 
-```{r}
+```{r, eval=FALSE}
 datset.test <- r$datasets$test[,1:4093]
 datset.all <- r$datasets$global[,1:4093]
 datset.train <- setdiff(datset.all,datset.test) %>%
@@ -100,7 +102,7 @@ datset.test.pred <- datset.test %>%
   select(-Cancer)
 ```
 
-```{r}
+```{r, eval=FALSE}
 set.seed(12351)
 # gbm.mod <- train(data = datset.train,
 #                  formula = Cancer ~ .,
@@ -130,14 +132,14 @@ print(gbm.carfit)
 pROC::multiclass.roc(as.numeric(datset.test$Cancer), as.numeric(car.pred))
 ```
 
-```{r}
+```{r, eval=FALSE}
 library(gbm)
 caret.imp <- varImp(gbm.carfit, scale = F) $importance
 caret.imp
 write.csv(caret.imp, "../data/gbm_variable-importance.csv")
 ```
 
-```{r}
+```{r, eval=FALSE}
 # summary(
 #   gbm.mod, 
 #   cBars = 10,
@@ -146,7 +148,7 @@ write.csv(caret.imp, "../data/gbm_variable-importance.csv")
 #   )
 ```
 
-```{r}
+```{r, eval=FALSE}
 # gbm.pred <- predict.gbm(gbm.mod, datset.test, n.trees = gbm.mod$n.trees,
 #                         type = "response")
 # 
@@ -162,14 +164,14 @@ write.csv(caret.imp, "../data/gbm_variable-importance.csv")
 #   mutate(Cancer = gsub("\\.19", "", cancer))
 ```
 
-```{r}
+```{r, eval=FALSE}
 # library(pROC)
 # multiclass.roc(as.numeric(as.factor(datset.test$Cancer)), as.numeric(as.factor(gbm.bestpred$Cancer)))
 ```
 
-# Binarize
+## Binarize
 
-```{r}
+```{r, eval=FALSE}
 datset.all.bin <- datset.train %>%
   mutate(Cancer = ifelse(Cancer == "GI", "1","0")) %>%
   select(Cancer, everything())
@@ -191,7 +193,7 @@ gbm.carfit.bin <- train(datset.all.bin[,-1], datset.all.bin$Cancer,
                     trControl = ctrl)
 ```
 
-```{r}
+```{r, eval=FALSE}
 # indices <- gbm.carfit.bin$pred$Resample == "Resample25"
 # png("../figures/roc_gbm-bin.png")
 # pROC::plot.roc(as.numeric(gbm.carfit.bin$pred$obs[indices]),
@@ -199,11 +201,46 @@ gbm.carfit.bin <- train(datset.all.bin[,-1], datset.all.bin$Cancer,
 # dev.off()
 ```
 
-```{r}
+```{r, eval=FALSE}
 bin.preds <- predict(gbm.carfit.bin, datset.test.bin[,-1], type = "prob")
 pROC::roc(as.numeric(datset.test.bin$Cancer), bin.preds$`1`)
 
 png("../figures/roc_gbm-bin.png")
 pROC::plot.roc(as.numeric(datset.test.bin$Cancer), bin.preds$`1`)
 dev.off()
+```
+
+# New, following AWS tutorial
+
+http://h2o-release.s3.amazonaws.com/h2o/master/1292/docs-website/tutorial/rtutorial.html
+
+## Generate local h2o object
+```{r}
+localH2O = h2o.init(ip = "localhost", port = 54321, startH2O = TRUE)
+```
+
+## import R data
+
+```{r}
+set.seed(112358)
+trainsamps <- sort(sample(nrow(tcc.modin), .8*nrow(tcc.modin)))
+tcc.train <- tcc.modin[trainsamps,]
+tcc.test <- tcc.modin[-trainsamps,]
+modin.h2o <- as.h2o(tcc.train)
+modval.h2o <- as.h2o(tcc.test)
+```
+
+## Run gbm
+
+The tutorial uses argument names that don't match the current version of the package. I'm going to assume the defaults are reasonable for the first run, if that's awful we'll try to use the arguments from the auto ml.
+
+```{r}
+h2o.gbm(y = "Cancer", training_frame = modin.h2o, validation_frame = modval.h2o,
+        distribution= "multinomial", seed = 112358)
+```
+
+```{r}
+h2o.gbm(y = "Cancer", training_frame = modin.h2o, validation_frame = modval.h2o,
+        distribution= "multinomial",ntrees = 19, seed = 12345,
+        col_sample_rate = 0.8,sample_rate=0.8)
 ```
