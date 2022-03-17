@@ -16,7 +16,7 @@ library(broom)
 # Load data
 
 ```{r}
-drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-01-13/"
+drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/"
 
 # Counts, removing samples that fail to resolve batches (missing info, etc.)
 tcc.batchres <- readRDS(file.path(drakedir, "tcc.batchres.RDS"))
