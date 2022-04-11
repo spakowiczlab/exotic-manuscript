@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(ggforce)
+library(devEMF)
 ```
 
 # Load
@@ -23,7 +24,17 @@ tcc.split <- readRDS("../data/survival_tcc_split-cancers.RDS")
 tcga.split <- readRDS("../data/survival_tcga_split-cancers.RDS")
 ```
 
-# Format
+```{r}
+tcc.all.join <- tcc.all %>%
+  mutate(cancer = "All")
+tcga.all.join <- tcga.all %>%
+  mutate(cancer = "All")
+
+surv.res <- bind_rows(tcc.all.join, tcga.all.join, tcc.split, tcga.split)
+```
+# Forrest
+
+## Format
 
 ```{r}
 formForForest <- function(cname, resdf){
@@ -63,22 +74,12 @@ plotForest <- function(df){
 ```
 
 ```{r}
-tcc.all.join <- tcc.all %>%
-  mutate(cancer = "All")
-tcga.all.join <- tcga.all %>%
-  mutate(cancer = "All")
-
-surv.res <- bind_rows(tcc.all.join, tcga.all.join, tcc.split, tcga.split)
-```
-
-
-```{r}
 matched.cancers <- unique(subset(surv.res, surv.res$datset == "TCGA")$cancer)
 plotdat.ls <- lapply(matched.cancers, function(x) formForForest(x, surv.res))
 names(plotdat.ls) <- matched.cancers
 ```
 
-# Plot
+## Plot
 
 ```{r}
 fplots.ls <- lapply(plotdat.ls, function(x) plotForest(x))
@@ -92,5 +93,78 @@ lapply(matched.cancers, function(x) ggsave(plot = fplots.ls[[x]],
                                                              x, ".png"), 
                                            device = "png"))
 ```
+
+# Circos
+
+## Formatting
+
+```{r make big plot input object}
+tile.input <- surv.res %>%
+  mutate(taxalev = str_sub(microbe,1,1),
+         sigcode = p.value < 0.05) %>%
+  select(microbe, taxalev, sigcode, datset, cancer)
+
+
+```
+
+```{r find the variables that we want to limit the plots on}
+test <- tile.input %>%
+  filter(sigcode == T & !grepl("Other", cancer)) %>%
+  group_by(cancer) %>%
+  tally()
+
+good.cancers <- test$cancer
+all.taxlevs <- unique(tile.input$taxalev)
+```
+
+## geom_tile
+
+```{r ensure consistent fill scale}
+vir.cols <- viridis::viridis_pal()(9)
+names(vir.cols) <- good.cancers
+```
+
+```{r plotting function}
+polarizedHeatmaps <- function(tlev, dset, yadj){
+  tile.input %>%
+    filter(datset == dset & taxalev == tlev) %>%
+    filter(cancer %in% good.cancers) %>%
+    mutate(cancer.code = ifelse(sigcode == T, cancer, NA),
+           cancer = as.numeric(as.factor(cancer)) + yadj) %>%
+    ggplot(aes(x = microbe, y = cancer, fill = cancer.code)) +
+    geom_tile() +
+    ylim(c(0,100)) +
+    # facet_wrap(vars(taxalev), scales = "free_x") +
+    scale_fill_viridis_d(na.value = "grey80", direction = 1) + 
+    theme_void() +
+    theme(axis.text.x = element_blank(),
+          axis.ticks = element_blank()) +
+    coord_polar()
+}
+```
+
+```{r}
+ringplot.tcc.ls <- list(d = polarizedHeatmaps("d", "TCC", 1),
+                        k = polarizedHeatmaps("k", "TCC", 12),
+                        p = polarizedHeatmaps("p", "TCC", 23),
+                        c = polarizedHeatmaps("c", "TCC", 34),
+                        o = polarizedHeatmaps("o", "TCC", 45),
+                        f = polarizedHeatmaps("f", "TCC", 56),
+                        g = polarizedHeatmaps("g", "TCC", 67),
+                        s = polarizedHeatmaps("s", "TCC", 78))
+
+ringplot.tcc.ls
+```
+
+```{r}
+lapply(as.character(all.taxlevs), function(x) ggsave(plot = ringplot.tcc.ls[[x]],
+                                                     filename = 
+                                                       paste0("../figures/",
+                                                              "heatmap_ring_TCC_",
+                                                              x, ".pdf"),
+                                                     dev = "pdf"))
+```
+
+## 
 
 

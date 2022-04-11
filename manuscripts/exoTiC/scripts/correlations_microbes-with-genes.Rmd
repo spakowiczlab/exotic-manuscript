@@ -79,9 +79,49 @@ tcga.w <- exoToDF(data = tcga.exo.ra)
 ```
 
 ```{r combine with expression}
+tcc.modin <- inner_join(tcc.expr, tcc.w)
 
+tcga.modin <- tcga.clin %>%
+  select(file_id.BAM, file_id.expression) %>%
+  mutate(sample = file_id.BAM) %>%
+  inner_join(tcga.w) %>%
+  mutate(sample = file_id.expression) %>%
+  inner_join(tcga.expr)
+```
+
+```{r grab gene and microbe lists}
+mics <- intersect(colnames(tcc.w[,-1]), colnames(tcga.w[,-1]))
+genes <- intersect(colnames(tcc.expr[,-1]), colnames(tcga.expr[,-1]))
+
+genes.ls <- split(genes, floor(seq_along(genes)/100))
+```
+
+```{r}
+saveRDS(tcc.modin, "/fs/ess/PAS1695/projects/exotic/data/mic-genes_TCC.RDS")
+saveRDS(tcga.modin, "/fs/ess/PAS1695/projects/exotic/data/mic-genes_TCGA.RDS")
+
+saveRDS(mics, "/fs/ess/PAS1695/projects/exotic/data/microbe-names.RDS")
+saveRDS(genes.ls, "/fs/ess/PAS1695/projects/exotic/data/gene-lists.RDS")
 ```
 
 # Run correlations
+
+```{r}
+  fileOut<- paste0("/fs/ess/PAS1695/projects/exotic/scripts/batch/corr-mic-genes.pbs")
+  
+  writeLines(c(paste0("#PBS -N corr-mic-genes_", f),
+               "#PBS -A PAS1695",
+               "#PBS -l walltime=12:00:00",
+               "#PBS -l nodes=1:ppn=28",
+               "#PBS -j ae",
+               "",
+               "module load R/4.1.0-gnu9.1",
+               paste0("Rscript ~/Documents/repos/exoTCC/manuscripts/exoTiC/",
+                      "scripts/corr_functions.R $PBS_ARRAY_INDEX")),
+             fileOut
+  )
+  # close(fileOut)
+
+```
 
 # Display, save

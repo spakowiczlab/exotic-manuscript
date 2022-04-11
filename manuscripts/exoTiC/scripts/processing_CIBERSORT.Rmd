@@ -1,0 +1,16 @@
+---
+title: "prep remaining cancers for cibersort"
+author: "Rebecca Hoyd"
+date: "3/25/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load data
+
+```{r}
+skcm <- read.table("/fs/ess/PAS1695/generate-inputs_v2/TCGA-processing/data/SKCM/expressions.txt", sep = "\t", header = T)
+```
