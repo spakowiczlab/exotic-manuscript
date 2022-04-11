@@ -134,8 +134,7 @@ polarizedHeatmaps <- function(tlev, dset, yadj){
     ggplot(aes(x = microbe, y = cancer, fill = cancer.code)) +
     geom_tile() +
     ylim(c(0,100)) +
-    # facet_wrap(vars(taxalev), scales = "free_x") +
-    scale_fill_viridis_d(na.value = "grey80", direction = 1) + 
+    scale_fill_manual(values = vir.cols, name = "", na.value = "grey80") + 
     theme_void() +
     theme(axis.text.x = element_blank(),
           axis.ticks = element_blank()) +
@@ -165,6 +164,108 @@ lapply(as.character(all.taxlevs), function(x) ggsave(plot = ringplot.tcc.ls[[x]]
                                                      dev = "pdf"))
 ```
 
-## 
+```{r}
+ringplot.tcga.ls <- list(d = polarizedHeatmaps("d", "TCGA", 1),
+                        k = polarizedHeatmaps("k", "TCGA", 12),
+                        p = polarizedHeatmaps("p", "TCGA", 23),
+                        c = polarizedHeatmaps("c", "TCGA", 34),
+                        o = polarizedHeatmaps("o", "TCGA", 45),
+                        f = polarizedHeatmaps("f", "TCGA", 56),
+                        g = polarizedHeatmaps("g", "TCGA", 67),
+                        s = polarizedHeatmaps("s", "TCGA", 78))
 
+ringplot.tcga.ls
+```
 
+```{r}
+lapply(as.character(all.taxlevs), function(x) ggsave(plot = ringplot.tcga.ls[[x]],
+                                                     filename = 
+                                                       paste0("../figures/",
+                                                              "heatmap_ring_TCGA_",
+                                                              x, ".pdf"),
+                                                     dev = "pdf"))
+```
+
+## repeat for agreement plot
+
+```{r}
+agree.input <- surv.res %>%
+  filter(cancer %in% good.cancers) %>%
+  mutate(hazard.dir = ifelse(hazard.ratio > 1, "neg", "pos"),
+         signif = p.value < 0.05,
+         dirsig = paste(hazard.dir, signif)) %>%
+  select(microbe, dirsig, cancer, datset) %>%
+  spread(key = "datset", value = "dirsig") %>%
+  separate(TCC, into = c("TCC.dir", "TCC.sig")) %>%
+  separate(TCGA, into = c("TCGA.dir", "TCGA.sig")) %>%
+  mutate(agree.code = TCC.sig == T & TCGA.sig == T & TCC.dir == TCGA.dir) %>%
+  mutate(taxalev = str_sub(microbe,1,1))
+```
+
+```{r}
+agreeingHeatmaps <- function(tlev, yadj){
+    agree.input %>%
+    filter(taxalev == tlev) %>%
+    filter(cancer %in% good.cancers) %>%
+    mutate(cancer.code = ifelse(agree.code == T, cancer, NA),
+           cancer = as.numeric(as.factor(cancer)) + yadj) %>%
+    ggplot(aes(x = microbe, y = cancer, fill = cancer.code)) +
+    geom_tile() +
+    ylim(c(0,100)) +
+    scale_fill_manual(values = vir.cols, name = "", na.value = "grey80") +
+    theme_void() +
+    theme(axis.text.x = element_blank(),
+          axis.ticks = element_blank()) +
+    coord_polar()
+}
+```
+
+```{r}
+ringplot.agree.ls <- list(d = agreeingHeatmaps("d", 1),
+                          k = agreeingHeatmaps("k", 12),
+                          p = agreeingHeatmaps("p", 23),
+                          c = agreeingHeatmaps("c", 34),
+                          o = agreeingHeatmaps("o", 45),
+                          f = agreeingHeatmaps("f", 56),
+                          g = agreeingHeatmaps("g", 67),
+                          s = agreeingHeatmaps("s", 78))
+
+ringplot.agree.ls
+```
+
+```{r}
+lapply(as.character(all.taxlevs), function(x) ggsave(plot = ringplot.agree.ls[[x]],
+                                                     filename = 
+                                                       paste0("../figures/",
+                                                              "heatmap_ring_agree_",
+                                                              x, ".pdf"),
+                                                     dev = "pdf"))
+```
+
+# Example curves
+
+```{r}
+poss.choices <- agree.input %>%
+  filter(agree.code == T) %>%
+  select(microbe, cancer) %>%
+  left_join(surv.res) %>%
+  filter(prevalence.1 > 10) %>%
+  add_count(microbe, cancer) %>%
+  filter(n>1)
+
+```
+
+```{r as forest plot}
+poss.choices %>%
+  ggplot(aes(x = hazard.ratio, y = datset)) +
+  facet_wrap(vars(microbe), ncol = 1) +
+  geom_point() +
+  geom_segment(inherit.aes = F, aes(x = confint.low, xend = confint.high,
+                                    y = datset, yend = datset)) +
+  xlim(c(0,28)) +
+  geom_vline(xintercept = 1, lty = 2) +
+  labs(x = "Hazard Ratio", y = "") +
+  theme_bw()
+
+ggsave("../figures/forest_example-microbes.pdf")
+```
