@@ -13,7 +13,7 @@ library(tidyverse)
 # Access starting targets
 
 ```{r}
-drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-01-13/"
+drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/"
 # Counts, before any manipulation
 raw.tcc.counts <- readRDS(file.path(drakedir, "raw.tcc.counts.RDS")) %>%
   select(-Homo.sapiens)
@@ -151,37 +151,37 @@ waterfall.df$y.min <- c(ymin.tcc, ymin.tcga)
 
 ## Waterfall format - both datasets
 ```{r}
-waterfall.df %>%
-  mutate(id = rep(1:5, 2),
-         y.min = as.numeric(y.min),
-         count = as.numeric(count),
-         changedir = ifelse(y.min < count, "Gain", "Loss"),
-         Data.Source = toupper(Data.Source)) %>%
-  ggplot() +
-  geom_rect(aes(ymin = y.min, ymax = count, xmin = id - .45 ,
-            xmax = id + .45, x = id, fill = changedir)) +
-  scale_fill_manual(breaks = c("Gain", "Loss"), values = c("darkgreen", "darkred"), 
-                    name = "Effect on\nread count") +
-  facet_wrap(vars(Data.Source), scales = "free_y") +
-  # scale_x_discrete(breaks = 1:5, labels = c("start", "batch resolution", "initial decontam",
-  #                                            "literature altered decontam", "Remove TCC only")) +
-  labs(x = "") +
-  theme_bw() 
-ggsave("../figures/1A_waterfall-plot.png")
+# waterfall.df %>%
+#   mutate(id = rep(1:5, 2),
+#          y.min = as.numeric(y.min),
+#          count = as.numeric(count),
+#          changedir = ifelse(y.min < count, "Gain", "Loss"),
+#          Data.Source = toupper(Data.Source)) %>%
+#   ggplot() +
+#   geom_rect(aes(ymin = y.min, ymax = count, xmin = id - .45 ,
+#             xmax = id + .45, x = id, fill = changedir)) +
+#   scale_fill_manual(breaks = c("Gain", "Loss"), values = c("darkgreen", "darkred"), 
+#                     name = "Effect on\nread count") +
+#   facet_wrap(vars(Data.Source), scales = "free_y") +
+#   # scale_x_discrete(breaks = 1:5, labels = c("start", "batch resolution", "initial decontam",
+#   #                                            "literature altered decontam", "Remove TCC only")) +
+#   labs(x = "") +
+#   theme_bw() 
+# ggsave("../figures/1A_waterfall-plot.png")
 ```
 
 ## Barplot format
 
 ```{r}
-waterfall.df %>%
-  mutate(id = rep(1:5, 2),
-         y.min = as.numeric(y.min),
-         count = as.numeric(count)) %>%
-  ggplot(aes(x = id, y = count)) +
-  geom_col() +
-  facet_wrap(vars(Data.Source), scales = "free_y") +
-  theme_bw()
-ggsave("../figures/fig1_waterfall_barplot.png")
+# waterfall.df %>%
+#   mutate(id = rep(1:5, 2),
+#          y.min = as.numeric(y.min),
+#          count = as.numeric(count)) %>%
+#   ggplot(aes(x = id, y = count)) +
+#   geom_col() +
+#   facet_wrap(vars(Data.Source), scales = "free_y") +
+#   theme_bw()
+# ggsave("../figures/fig1_waterfall_barplot.png")
 ```
 
 ## Waterfall format - only TCGA
@@ -202,7 +202,7 @@ tcga.waterfall.df %>%
   mutate(id = 6-id,
          y.min = ifelse(id == 5, 0, y.min)) %>%
   ggplot(aes(x = id, y = count)) +
-  geom_rect(aes(ymin = 0, ymax = 906768141, xmin = 1 - .45 ,
+  geom_rect(aes(ymin = 0, ymax = 805457002, xmin = 1 - .45 ,
             xmax = 1 + .45)) +
   geom_rect(aes(ymin = y.min, ymax = count, xmin = id - .45 ,
             xmax = id + .45, fill = changedir)) +
@@ -217,6 +217,6 @@ tcga.waterfall.df %>%
                                 "Final read count")) +
   coord_flip() +
   theme_bw() 
-ggsave("../figures/waterfall_TCGA-combine-types.png")
+ggsave("../figures/waterfall_TCGA-combine-types.pdf")
 ```
 

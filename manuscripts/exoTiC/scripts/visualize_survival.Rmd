@@ -134,7 +134,7 @@ polarizedHeatmaps <- function(tlev, dset, yadj){
     ggplot(aes(x = microbe, y = cancer, fill = cancer.code)) +
     geom_tile() +
     ylim(c(0,100)) +
-    scale_fill_manual(values = vir.cols, name = "", na.value = "grey80") + 
+    scale_fill_manual(values = vir.cols, name = "", na.value = "grey95") + 
     theme_void() +
     theme(axis.text.x = element_blank(),
           axis.ticks = element_blank()) +
@@ -212,7 +212,7 @@ agreeingHeatmaps <- function(tlev, yadj){
     ggplot(aes(x = microbe, y = cancer, fill = cancer.code)) +
     geom_tile() +
     ylim(c(0,100)) +
-    scale_fill_manual(values = vir.cols, name = "", na.value = "grey80") +
+    scale_fill_manual(values = vir.cols, name = "", na.value = "grey95") +
     theme_void() +
     theme(axis.text.x = element_blank(),
           axis.ticks = element_blank()) +
@@ -258,13 +258,12 @@ poss.choices <- agree.input %>%
 ```{r as forest plot}
 poss.choices %>%
   ggplot(aes(x = hazard.ratio, y = datset)) +
-  facet_wrap(vars(microbe), ncol = 1) +
+  facet_wrap(vars(microbe), ncol = 1, scales = "free_x") +
   geom_point() +
   geom_segment(inherit.aes = F, aes(x = confint.low, xend = confint.high,
                                     y = datset, yend = datset)) +
-  xlim(c(0,28)) +
   geom_vline(xintercept = 1, lty = 2) +
-  labs(x = "Hazard Ratio", y = "") +
+  labs(x = "", y = "") +
   theme_bw()
 
 ggsave("../figures/forest_example-microbes.pdf")

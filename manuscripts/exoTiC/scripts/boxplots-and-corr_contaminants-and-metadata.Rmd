@@ -138,7 +138,7 @@ ggplot(box.dat, aes(x = microbe, y = counts, fill = FFPE)) +
   scale_fill_viridis_d(option = "mako") +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-ggsave("../figures/boxplots_contaminant_FFPE.png")
+ggsave("../figures/boxplots_contaminant_FFPE.pdf")
 ```
 
 # Correlations for continuous
@@ -200,17 +200,17 @@ all.corrs.anno <- all.corrs %>%
 ### RIN
 ```{r}
 plot.many.corrs(all.corrs.anno, "RIN")
-ggsave("../figures/barplot_corrs-with-contam_RIN.png")
+ggsave("../figures/barplot_corrs-with-contam_RIN.pdf")
 ```
 
 ### DV200
 ```{r}
 plot.many.corrs(all.corrs.anno, "DV200")
-ggsave("../figures/barplot_corrs-with-contam_DV200.png")
+ggsave("../figures/barplot_corrs-with-contam_DV200.pdf")
 ```
 ### Concentration
 
 ```{r}
 plot.many.corrs(all.corrs.anno, "RNA")
-ggsave("../figures/barplot_corrs-with-contam_RNA.png")
+ggsave("../figures/barplot_corrs-with-contam_RNA.pdf")
 ```
