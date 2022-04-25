@@ -2,11 +2,12 @@ library(tidyverse)
 library(data.table)
 library(dtplyr)
 library(tidyfast)
+library(ggmosaic)
 
 loadSummarizeCorrs <- function(fpath){
   tmp <- read.csv(fpath, stringsAsFactors = F)
   tmp.form <- lazy_dt(tmp) %>% 
-    mutate(sig = ifelse(p.value < 0.05, T, F),
+    mutate(sig = ifelse(is.na(p.value), F, ifelse(p.value < 0.05, T, F)),
            direct = ifelse(estimate < 0, "negative", "positive"),
            sigdir = paste(sig, direct)) %>%
     select(sigdir, microbe, Gene, datset) %>%

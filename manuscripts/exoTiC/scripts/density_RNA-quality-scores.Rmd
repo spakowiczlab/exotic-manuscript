@@ -48,7 +48,7 @@ concentration.df %>%
   labs(x = "RNA Concentration", y = "") +
   theme_bw()
 
-ggsave("../figures/density_RNA-concentration.png")
+ggsave("../figures/density_RNA-concentration.pdf")
 ```
 
 ```{r}
@@ -58,7 +58,7 @@ othscores.df %>%
   labs(x = "RIN", y = "") +
   theme_bw()
 
-ggsave("../figures/density_RIN.png")
+ggsave("../figures/density_RIN.pdf")
 ```
 
 ```{r}
@@ -68,7 +68,7 @@ othscores.df %>%
   labs(x = "DV200", y = "") +
   theme_bw()
 
-ggsave("../figures/density_DV200.png")
+ggsave("../figures/density_DV200.pdf")
 ```
 
 ```{r}
@@ -78,5 +78,5 @@ othscores.df %>%
   labs(x = "Q score", y = "") +
   theme_bw()
 
-ggsave("../figures/density_qscore.png")
+ggsave("../figures/density_qscore.pdf")
 ```

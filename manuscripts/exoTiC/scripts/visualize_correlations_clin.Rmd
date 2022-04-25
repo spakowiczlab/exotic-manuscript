@@ -80,8 +80,8 @@ names(scoreplots) <- scores
 ```{r}
 lapply(scores, function(x) ggsave(scoreplots[[x]],
                                   filename = paste0("../figures/heatmap_corr_", 
-                                                    x, ".png"),
-                                  device = "png",
+                                                    x, ".pdf"),
+                                  device = "pdf",
                                   height = 14))
 ```
 

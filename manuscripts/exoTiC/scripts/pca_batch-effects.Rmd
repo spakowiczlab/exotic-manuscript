@@ -167,13 +167,13 @@ pcs.res.all <- bind_rows(counts.res.all, norm.res.all) %>%
   mutate(SequencingCenter = ifelse(is.na(SequencingCenter), "TCC", SequencingCenter))
 
 pcs.res.all %>%
-  ggplot(aes(x = PC1, y = PC2, color = SequencingCenter, fill = SequencingCenter)) +
+  ggplot(aes(x = PC1, y = PC2, color = ffpe.status, fill = ffpe.status)) +
   facet_wrap(vars(datset), scales = "free") +
   geom_point(alpha = .4) +
   stat_ellipse(geom = "polygon", alpha = .2) +
   scale_fill_viridis_d(aesthetics = c("color", "fill")) +
   theme_bw()
-ggsave("../figures/pca_compare-FFPE_all.png")
+ggsave("../figures/pca_compare-FFPE_all.pdf")
 ```
 
 # What are those groups?
