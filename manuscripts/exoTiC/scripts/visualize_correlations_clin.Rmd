@@ -56,13 +56,13 @@ corr.res.red <- corr.res %>%
 ```{r}
 plotScoreCorr <- function(sname){
   p <- corr.res.red %>%
-    filter(score == sname) %>%
     mutate(TaxLev = str_sub(microbe, 1, 1)) %>%
+    filter(score == sname & TaxLev == "g") %>%
     ggplot(aes(x = microbe, y = cancer, fill = estimate)) +
-    facet_wrap(TaxLev ~ datset, scales = "free", ncol = 2) +
+    facet_wrap(vars(datset), scales = "free", ncol = 2) +
     geom_tile() +
     labs(x = "", y = "") +
-    scale_fill_viridis_c(option = "mako", name = "Correlation with Age") +
+    scale_fill_viridis_c(option = "mako", name = "Correlation Estimate") +
     theme_classic() +
     theme(axis.text.x = element_blank(),
           axis.ticks.x = element_blank())
@@ -81,7 +81,6 @@ names(scoreplots) <- scores
 lapply(scores, function(x) ggsave(scoreplots[[x]],
                                   filename = paste0("../figures/heatmap_corr_", 
                                                     x, ".pdf"),
-                                  device = "pdf",
-                                  height = 14))
+                                  device = "pdf"))
 ```
 

@@ -16,13 +16,13 @@ library(viridis)
 # Load data
 
 ```{r}
-tcc.all <- read.csv("../data/correlations_mic-immune_TCC.csv",
+tcc.all <- read.csv("/fs/ess/PAS1695/projects/exotic/data/correlations_mic-immune_TCC.csv",
                     stringsAsFactors = F)
-tcc.split <- read.csv("../data/correlations_mic-immune_TCC_split-cancer.csv",
+tcc.split <- read.csv("/fs/ess/PAS1695/projects/exotic/data/correlations_mic-immune_TCC_split-cancer.csv",
                       stringsAsFactors = F)
-tcga.all <- read.csv("../data/correlations_mic-immune_TCGA.csv",
+tcga.all <- read.csv("/fs/ess/PAS1695/projects/exotic/data/correlations_mic-immune_TCGA.csv",
                      stringsAsFactors = F)
-tcga.split <- read.csv("../data/correlations_mic-immune_TCGA_split-cancer.csv",
+tcga.split <- read.csv("/fs/ess/PAS1695/projects/exotic/data/correlations_mic-immune_TCGA_split-cancer.csv",
                        stringsAsFactors = F)
 ```
 
@@ -47,7 +47,7 @@ corr.res.red <- corr.res %>%
   group_by(microbe) %>%
   mutate(choosemic = any(p.value < 0.05)) %>%
   ungroup() %>%
-  filter(choosemic == T) %>%
+  filter(choosemic == T & grepl("^g", microbe)) %>%
   mutate(datset = ifelse(datset == "TCGA", "TCGA", "ORIEN"))
 ```
 
@@ -59,7 +59,7 @@ plotScoreCorr <- function(dsource){
     filter(datset == dsource) %>%
     mutate(TaxLev = str_sub(microbe, 1, 1)) %>%
     ggplot(aes(x = microbe, y = ImmuneCell, fill = estimate)) +
-    facet_wrap(TaxLev ~ cancer, scales = "free_x", ncol = 9) +
+    facet_wrap(vars(cancer), scales = "free_x", ncol = 1) +
     geom_tile() +
     labs(x = "", y = "") +
     scale_fill_viridis_c(option = "mako", name = "Correlation Estimate") +
@@ -73,12 +73,12 @@ plotScoreCorr <- function(dsource){
 
 ```{r}
 plotScoreCorr("TCGA")
-ggsave("../figures/heatmap_corr_mic-immune_TCGA.pdf", height = 15,width = 15)
+ggsave("../figures/heatmap_corr_mic-immune_TCGA.pdf", height = 8)
 ```
 
 ```{r}
 plotScoreCorr("ORIEN")
-ggsave("../figures/heatmap_corr_mic-immune_ORIEN.pdf", height = 15,width = 15)
+ggsave("../figures/heatmap_corr_mic-immune_ORIEN.pdf", height = 8)
 ```
 
 
