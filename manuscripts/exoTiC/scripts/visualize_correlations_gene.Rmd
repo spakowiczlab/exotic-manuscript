@@ -9,179 +9,57 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
-library(dtplyr)
-library(data.table)
-library(ggdendro)
-library(ggmosaic)
-```
-
-# Functions
-
-```{r}
-summarizeCorrs <- function(tmp){
-  tmp.form <- lazy_dt(tmp) %>% 
-    mutate(sig = ifelse(p.value < 0.05, T, F),
-           direct = ifelse(estimate < 0, "negative", "positive"),
-           sigdir = paste(sig, direct)) %>%
-    select(sigdir, microbe, Gene, datset) %>%
-    as.data.frame() %>%
-    spread(key = "datset", value = "sigdir") %>%
-    separate(TCC, into = c("TCC.sig", "TCC.dir")) %>%
-    separate(TCGA, into = c("TCGA.sig", "TCGA.dir")) %>%
-    lazy_dt() %>%
-    mutate(summary.code = case_when(TCC.sig == T & TCGA.sig == T & 
-                                      TCC.dir == TCGA.dir ~ "match",
-                                    TCC.sig == T & TCGA.sig == T & 
-                                      TCC.dir != TCGA.dir ~ "disagree",
-                                    TCC.sig == F & TCGA.sig == T ~ "TCGA only",
-                                    TCC.sig == T & TCGA.sig == F ~ "TCC only"
-    )) %>%
-    select(microbe, Gene, summary.code) %>%
-    as.data.frame()
-  
-  return(tmp.form)
-}
+library(tidygraph)
+library(ggraph)
 ```
 
 # Load data
 
-This is only grabbing a subset of data for now so we can build the general idea of the figure. Then this is probably all going to be remade for batch.
-
 ```{r}
-resdir <- "/fs/ess/PAS1695/projects/exotic/data/correlations_mic-gene/"
-
-res.files <- list.files(resdir, full.names = T)
-
-# res.ls <- lapply(res.files[1:10], function(x) read.csv(x, stringsAsFactors = F))
+edges.raw <- readRDS("/fs/ess/PAS1695/projects/exotic/data/network_TCC-corr-in.RDS")
 ```
 
-# Format
+# Some quick queries
 
 ```{r}
-res.df <- read.csv(res.files[1], stringsAsFactors = F)
+hub.m <- edges.raw %>%
+  group_by(microbe) %>%
+  tally() %>%
+  arrange(desc(n))
 
-sig.df <- summarizeCorrs(res.df)
+hub.g <- edges.raw %>%
+  group_by(Gene) %>%
+  tally() %>%
+  arrange(desc(n))
+
+head(hub.m)
 ```
 
-# Histograms
+# Format for network
 
-```{r}
-res.df %>%
-  ggplot(aes(x = estimate)) +
-  facet_wrap(vars(datset)) +
-  geom_histogram() +
-  labs(x = "Correlation estimate", y = "") +
-  theme_bw()
+```{r try basic tidygraph}
+bad.genes <- hub.g %>%
+  filter(n > 6000)
 
-ggsave("../figures/histogram_correlation_mic-gene.png")
-```
-# Heatmaps
 
-```{r}
-sig.df.clust <- sig.df %>%
-  mutate(summary.code = case_when(is.na(summary.code) ~ 0,
-                                  summary.code == "TCGA only" ~ 1,
-                                  summary.code == "TCC only" ~ 2,
-                                  summary.code == "disagree" ~ 3,
-                                  summary.code == "match" ~ 4))
-
-sig.df.genes <- sig.df.clust %>%
-  spread(key = microbe, value = summary.code) %>%
-  column_to_rownames(var = "Gene") %>%
-  dist() %>%
-  hclust() %>%
-  dendro_data()
-heat.geneord <- sig.df.genes$labels$label
-
-sig.df.mic <- sig.df.clust %>%
-  spread(key = Gene, value = summary.code) %>%
-  column_to_rownames(var = "microbe") %>%
-  dist() %>%
-  hclust() %>%
-  dendro_data()
-heat.micord <- sig.df.mic$labels$label
-```
-
-```{r}
-sig.df %>%
-  ggplot(aes(x = fct_relevel(Gene, heat.geneord),
-             y = fct_relevel(microbe, heat.micord),
-             fill = summary.code)) +
-  geom_tile() +
-  labs(x = "Gene",
-       y = "Microbe") +
-  scale_fill_viridis_d(option = "magma") +
-  theme_classic() +
-  theme(axis.text = element_blank(),
-        axis.ticks = element_blank())
-ggsave("../figures/heatmap_correlation_mic-gene.png")
-```
-
-## Try mosaic plot?
-
-```{r}
-mos.df <- res.df %>%
-  lazy_dt() %>%
-  mutate(sig = ifelse(p.value < 0.05, T, F),
-         direct = ifelse(estimate < 0, "negative", "positive"),
-         sigdir = paste(sig, direct)) %>%
-  select(sigdir, microbe, Gene, datset) %>%
-  as.data.frame() %>%
-  spread(key = "datset", value = "sigdir") %>%
-  separate(TCC, into = c("TCC.sig", "TCC.dir")) %>%
-  separate(TCGA, into = c("TCGA.sig", "TCGA.dir")) %>%
-  mutate(sig.sum = case_when(TCC.sig == T & TCGA.sig == T ~ "Both",
-                             xor(TCC.sig == T, TCGA.sig == T) ~ "One",
-                             TCC.sig == F & TCGA.sig == F ~ "Neither"),
-         dir.agree = ifelse(TCC.dir == TCGA.dir, "Agree", "Disagree"),
-         mosfill = paste(sig.sum, dir.agree))
-```
-
-```{r}
-mos.df %>%
-  ggplot() +
-  geom_mosaic(aes(x = product(sig.sum, dir.agree), fill = dir.agree),
-              show.legend = F) +
-  labs(x = "Effect direction", y = "Significant in") +
-  scale_fill_manual(breaks = c("Agree", "Disagree"),
-                                values = c("orange", "darkblue")) +
-  theme_bw()
-ggsave("../figures/mosaic_corr-mic-gene.png")
-``` 
-
-# Highlighted effect sizes
-
-```{r}
-choose.effectsize.pairs <- mos.df %>%
-  filter(mosfill == "Both Agree") %>%
-  select(Gene, microbe) %>%
-  left_join(res.df) %>%
+edges.tidygraph <- edges.raw %>%
+  anti_join(bad.genes) %>%
   arrange(p.value) %>%
-  mutate(gm.pair = paste(microbe, Gene, sep = ", "))
-
-best.mics.effect<- unique(choose.effectsize.pairs$gm.pair)[1:8]
-
-effect.in <- choose.effectsize.pairs %>%
- filter(gm.pair %in% best.mics.effect) 
-
-gm.pair.ord <- effect.in %>%
-  filter(datset == "TCGA") %>%
-  arrange(estimate)
-gm.pair.ord <- gm.pair.ord$gm.pair
+  mutate(from = microbe,
+         to = Gene,
+         r = row_number()) %>%
+  filter(r <= 100) %>%
+  select(from, to) %>%
+  as_tbl_graph()
 ```
 
 ```{r}
-ggplot(effect.in, aes(x = fct_relevel(gm.pair, gm.pair.ord),
-                      y = estimate, fill = datset)) +
-  geom_col(position = "dodge") +
-  coord_flip() +
-  labs(x = "", y = "") +
-  scale_fill_manual(breaks = c("TCC", "TCGA"), values = c("turquoise4", "brown"),
-                    name = "")
-
-ggsave("../figures/barplot_highlight_mic-gene_sig-agree.png")
+edges.tidygraph %>% 
+    ggraph() + 
+    geom_edge_link() + 
+    geom_node_point() +
+    # geom_node_text(aes(label = name), colour = 'white', vjust = 0.4) + 
+    ggtitle('test') + 
+    theme_graph()
 ```
-# Pathways?
-
-
-
+# Prepare for pathways
