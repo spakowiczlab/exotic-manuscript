@@ -35,6 +35,13 @@ hub.g <- edges.raw %>%
 head(hub.m)
 ```
 
+```{r}
+par(mfrow = c(1,2))
+
+hist(hub.g$n)
+hist(hub.m$n)
+```
+
 # Format for network
 
 ```{r try basic tidygraph}
@@ -42,13 +49,25 @@ bad.genes <- hub.g %>%
   filter(n > 6000)
 
 
-edges.tidygraph <- edges.raw %>%
-  anti_join(bad.genes) %>%
+edges.fortidy <- edges.raw %>%
+  group_by(Gene) %>%
   arrange(p.value) %>%
   mutate(from = microbe,
          to = Gene,
          r = row_number()) %>%
-  filter(r <= 100) %>%
+  ungroup() %>%
+  filter(r <= 5) 
+
+test.edgecounts <- edges.fortidy %>%
+  group_by(microbe) %>%
+  tally() %>%
+  arrange(desc(n)) %>%
+  mutate(cml.con = cumsum(n))
+
+good.mics <- test.edgecounts$microbe[1:16]  
+
+edges.tidygraph <- edges.fortidy %>%
+  filter(microbe %in% good.mics) %>%
   select(from, to) %>%
   as_tbl_graph()
 ```
@@ -61,5 +80,6 @@ edges.tidygraph %>%
     # geom_node_text(aes(label = name), colour = 'white', vjust = 0.4) + 
     ggtitle('test') + 
     theme_graph()
+ggsave("../figures/network_microbe-gene_top-corrs.png")
 ```
 # Prepare for pathways
