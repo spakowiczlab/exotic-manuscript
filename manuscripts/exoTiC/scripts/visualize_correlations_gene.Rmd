@@ -17,20 +17,38 @@ library(ggraph)
 
 ```{r}
 edges.raw <- readRDS("/fs/ess/PAS1695/projects/exotic/data/network_TCC-corr-in.RDS")
+exprs.norm <- readRDS("/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/tcc.expr.norm.RDS")
 ```
 
-# Some quick queries
+# Filter low variance genes
+
+```{r}
+exprs.var <- unlist(lapply(exprs.norm[,-1], var))
+table(exprs.var > 1)
+genes.keep <- names(subset(exprs.var, exprs.var > 1))
+
+exprs.var %>%
+  as.data.frame() %>%
+  ggplot(aes(x = .)) +
+  geom_histogram(bins = 100)
+```
+
+# Some quick queries for hubbiness
 
 ```{r}
 hub.m <- edges.raw %>%
+  filter(Gene %in% genes.keep) %>%
   group_by(microbe) %>%
   tally() %>%
-  arrange(desc(n))
+  arrange(desc(n)) %>%
+  mutate(rank = row_number())
 
 hub.g <- edges.raw %>%
+  filter(Gene %in% genes.keep) %>%
   group_by(Gene) %>%
   tally() %>%
-  arrange(desc(n))
+  arrange(desc(n)) %>%
+  mutate(rank = row_number())
 
 head(hub.m)
 ```
@@ -42,9 +60,19 @@ hist(hub.g$n)
 hist(hub.m$n)
 ```
 
+
+```{r}
+hub.g %>%
+  filter(Gene %in% genes.keep) %>%
+  ggplot(aes(x = n)) +
+  geom_histogram()
+ggsave("../figures/histogram_correlation_mic-gene_TCC-var-filtered.pdf")
+```
+
 # Format for network
 
-```{r try basic tidygraph}
+## tidygraph version
+```{r try basic tidygraph, eval = F}
 bad.genes <- hub.g %>%
   filter(n > 6000)
 
@@ -72,7 +100,7 @@ edges.tidygraph <- edges.fortidy %>%
   as_tbl_graph()
 ```
 
-```{r}
+```{r tidygraph plot, eval = F}
 edges.tidygraph %>% 
     ggraph() + 
     geom_edge_link() + 
@@ -81,5 +109,48 @@ edges.tidygraph %>%
     ggtitle('test') + 
     theme_graph()
 ggsave("../figures/network_microbe-gene_top-corrs.png")
+```
+
+## 2 columns version
+
+```{r}
+hubmics <- hub.m %>%
+  filter(rank <= 500) %>%
+  mutate(rank.m = rank) %>%
+  select(microbe, rank.m)
+
+hubgenes <- hub.g %>%
+  filter(rank <= 500) %>%
+  mutate(rank.g = rank) %>%
+  select(Gene, rank.g)
+
+edges.lim <- edges.raw %>%
+  inner_join(hubmics) %>%
+  inner_join(hubgenes) %>%
+  mutate(colcode = ifelse(microbe %in% c("g__Alistipes",
+                                         "s__Bifidobacterium adolescentis"),
+                          gsub(".*__", "",microbe), NA),
+         alphcode = ifelse(is.na(colcode), "a", "b"))
+
+nodes.lim <- bind_rows(hubmics, hubgenes) %>%
+  mutate(rank = coalesce(rank.m, rank.g)) %>%
+  mutate(xval = ifelse(is.na(microbe), 10, 0),
+         colcode = ifelse(microbe %in% c("g__Alistipes",
+                                         "s__Bifidobacterium adolescentis"),
+                          gsub(".*__", "",microbe), NA)) %>%
+  as.data.frame()
+```
+
+```{r}
+ggplot(nodes.lim, aes(x = xval, y = -rank, color = colcode)) +
+  geom_point() +
+  geom_segment(data = edges.lim, inherit.aes = F, 
+             aes(x = 0, xend = 10, y = -rank.m, yend = -rank.g, 
+                 color = colcode, alpha = alphcode)) +
+  scale_alpha_manual(breaks = c("a", "b"), values = c(0.1,1),
+                     guide = "none") +
+  scale_color_manual(values = c("red", "darkblue"), name = "") +
+  theme_void()
+ggsave("../figures/network_microbe-gene_top-hubs.png", height = 20, width = 10)
 ```
 # Prepare for pathways
