@@ -154,3 +154,65 @@ ggplot(nodes.lim, aes(x = xval, y = -rank, color = colcode)) +
 ggsave("../figures/network_microbe-gene_top-hubs.png", height = 20, width = 10)
 ```
 # Prepare for pathways
+
+```{r}
+library(msigdbr)
+library(fgsea)
+```
+
+```{r prepare hallmark database}
+msig.human <- msigdbr(species = "Homo sapiens") %>%
+  dplyr::select(gs_cat, entrez_gene, gs_name, gene_symbol, gs_description) %>%
+  dplyr::rename("pathname" = gs_name, "genes" = gene_symbol, "desc" = gs_description,
+                "category" = gs_cat, "NCBI Entrez ID" = entrez_gene) 
+
+msig.hlmrk <- msig.human %>%
+    filter(category=="H") %>%
+    unique()
+
+hlmrk.paths <- msig.hlmrk %>%
+     dplyr::select(genes, pathname) %>%
+     split(x = .$genes, f = .$pathname)
+
+```
+
+```{r some quick functions}
+edgesToFGSEA <- function(m){
+  edges.microbe <- edges.raw %>%
+    filter(microbe == m) %>%
+    filter(Gene %in% genes.keep) %>%
+    arrange(p.value)
+  
+  fgsea.ranks <- edges.microbe$estimate
+  names(fgsea.ranks) <- edges.microbe$Gene
+  
+  fgsea.res <- fgsea(hlmrk.paths, fgsea.ranks)
+  return(fgsea.res)
+}
+
+fgseaEnrichPlot <- function(fres, nranks, colname){
+  fres %>%
+    arrange(pval) %>%
+    mutate(rank = row_number()) %>%
+    filter(rank <= nranks) %>%
+    mutate(pathway = fct_reorder(pathway, NES)) %>%
+    ggplot(aes(x = NES, y = pathway)) +
+    geom_col(fill = colname) +
+    labs(x = "Normalized Enrichment", y = "") +
+    theme_bw()
+}
+```
+
+```{r run on interesting microbes}
+fgsea.allistipes <- edgesToFGSEA("g__Alistipes")
+fgsea.bifido <- edgesToFGSEA("s__Bifidobacterium adolescentis")
+```
+
+```{r format for effect size plots}
+fgseaEnrichPlot(fgsea.allistipes, 10, "red")
+ggsave("../figures/fgsea_alistipes.pdf")
+
+fgseaEnrichPlot(fgsea.bifido, 10, "darkblue")
+ggsave("../figures/fgsea_bifido.pdf")
+```
+
