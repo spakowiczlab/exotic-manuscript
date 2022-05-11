@@ -11,6 +11,9 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
 library(viridis)
+
+library(vegan)
+library(ggdendro)
 ```
 
 # Load data
@@ -55,17 +58,29 @@ corr.res.red <- corr.res %>%
 
 ```{r}
 plotScoreCorr <- function(dsource){
+  micord <- corr.res.red %>%
+    filter(datset == dsource & cancer == "All") %>%
+    dplyr::select(microbe, estimate, ImmuneCell) %>%
+    pivot_wider(names_from = ImmuneCell, values_from = estimate,
+                values_fill = NA) %>%
+    column_to_rownames(var = "microbe") %>%
+    as.matrix() %>%
+    dist() %>%
+    hclust() %>%
+    dendro_data()
+  micord <- micord$labels$label
   p <- corr.res.red %>%
     filter(datset == dsource) %>%
     mutate(TaxLev = str_sub(microbe, 1, 1)) %>%
-    ggplot(aes(x = microbe, y = ImmuneCell, fill = estimate)) +
-    facet_wrap(vars(cancer), scales = "free_x", ncol = 1) +
+    ggplot(aes(x = fct_relevel(microbe, micord), y = ImmuneCell, fill = estimate)) +
+    facet_wrap(vars(cancer), scales = "free_x", nrow = 1) +
     geom_tile() +
     labs(x = "", y = "") +
-    scale_fill_viridis_c(option = "mako", name = "Correlation Estimate") +
+    scale_fill_viridis_c(option = "mako", name = "Correlation Estimate",
+                         limits = c(-1,1)) +
     theme_classic() +
-    theme(axis.text = element_blank(),
-          axis.ticks = element_blank())
+    theme(axis.text.x = element_blank(),
+          axis.ticks.x = element_blank())
   
   return(p)
 }
@@ -73,12 +88,12 @@ plotScoreCorr <- function(dsource){
 
 ```{r}
 plotScoreCorr("TCGA")
-ggsave("../figures/heatmap_corr_mic-immune_TCGA.pdf", height = 8)
+ggsave("../figures/heatmap_corr_mic-immune_TCGA.pdf")
 ```
 
 ```{r}
 plotScoreCorr("ORIEN")
-ggsave("../figures/heatmap_corr_mic-immune_ORIEN.pdf", height = 8)
+ggsave("../figures/heatmap_corr_mic-immune_ORIEN.pdf")
 ```
 
 

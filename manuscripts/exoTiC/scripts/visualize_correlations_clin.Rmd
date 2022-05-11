@@ -84,3 +84,88 @@ lapply(scores, function(x) ggsave(scoreplots[[x]],
                                   device = "pdf"))
 ```
 
+
+# Lollipop version
+
+## Choose microbes
+
+```{r}
+tcc.newlab <- tcc.res %>%
+  filter(p.value < 0.05) %>%
+  mutate(TCC.est = estimate, 
+         dir = TCC.est >= 0) %>%
+  select(TCC.est, dir, microbe, score, cancer)
+
+tcga.newlab <- tcga.res %>%
+  filter(p.value < 0.05) %>%
+  mutate(TCGA.est = estimate, 
+         dir = TCGA.est >= 0) %>%
+  select(TCGA.est, dir, microbe, score, cancer)
+
+corrs.matched <- inner_join(tcc.newlab, tcga.newlab)
+
+corrs.matched %>%
+  group_by(cancer, score) %>%
+  tally()
+```
+
+## Plot
+
+```{r}
+plotScoreLolli <- function(sname){
+  tmp <- corrs.matched %>%
+    filter(score == sname) %>%
+    pivot_longer(cols = c(TCC.est, TCGA.est),
+                 names_to = "datset", values_to = "estimate")
+  
+  tmp %>%
+    ggplot(aes(x = microbe,y = estimate,
+               xend = microbe, yend = 0)) +
+  facet_wrap(vars(cancer), ncol = 1) +
+    geom_segment() +
+    geom_point(aes(color = datset)) +
+    geom_hline(yintercept = 0, lty = 2) +
+    labs(x = "", y = "") +
+    scale_color_manual(breaks = c("TCC.est", "TCGA.est"),
+                       labels = c("ORIEN", "TCGA"),
+                       values = c("red", "blue"),
+                       name = "") +
+    theme_classic() +
+    theme(axis.text.x = element_blank(),
+          axis.ticks.x = element_blank())
+}
+```
+
+```{r}
+plotScoreLolli("age")
+ggsave("../figures/lollipop_mic-clin_age.pdf")
+
+plotScoreLolli("buffa.score")
+ggsave("../figures/lollipop_mic-clin_buffa.pdf")
+
+plotScoreLolli("MitoScore")
+ggsave("../figures/lollipop_mic-clin_mito.pdf")
+```
+
+```{r}
+matched.long <- corrs.matched %>%
+  pivot_longer(cols = c(TCC.est, TCGA.est),
+               names_to = "datset", values_to = "estimate")
+
+matched.long %>%
+  ggplot(aes(x = microbe,y = estimate,
+             xend = microbe, yend = 0)) +
+  facet_grid(score ~ cancer) +
+  geom_segment() +
+  geom_point(aes(color = datset)) +
+  geom_hline(yintercept = 0, lty = 2) +
+  labs(x = "", y = "") +
+  scale_color_manual(breaks = c("TCC.est", "TCGA.est"),
+                     labels = c("ORIEN", "TCGA"),
+                     values = c("red", "blue"),
+                     name = "") +
+  theme_classic() +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
+ggsave("../figures/lollipop_mic-clin.pdf")
+```
