@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(tidygraph)
 library(ggraph)
+library(igraph)
 ```
 
 # Load data
@@ -33,9 +34,11 @@ exprs.var %>%
   geom_histogram(bins = 100)
 ```
 
-# Some quick queries for hubbiness
+# Some quick queries for network characteristics
 
-```{r}
+## Degree centrality
+
+```{r calculate hubbiness}
 hub.m <- edges.raw %>%
   filter(Gene %in% genes.keep) %>%
   group_by(microbe) %>%
@@ -67,6 +70,53 @@ hub.g %>%
   ggplot(aes(x = n)) +
   geom_histogram()
 ggsave("../figures/histogram_correlation_mic-gene_TCC-var-filtered.pdf")
+```
+
+## Path centrality
+
+```{r format the igraph}
+weighted.graph <- edges.raw %>%
+  filter(Gene %in% genes.keep) %>%
+  mutate(new.weight = 1/abs(estimate))
+hist(weighted.graph$new.weight)
+
+
+edges.for.weight <- weighted.graph %>%
+  select(Gene, microbe)%>%
+  as.matrix() %>%
+  graph_from_edgelist(directed = F)
+
+weighted.edges <- set.edge.attribute(edges.for.weight,
+                                     "weight",
+                                     E(edges.for.weight),
+                                     weighted.graph$new.weight)
+
+test <- shortest_paths(weighted.edges, "g__Alistipes", "1/2-SBSRNA4")
+```
+
+```{r}
+all.nodes <- c(unique(weighted.graph$Gene), unique(weighted.graph$microbe))
+all.nodes.combos <- combn(all.nodes, 2)
+```
+
+```{r}
+grabShortPaths <- function(n){
+ tmppath <- shortest_paths(weighted.edges, 
+                           from = all.nodes.combos[1,n],
+                           to = all.nodes.combos[2,n]) 
+ tmp.return <- gsub("vpath.", "", names(unlist(tmppath)))
+ return(tmp.return)
+}
+```
+
+This takes about a minute, but there's ~ 34,000,000 rows. This needs to be a batch job.
+```{r}
+all.paths <- lapply(1:35, grabShortPaths)
+
+saveRDS(all.nodes.combos,
+        "/fs/ess/PAS1695/projects/exotic/data/network_all-node-combos.RDS")
+saveRDS(weighted.edges, 
+        "/fs/ess/PAS1695/projects/exotic/data/network_igraph-data.RDS")
 ```
 
 # Format for network
@@ -149,10 +199,64 @@ ggplot(nodes.lim, aes(x = xval, y = -rank, color = colcode)) +
                  color = colcode, alpha = alphcode)) +
   scale_alpha_manual(breaks = c("a", "b"), values = c(0.1,1),
                      guide = "none") +
-  scale_color_manual(values = c("red", "darkblue"), name = "") +
+  scale_color_manual(values = c("red", "darkblue"), name = "",
+                     na.value = "grey70") +
   theme_void()
 ggsave("../figures/network_microbe-gene_top-hubs.png", height = 20, width = 10)
 ```
+## Try interesting microbes
+
+```{r}
+netmics <- as.data.frame(cbind(microbe = c("g__Alistipes", 
+                                           "s__Bifidobacterium adolescentis", 
+                                           "s__Escherichia fergusonii",
+                                           "s__Salmonella bongori",
+                                           "s__Fusobacterium canifelinum"),
+                               rank.m = c(1,125,250,375,500)),
+                         stringsAsFactors = F) %>%
+  mutate(rank.m = as.numeric(rank.m))
+
+edges.lim.mics <- edges.raw %>%
+  inner_join(netmics) %>%
+  inner_join(hubgenes) %>%
+  mutate(colcode = gsub(".*__", "",microbe), NA)
+
+nodes.lim.mics <- bind_rows(netmics, hubgenes) %>%
+  mutate(rank = coalesce(rank.m, rank.g)) %>%
+  mutate(xval = ifelse(is.na(microbe), 10, 0),
+         colcode = gsub(".*__", "",microbe), NA) %>%
+  as.data.frame()
+```
+
+```{r}
+ggplot(nodes.lim.mics, aes(x = xval, y = -rank, color = colcode)) +
+  geom_point() +
+  geom_segment(data = edges.lim.mics, inherit.aes = F, 
+             aes(x = 0, xend = 10, y = -rank.m, yend = -rank.g, 
+                 color = colcode), alpha = .5) +
+  scale_color_manual(values = c("red", "darkblue", "darkgreen", "orange", "brown"),
+                     name = "", na.value = "grey70") +
+  theme_void()
+ggsave("../figures/network_microbe-gene_lit-mics.pdf", height = 20, width = 10)
+```
+
+```{r try tidygraph, eval = F}
+
+edges.tidygraph.int <- edges.lim.mics %>%
+  mutate(from = microbe, to = Gene) %>%
+  select(from, to) %>%
+  as_tbl_graph()
+
+
+edges.tidygraph.int %>% 
+    ggraph() + 
+    geom_edge_link() + 
+    geom_node_point() +
+    # geom_node_text(aes(label = name), colour = 'white', vjust = 0.4) + 
+    ggtitle('test') + 
+    theme_graph()
+```
+
 # Prepare for pathways
 
 ```{r}
