@@ -169,7 +169,8 @@ plot.dat %>%
   coord_flip() +
   labs(x = "", y = "") +
   theme_void() +
-  theme(axis.text.y = element_blank())
+  theme(axis.text.y = element_blank()) +
+  theme(text = element_text(size = 10))
 }
 ```
 
@@ -192,7 +193,8 @@ all.corrs.anno <- all.corrs %>%
          salter = ifelse(microbe %in% salter.affected.mics, 1, 0),
          contam.group = case_when(decontam == 1 & salter == 1 ~ "Both",
                                   decontam == 1 & salter == 0 ~ "Decontam",
-                                  decontam == 0 & salter == 1 ~ "Literature"))
+                                  decontam == 0 & salter == 1 ~ "Literature",
+                                  decontam == 0 & salter == 0 ~ "Passed"))
 ```
 
 ## Plot results
@@ -200,7 +202,7 @@ all.corrs.anno <- all.corrs %>%
 ### RIN
 ```{r}
 plot.many.corrs(all.corrs.anno, "RIN")
-ggsave("../figures/barplot_corrs-with-contam_RIN.pdf")
+ggsave("../figures/barplot_corrs-with-contam_RIN.pdf", height = 3, width = 4)
 ```
 
 ### DV200

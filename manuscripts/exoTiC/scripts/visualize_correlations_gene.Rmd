@@ -93,31 +93,11 @@ weighted.edges <- set.edge.attribute(edges.for.weight,
 
 test <- shortest_paths(weighted.edges, "g__Alistipes", "1/2-SBSRNA4")
 ```
-
+This version also has to be a batch job
 ```{r}
-all.nodes <- c(unique(weighted.graph$Gene), unique(weighted.graph$microbe))
-all.nodes.combos <- combn(all.nodes, 2)
+# betweenness.centrality <- betweenness(weighted.edges)
 ```
 
-```{r}
-grabShortPaths <- function(n){
- tmppath <- shortest_paths(weighted.edges, 
-                           from = all.nodes.combos[1,n],
-                           to = all.nodes.combos[2,n]) 
- tmp.return <- gsub("vpath.", "", names(unlist(tmppath)))
- return(tmp.return)
-}
-```
-
-This takes about a minute, but there's ~ 34,000,000 rows. This needs to be a batch job.
-```{r}
-all.paths <- lapply(1:35, grabShortPaths)
-
-saveRDS(all.nodes.combos,
-        "/fs/ess/PAS1695/projects/exotic/data/network_all-node-combos.RDS")
-saveRDS(weighted.edges, 
-        "/fs/ess/PAS1695/projects/exotic/data/network_igraph-data.RDS")
-```
 
 # Format for network
 

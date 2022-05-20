@@ -142,13 +142,16 @@ new.pcs.res <- bind_rows(new.counts.res, new.norm.res) %>%
   left_join(norm.inputs.new[[2]])
 
 new.pcs.res %>%
+  mutate(datset = ifelse(datset == "counts", "Counts", "Normalized")) %>%
   ggplot(aes(x = PC1, y = PC2, color = SequencingCenter, fill = SequencingCenter)) +
   facet_wrap(vars(datset), scales = "free") +
   geom_point(alpha = .4) +
   stat_ellipse(geom = "polygon", alpha = .2) +
-  scale_fill_viridis_d(aesthetics = c("color", "fill")) +
-  theme_bw()
-ggsave("../figures/pca_compare-FFPE_expr_new.png")
+  scale_fill_viridis_d(aesthetics = c("color", "fill"),
+                       name = "Sequencing \nCenter") +
+  theme_bw() +
+  theme(text = element_text(size = 10))
+ggsave("../figures/pca_compare-FFPE_expr_new.pdf", height = 3, width = 4.5)
 ```
 
 # What are those groups?

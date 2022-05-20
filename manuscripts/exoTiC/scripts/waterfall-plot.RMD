@@ -216,7 +216,8 @@ tcga.waterfall.df %>%
                                 "Adjust contaminants \nwith literature review",
                                 "Final read count")) +
   coord_flip() +
-  theme_bw() 
-ggsave("../figures/waterfall_TCGA-combine-types.pdf")
+  theme_bw() +
+  theme(text = element_text(size = 10))
+ggsave("../figures/waterfall_TCGA-combine-types.pdf", height = 3.5, width = 5)
 ```
 
