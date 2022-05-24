@@ -57,6 +57,13 @@ head(hub.m)
 ```
 
 ```{r}
+write.csv(hub.g, "../tables/network_gene-hubbiness.csv",
+          row.names = F)
+write.csv(hub.m, "../tables/network_microbe-hubbiness.csv",
+          row.names = F)
+```
+
+```{r}
 par(mfrow = c(1,2))
 
 hist(hub.g$n)
@@ -96,6 +103,14 @@ test <- shortest_paths(weighted.edges, "g__Alistipes", "1/2-SBSRNA4")
 This version also has to be a batch job
 ```{r}
 # betweenness.centrality <- betweenness(weighted.edges)
+```
+
+```{r format betweenness results}
+betweencent <- readRDS("/fs/ess/PAS1695/projects/exotic/data/network_betweenness-centrality.RDS")
+betweencent.df <- as.data.frame(betweencent) %>%
+  rownames_to_column(var = "node")
+write.csv(betweencent.df, "../tables/network_betweenness-centrality.csv",
+          row.names = F)
 ```
 
 
@@ -215,6 +230,7 @@ ggplot(nodes.lim.mics, aes(x = xval, y = -rank, color = colcode)) +
              aes(x = 0, xend = 10, y = -rank.m, yend = -rank.g, 
                  color = colcode), alpha = .5,
              show.legend = F) +
+  geom_label(aes(label = colcode), show.legend = F)+
   scale_color_manual(values = c("red", "darkblue", "darkgreen", "orange", "brown"),
                      name = "", na.value = "grey70") +
   theme_void()
