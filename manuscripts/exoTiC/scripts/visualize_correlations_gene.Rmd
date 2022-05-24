@@ -210,10 +210,11 @@ nodes.lim.mics <- bind_rows(netmics, hubgenes) %>%
 
 ```{r}
 ggplot(nodes.lim.mics, aes(x = xval, y = -rank, color = colcode)) +
-  geom_point() +
+  geom_point(show.legend = F) +
   geom_segment(data = edges.lim.mics, inherit.aes = F, 
              aes(x = 0, xend = 10, y = -rank.m, yend = -rank.g, 
-                 color = colcode), alpha = .5) +
+                 color = colcode), alpha = .5,
+             show.legend = F) +
   scale_color_manual(values = c("red", "darkblue", "darkgreen", "orange", "brown"),
                      name = "", na.value = "grey70") +
   theme_void()

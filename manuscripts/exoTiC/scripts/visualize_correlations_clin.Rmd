@@ -102,7 +102,11 @@ tcga.newlab <- tcga.res %>%
          dir = TCGA.est >= 0) %>%
   select(TCGA.est, dir, microbe, score, cancer)
 
-corrs.matched <- inner_join(tcc.newlab, tcga.newlab)
+corrs.matched.1 <- inner_join(tcc.newlab, tcga.newlab)
+
+corrs.matched <- tcc.newlab %>%
+  filter(cancer %in% c("LUAD", "LUSC", "SARC", "KIRC", "BLCA") & score == "bmi") %>%
+  bind_rows(corrs.matched.1)
 
 corrs.matched %>%
   group_by(cancer, score) %>%
@@ -112,45 +116,49 @@ corrs.matched %>%
 ## Plot
 
 ```{r}
-plotScoreLolli <- function(sname){
-  tmp <- corrs.matched %>%
-    filter(score == sname) %>%
-    pivot_longer(cols = c(TCC.est, TCGA.est),
-                 names_to = "datset", values_to = "estimate")
-  
-  tmp %>%
-    ggplot(aes(x = microbe,y = estimate,
-               xend = microbe, yend = 0)) +
-  facet_wrap(vars(cancer), ncol = 1) +
-    geom_segment() +
-    geom_point(aes(color = datset)) +
-    geom_hline(yintercept = 0, lty = 2) +
-    labs(x = "", y = "") +
-    scale_color_manual(breaks = c("TCC.est", "TCGA.est"),
-                       labels = c("ORIEN", "TCGA"),
-                       values = c("red", "blue"),
-                       name = "") +
-    theme_classic() +
-    theme(axis.text.x = element_blank(),
-          axis.ticks.x = element_blank())
-}
+# plotScoreLolli <- function(sname){
+#   tmp <- corrs.matched %>%
+#     filter(score == sname) %>%
+#     pivot_longer(cols = c(TCC.est, TCGA.est),
+#                  names_to = "datset", values_to = "estimate")
+#   
+#   tmp %>%
+#     ggplot(aes(x = microbe,y = estimate,
+#                xend = microbe, yend = 0)) +
+#   facet_wrap(vars(cancer), ncol = 1) +
+#     geom_segment() +
+#     geom_point(aes(color = datset)) +
+#     geom_hline(yintercept = 0, lty = 2) +
+#     labs(x = "", y = "") +
+#     scale_color_manual(breaks = c("TCC.est", "TCGA.est"),
+#                        labels = c("ORIEN", "TCGA"),
+#                        values = c("red", "blue"),
+#                        name = "") +
+#     theme_classic() +
+#     theme(axis.text.x = element_blank(),
+#           axis.ticks.x = element_blank())
+# }
 ```
 
 ```{r}
-plotScoreLolli("age")
-ggsave("../figures/lollipop_mic-clin_age.pdf")
-
-plotScoreLolli("buffa.score")
-ggsave("../figures/lollipop_mic-clin_buffa.pdf")
-
-plotScoreLolli("MitoScore")
-ggsave("../figures/lollipop_mic-clin_mito.pdf")
+# plotScoreLolli("age")
+# ggsave("../figures/lollipop_mic-clin_age.pdf")
+# 
+# plotScoreLolli("buffa.score")
+# ggsave("../figures/lollipop_mic-clin_buffa.pdf")
+# 
+# plotScoreLolli("MitoScore")
+# ggsave("../figures/lollipop_mic-clin_mito.pdf")
 ```
 
 ```{r}
 matched.long <- corrs.matched %>%
   pivot_longer(cols = c(TCC.est, TCGA.est),
-               names_to = "datset", values_to = "estimate")
+               names_to = "datset", values_to = "estimate") %>%
+  filter(score != "MitoScore") %>%
+  mutate(score = case_when(score == "bmi" ~ "BMI",
+                           score == "age" ~ "Age",
+                           score == "buffa.score" ~ "Buffa"))
 
 matched.long %>%
   ggplot(aes(x = microbe,y = estimate,
@@ -165,7 +173,8 @@ matched.long %>%
                      values = c("red", "blue"),
                      name = "") +
   theme_classic() +
-  theme(axis.text.x = element_blank(),
+  theme(text = element_text(size = 10),
+        axis.text.x = element_blank(),
         axis.ticks.x = element_blank())
-ggsave("../figures/lollipop_mic-clin.pdf")
+ggsave("../figures/lollipop_mic-clin.pdf", height = 3, width = 4)
 ```

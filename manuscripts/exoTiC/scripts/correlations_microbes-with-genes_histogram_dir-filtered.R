@@ -30,13 +30,15 @@ high.est <- quantile(res.df$estimate, 0.975, na.rm = T)
 res.df %>%
   ggplot(aes(x = estimate)) +
   geom_histogram(bins = 200) +
-  labs(x = "", y = "") +
+  labs(x = "Correlation estimate", y = "Frequency") +
   geom_vline(xintercept = low.est, lty = 2, color = "red") +
   geom_vline(xintercept = high.est, lty = 2, color = "red") +
   theme_bw() +
   theme(axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())
-ggsave("../figures/histogram_correlation_mic-gene_TCC-dir-matched.pdf")
+        axis.ticks.y = element_blank()) +
+  theme(text = element_text(size = 10))
+ggsave("../figures/histogram_correlation_mic-gene_TCC-dir-matched.pdf", 
+       height = 3, width = 6)
 
 
 network.in <- res.df %>%

@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(broom)
+library(rlist)
 ```
 
 # Load data
@@ -61,7 +62,8 @@ correlate_mics_clin <- function(mics, scores, data, datalab){
     try(cor.test(data[[m]], data[[i]],
                  method = "spearman") %>%
           tidy() %>%
-          mutate(score = i, microbe = m, datset = datalab))))
+          mutate(score = i, microbe = m, datset = datalab))) %>%
+      list.clean(., is.character))
   
   
   test <- lapply(cor.res, function(x) bind_rows(x))
@@ -80,12 +82,13 @@ microbes <- colnames(tcc.w)[-1]
 ```
 
 ```{r formatting clinical}
-clin.vars <- c("age", "buffa.score", "MitoScore")
+clin.vars <- c("age", "buffa.score", "MitoScore", "bmi")
 
 tcc.clin.form <- tcc.clin %>%
   mutate(sample = RNA.SL.ID,
-         age = Age.at.Collection) %>%
-  select(sample, age) %>%
+         age = Age.at.Collection,
+         bmi = BMI.at.Collection) %>%
+  select(sample, age, bmi) %>%
   left_join(tcc.scores) %>%
   left_join(tcc.cancer.labs)
 
@@ -94,7 +97,7 @@ tcga.clin.form <- tcga.clin %>%
   left_join(tcga.scores) %>%
   mutate(age = age_at_index/365.25,
          sample = file_id.BAM) %>%
-  select(sample,age, buffa.score, MitoScore, cancer)
+  select(sample, age, bmi, buffa.score, MitoScore, cancer)
 ```
 
 ```{r model inputs}
@@ -123,10 +126,10 @@ tcc.cph.cancer <- lapply(tcc.cancers, function(y)
                       y))
 
 tcga.cph.cancer <- lapply(tcga.cancers, function(y) 
-  correlate_mics_clin(microbes, clin.vars,
+  try(correlate_mics_clin(microbes, clin.vars,
                       filter(tcga.modin,
                              cancer == y),
-                      y))
+                      y)))
 ```
 
 ```{r format split cancer results}

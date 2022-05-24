@@ -49,7 +49,9 @@ res.df %>%
   labs(x = "Effect direction", y = "Significant in") +
   scale_fill_manual(breaks = c("Agree", "Disagree"),
                     values = c("orange", "darkblue")) +
-  theme_bw()
-ggsave("~/Documents/repos/exoTCC/manuscripts/exoTiC/figures/mosaic_corr-mic-gene.pdf")
+  theme_bw() +
+  theme(text = element_text(size = 10))
+ggsave("~/Documents/repos/exoTCC/manuscripts/exoTiC/figures/mosaic_corr-mic-gene.pdf",
+       height = 3, width = 4)
 
 
