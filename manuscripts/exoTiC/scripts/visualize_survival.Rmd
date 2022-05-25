@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggforce)
 library(devEMF)
+library(ggtext)
 ```
 
 # Load
@@ -257,14 +258,20 @@ poss.choices <- agree.input %>%
 
 ```{r as forest plot}
 poss.choices %>%
-  ggplot(aes(x = hazard.ratio, y = datset)) +
-  facet_wrap(vars(microbe), ncol = 1, scales = "free_x") +
-  geom_point() +
-  geom_segment(inherit.aes = F, aes(x = confint.low, xend = confint.high,
-                                    y = datset, yend = datset)) +
-  geom_vline(xintercept = 1, lty = 2) +
-  labs(x = "", y = "") +
-  theme_bw()
+  mutate(microbe = gsub("s__(.*)", paste0("<i>", "\\1", "</i>"), microbe),
+         microbe = gsub(" ", "<br>", microbe),
+         microbe = gsub("sp.<br>", "sp.", microbe)) %>%
+  ggplot(aes(x = microbe, y = hazard.ratio, fill = datset)) +
+  geom_col(position = "dodge") +
+  labs(x = "", y = "Hazard Ratio") +
+  scale_fill_manual(breaks = c("TCC", "TCGA"),
+                    values = c("red", "blue"),
+                    labels = c("ORIEN", "TCGA"),
+                    name = "") +
+  coord_flip() +
+  theme_bw() +
+  theme(text = element_text(size = 10),
+        axis.text.y = element_markdown())
 
-ggsave("../figures/forest_example-microbes.pdf")
+ggsave("../figures/forest_example-microbes.pdf", height = 4, width = 4)
 ```

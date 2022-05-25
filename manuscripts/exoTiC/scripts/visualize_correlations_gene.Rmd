@@ -12,6 +12,7 @@ library(tidyverse)
 library(tidygraph)
 library(ggraph)
 library(igraph)
+library(ggtext)
 ```
 
 # Load data
@@ -230,7 +231,7 @@ ggplot(nodes.lim.mics, aes(x = xval, y = -rank, color = colcode)) +
              aes(x = 0, xend = 10, y = -rank.m, yend = -rank.g, 
                  color = colcode), alpha = .5,
              show.legend = F) +
-  geom_label(aes(label = colcode), show.legend = F)+
+  geom_richtext(aes(label = colcode), angle = 90, show.legend = F)+
   scale_color_manual(values = c("red", "darkblue", "darkgreen", "orange", "brown"),
                      name = "", na.value = "grey70") +
   theme_void()

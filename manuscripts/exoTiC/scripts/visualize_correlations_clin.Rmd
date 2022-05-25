@@ -161,20 +161,22 @@ matched.long <- corrs.matched %>%
                            score == "buffa.score" ~ "Buffa"))
 
 matched.long %>%
-  ggplot(aes(x = microbe,y = estimate,
-             xend = microbe, yend = 0)) +
-  facet_grid(score ~ cancer) +
+  ggplot(aes(y = microbe,x = estimate,
+             yend = microbe, xend = 0)) +
+  facet_grid(cancer ~ score) +
   geom_segment() +
   geom_point(aes(color = datset)) +
-  geom_hline(yintercept = 0, lty = 2) +
-  labs(x = "", y = "") +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Correlation estimate", y = "") +
   scale_color_manual(breaks = c("TCC.est", "TCGA.est"),
                      labels = c("ORIEN", "TCGA"),
                      values = c("red", "blue"),
-                     name = "") +
+                     name = "",
+                     ) +
   theme_classic() +
   theme(text = element_text(size = 10),
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())
-ggsave("../figures/lollipop_mic-clin.pdf", height = 3, width = 4)
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = "top")
+ggsave("../figures/lollipop_mic-clin.pdf", height = 6, width = 4)
 ```
