@@ -142,6 +142,21 @@ order.sumheat.ic <- order.sumheat %>%
 sumheat.icord <- order.sumheat.ic$labels[order.sumheat.ic$order]
 ```
 
+
+```{r}
+oldlabs <- unique(match.map.dat$ImmuneCell)
+oldlabs
+newlabs <- c("Naive B Cells", "Memory B Cells", 
+             "CD8 T Cells", "Naive CD4 T Cells", 
+             "Resting Memory CD4 T Cells", "Activated Memory CD4 T Cells",
+             "Follicular Helper T Cells", "Regulatory T Cells",
+             "Gamma Delta T Cells", "Resting NK Cells", 
+             "Activated NK Cells", "M0 Macrophages",
+             "M1 Macrophages", "M2 Macrophages", "Resting Dendritic Cells", 
+             "Activated Dendritic Cells", "Resting Mast Cells", "Activated Mast Cells",
+             "Eosonophils", "Neutrophils")
+```
+
 ```{r}
 match.map.dat %>%
   ggplot(aes(x = fct_relevel(microbe, sumheat.micord), 
@@ -149,12 +164,14 @@ match.map.dat %>%
              fill = heatcode)) +
   facet_wrap(vars(cancer)) +
   geom_tile() +
-  labs( x = "Microbe", y = "Immune Cell") +
+  labs( x = "Microbe", y = "") +
   scale_fill_viridis_d(name = "") +
+  scale_y_discrete(breaks = oldlabs, labels = newlabs) +
   theme_bw() +
   theme(text = element_text(size = 10),
         axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())
+        axis.ticks.x = element_blank(),
+        panel.grid = element_blank())
 
 ggsave("../figures/heatmap_sigsum_mic-immune.pdf")
 ```
