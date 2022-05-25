@@ -261,8 +261,11 @@ poss.choices %>%
   mutate(microbe = gsub("s__(.*)", paste0("<i>", "\\1", "</i>"), microbe),
          microbe = gsub(" ", "<br>", microbe),
          microbe = gsub("sp.<br>", "sp.", microbe)) %>%
-  ggplot(aes(x = microbe, y = hazard.ratio, fill = datset)) +
+  ggplot(aes(x = microbe, y = hazard.ratio, fill = datset, group = datset,
+             ymin = confint.low, ymax = confint.high)) +
   geom_col(position = "dodge") +
+  geom_point(shape = "diamond", show.legend = F) +
+  geom_errorbar(position = "dodge") +
   labs(x = "", y = "Hazard Ratio") +
   scale_fill_manual(breaks = c("TCC", "TCGA"),
                     values = c("red", "blue"),
