@@ -1,0 +1,4 @@
+# packages in environment at /users/PAS1460/hoyd34/.conda/envs/TCGAstar:
+#
+# Name                    Version                   Build  Channel
+star                      2.4.2a                        0    bioconda
