@@ -1,0 +1,175 @@
+---
+title: "TCGA data pull set up"
+author: "Rebecca Hoyd"
+date: "February 27, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# library(ggplot2)
+library(dplyr)
+library(tibble)
+```
+
+
+# Define the function
+
+```{r setup.TCGA.data.pulls}
+setup.TCGA.data.pulls <- function(x){
+  samples <- get.sampnames(x)
+  make.alignment.batch(samples, x)
+  make.k2b.batch(samples, x)
+  
+    #bracken will not work unless we create the destination directory in advance
+  system(command = paste0("mkdir /fs/ess/PAS1695/generate-inputs_v2/ORIEN-processing/data/", 
+                          x, "/bracken-out"))
+  system(command = paste0("mkdir /fs/ess/PAS1695/generate-inputs_v2/ORIEN-processing/data/", 
+                          x, "/unaligned_extraction-stats"))
+  system(command = paste0("mkdir /fs/ess/PAS1695/generate-inputs_v2/ORIEN-processing/data/", 
+                          x, "/unmapped-fastqs"))
+}
+```
+
+```{r}
+get.sampnames <- function(cname){
+  fastq.dir <- file.path("/fs", "ess", "PAS1695", "generate-inputs_v1", "ORIEN-processing", "data", "fastqs",
+                         cname)
+  all.files <- list.files(fastq.dir)
+  snames <- gsub("_.*$", "", all.files)
+  snames.unq <- unique(snames)
+  return(snames.unq)
+}
+```
+
+
+```{r make.alignement.batch}
+
+make.alignment.batch <- function(sampnames, cname){
+  fileOut<-file(paste0("/fs/ess/PAS1695/generate-inputs_v2/ORIEN-processing/scripts/batch/ORIEN-",
+                       cname, "_STARalign.pbs"))
+  fastq1 <- paste0("/fs/ess/PAS1695/generate-inputs_v1/ORIEN-processing/data/fastqs/", cname,
+                   "/${snames[$PBS_ARRAY_INDEX]}_1.fastq.gz")
+  fastq2 <- paste0("/fs/ess/PAS1695/generate-inputs_v1/ORIEN-processing/data/fastqs/", cname,
+                   "/${snames[$PBS_ARRAY_INDEX]}_2.fastq.gz")
+  writeLines(c(paste0("#PBS -N ", cname, "_STARalign"),
+               "#PBS -l walltime=8:00:00",
+               "#PBS -l nodes=1:ppn=28",
+               "#PBS -j oe",
+               "#PBS -m ae",
+               "#PBS -A PAS1695",
+               "",
+               #List our important info in a way that can be indexed
+               paste0("snames=('", paste(sampnames, collapse = "' '"), "')"),
+               "",
+               #BAM alignment
+               "",
+               "cd $TMPDIR",
+               "module load python/3.6-conda5.2",
+               "source activate TCGAstar",
+               "",
+               paste0("STAR --genomeDir /fs/ess/PAS1695/db/star_genome_d1_vd1_gtfv22",
+                      " --readFilesIn ", fastq1, " ", fastq2, " --runThreadN 28 --outFilterMultimapScoreRange 1",
+                      " --outFilterMultimapNmax 20 --outFilterMismatchNmax 10 --alignIntronMax 500000",
+                      " --alignMatesGapMax 1000000 --sjdbScore 2 --alignSJDBoverhangMin 1 --genomeLoad",
+                      " NoSharedMemory --readFilesCommand zcat --outFilterMatchNminOverLread 0.33",
+                      " --outFilterScoreMinOverLread 0.33 --sjdbOverhang 100 --outSAMstrandField intronMotif",
+                      " --outSAMtype None --outSAMmode None"),
+               "mkdir ii",
+               "STAR --runMode genomeGenerate --genomeDir ii --genomeFastaFiles /fs/ess/PAS1695/db/GRCh38.d1.vd1.fa --sjdbOverhang 100 --runThreadN 28 --sjdbFileChrStartEnd SJ.out.tab",
+               paste0("STAR --genomeDir ii --readFilesIn ", fastq1, " ", fastq2, " --runThreadN 28",
+                      " --outFilterMultimapScoreRange 1 --outFilterMultimapNmax 20 --outFilterMismatchNmax 10",
+                      " --alignIntronMax 500000 --alignMatesGapMax 1000000 --sjdbScore 2 --alignSJDBoverhangMin 1",
+                      " --genomeLoad NoSharedMemory --limitBAMsortRAM 0 --readFilesCommand zcat",
+                      " --outFilterMatchNminOverLread 0.33 --outFilterScoreMinOverLread 0.33 --sjdbOverhang 100",
+                      " --outSAMstrandField intronMotif --outSAMattributes NH HI NM MD AS XS --outSAMunmapped",
+                      " Within --outSAMtype BAM SortedByCoordinate --outSAMheaderHD @HD VN:1.4"),
+               "",
+               "module load bam2fastq",
+               "module load samtools",
+               "",
+               
+               # Manipulate to fastqs.
+               paste0("samtools view -b -f 4 --threads 28 ",
+                      "Aligned.sortedByCoord.out.bam >",
+                      " unmapped.BAM"),
+               paste0("samtools sort -n --output-fmt BAM --threads 28 -o",
+                      " unmapped.qsort",
+                      " unmapped.BAM"),                     
+               paste0("bam2fastq -o /fs/ess/PAS1695/generate-inputs_v2/ORIEN-processing/data/", cname,
+                      "/unmapped-fastqs/${snames[$PBS_ARRAY_INDEX]}#.fastq unmapped.qsort"),
+               "",
+                # Capture number of reads in initial BAM for percentages
+               paste0("samtools flagstat --threads 20 ",
+                      "Aligned.sortedByCoord.out.bam > ",
+                      " /fs/ess/PAS1695/generate-inputs_v2/ORIEN-processing/data/",
+                      cname, "/unaligned_extraction-stats/",
+                      "${snames[$PBS_ARRAY_INDEX]}.txt")
+               
+  ),
+  
+  fileOut
+  )
+  
+}
+```
+
+
+```{r make.k2b.batch}
+
+make.k2b.batch <- function(sampnames, cname){
+  
+  fileOut<-file(paste0("/fs/ess/PAS1695/generate-inputs_v2/ORIEN-processing/scripts/batch/ORIEN-",
+                       cname, "_kraken2-bracken.pbs"))
+  
+  writeLines(c(paste0("#PBS -N ", cname, "_kraken2-bracken"),
+               "#PBS -l walltime=8:00:00",
+               "#PBS -l nodes=1:ppn=28",
+               "#PBS -j oe",
+               "#PBS -m ae",
+               "#PBS -A PAS1695",
+               "",
+               #List our important info in a way that can be indexed
+               paste0("snames=('", paste(sampnames, collapse = "' '"), "')"),
+               "",
+               #BAM download and test
+               "",
+               "module load python/3.6-conda5.2",
+               "",
+               "cd $TMPDIR",
+               
+               # Run kraken2/bracken
+               paste0("/fs/ess/PAS1695/src/kraken2/kraken2 --db",
+                      " /fs/ess/PAS1695/db/kraken2_noplants --threads 28 --minimum-base-quality 20",
+                      " --output tmp.txt --report ${snames[$PBS_ARRAY_INDEX]}.txt --confidence 0.1 --paired",
+                      " /fs/ess/PAS1695/generate-inputs_v2/ORIEN-processing/data/",
+                      cname, "/unmapped-fastqs/${snames[$PBS_ARRAY_INDEX]}_1.fastq",
+                      " /fs/ess/PAS1695/generate-inputs_v2/ORIEN-processing/data/",
+                      cname, "/unmapped-fastqs/${snames[$PBS_ARRAY_INDEX]}_2.fastq"),
+               "",
+               "source activate kraken2",
+               paste0("bracken -d /fs/ess/PAS1695/db/kraken2_noplants -l S -i ${snames[$PBS_ARRAY_INDEX]}.txt",
+                      " -o /fs/ess/PAS1695/generate-inputs_v2/ORIEN-processing/data/", cname,
+                      "/bracken-out/${snames[$PBS_ARRAY_INDEX]}.txt"),
+               ""
+               
+  ),
+  
+  fileOut
+  )
+  
+}
+```
+
+
+# Run the process
+
+
+```{r}
+
+setup.TCGA.data.pulls("SAR-Sarcoma")
+
+```
+
+

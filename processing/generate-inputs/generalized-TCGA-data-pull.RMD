@@ -1,0 +1,239 @@
+---
+title: "TCGA data pull set up"
+author: "Rebecca Hoyd"
+date: "February 27, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(GenomicDataCommons)
+# library(ggplot2)
+library(dplyr)
+library(tibble)
+```
+
+```{r}
+man <- read.csv("/fs/ess/PAS1695/generate-inputs_v2/TCGA-processing/data/PAAD/manifest.csv", stringsAsFactors = F)
+```
+
+TCGA data acquisition requires a few steps that are not currently well connected with each other and are also quite manual. The goal of this document will be to create a function that, when provided a single variable defining the desired TCGA cancer, will set up all data pulls related to that cancer that we required for the exotic pipeline at this time. Meta data (RNA concentration, etc.) will not be included here as that's currently in the exotic pipeline. This function will focus on setting up the large count tables and clinical data.
+
+# Define the function
+
+```{r setup.TCGA.data.pulls}
+setup.TCGA.data.pulls <- function(x){
+  gdc.manifest <- generate.manifest(x) 
+  gdc.clin <- formatted.clinical.data(x, gdc.manifest)
+  make.k2b.batch(gdc.manifest, x)
+  make.expressionpull.batch(x, gdc.manifest)
+  
+    #bracken will not work unless we create the destination directory in advance
+  system(command = paste0("mkdir /fs/ess/PAS1695/generate-inputs_v2/TCGA-processing/data/", 
+                          x, "/bracken-out"))
+  system(command = paste0("mkdir /fs/ess/PAS1695/generate-inputs_v2/TCGA-processing/data/", 
+                          x, "/unaligned_extraction-stats"))
+  
+  write.csv(gdc.manifest, paste0("/fs/ess/PAS1695/generate-inputs_v2/TCGA-processing/data/",
+                                 x, "/manifest.csv"),
+            row.names = F)
+  write.csv(gdc.clin, paste0("/fs/ess/PAS1695/generate-inputs_v2/TCGA-processing/data/",
+                             x, "/clinical.csv"),
+            row.names = F)
+}
+```
+
+```{r generate.manifest}
+generate.manifest <- function(cname){
+  
+  # Step 1 - find id's for bam files
+
+  grab.bam.files <- GenomicDataCommons::files(legacy = F) %>%
+    GenomicDataCommons::filter(~ type == "aligned_reads" &
+                                 cases.project.program.name =='TCGA' &
+                                 cases.samples.sample_type == "primary tumor" &
+                                 experimental_strategy == "RNA-Seq" &
+                                 cases.project.project_id == paste0("TCGA-", cname)) %>%
+    manifest() %>%
+    dplyr::mutate(cancer = cname,
+                  source = "tumor",
+                  file_id.BAM = id)
+  
+  # Step 2 - grab and add id's for expression files. We need both the file id for downloading, and the file name for eventually linking the expression table to the microbe table.
+  linksamps <- files() %>%
+  GenomicDataCommons::select(c("file_id", "downstream_analyses.output_files.file_name",
+           "downstream_analyses.output_files.file_id")) %>%
+  GenomicDataCommons::filter(file_id %in% grab.bam.files$id) %>%
+  results_all()
+  
+  sampids <- list()
+  for(i in linksamps$id){
+    sampids[[i]] <- linksamps$downstream_analyses[[i]]$output_files
+  }
+  sampids <- lapply(sampids, function(x) bind_rows(x))
+  sampids.form <- lapply(names(sampids), function(x) sampids[[x]] %>% mutate(file_id.BAM = x)) %>%
+    bind_rows() %>%
+    rename("file_id.expression" = "file_id",
+           "file_name.expression" = "file_name")
+
+  manifest.with.expression <- sampids.form %>%
+    left_join(grab.bam.files) %>%
+    rename("file_name.BAM" = "filename") %>%
+    dplyr::select(file_id.BAM,
+                  file_name.BAM,
+                  file_id.expression,
+                  file_name.expression,
+                  cancer,
+                  source)
+  
+  return(manifest.with.expression)
+}
+
+```
+
+```{r formatted.gdc.clinical}
+formatted.clinical.data <- function(cname, filemanifest){
+  grab.clinid <- GenomicDataCommons::cases(legacy = F) %>%
+    GenomicDataCommons::select(c(default_fields("cases"), "files.file_id")) %>%
+    GenomicDataCommons::filter(files.type == "aligned_reads" &
+             project.program.name =='TCGA' &
+             samples.sample_type == "primary tumor" &
+             project.project_id == paste0("TCGA-", cname)) %>%
+    response_all()
+  
+  for(cid in names(grab.clinid$results$files)){
+    grab.clinid$results$files[[cid]] <- grab.clinid$results$files[[cid]] %>%
+      dplyr::mutate(case_id = cid)
+  }
+  checkfilepres <- dplyr::bind_rows(grab.clinid$results$files)
+  # all(filemanifest$id %in% checkfilepres$file_id)
+  
+  file.case <- checkfilepres %>%
+    dplyr::filter(file_id %in% filemanifest$file_id.BAM)
+  choosecases <- unique(file.case$case_id)
+  
+  addtranslate <- file.case %>%
+    dplyr::mutate(file_id.BAM = file_id) %>%
+    dplyr::left_join(filemanifest) %>%
+    dplyr::filter(grepl("count", file_name.expression)) %>%
+    dplyr::select(file_id.BAM, file_id.expression, case_id, cancer, source)
+  
+  grab.clindat <- gdc_clinical(choosecases)
+  clindat.form <- Reduce(function(dtf1,dtf2) dplyr::full_join(dtf1,dtf2,by="case_id"),
+                         grab.clindat) %>%
+    dplyr::left_join(addtranslate)
+  clindat.form <- clindat.form[!duplicated(clindat.form),]
+  return(clindat.form)
+  }
+
+```
+
+```{r make.k2b.batch}
+
+make.k2b.batch <- function(filemanifest, cname){
+  
+  filemanifest.condense <- unique(filemanifest[, c("file_id.BAM", "file_name.BAM")])
+  
+  fileOut<-file(paste0("/fs/ess/PAS1695/generate-inputs_v2/TCGA-processing/scripts/batch/TCGA-",
+                       cname, "_kraken2-bracken.pbs"))
+  
+  writeLines(c(paste0("#PBS -N ", cname, "_kraken2-bracken"),
+               "#PBS -l walltime=8:00:00",
+               "#PBS -l nodes=1:ppn=28",
+               "#PBS -j oe",
+               "#PBS -m ae",
+               "#PBS -A PAS1695",
+               "",
+               #List our important info in a way that can be indexed
+               paste0("uuids=('", paste(filemanifest.condense$file_id.BAM, collapse = "' '"), "')"),
+               paste0("bnams=('", paste(filemanifest.condense$file_name.BAM, collapse = "' '"), "')"),
+               "",
+               #BAM download and test
+               "",
+               "module load python/3.6-conda5.2",
+               "module load bam2fastq",
+               "module load samtools",
+               "",
+               "cd $TMPDIR",
+               paste0("/fs/ess/PAS1695/generate-inputs_v2/TCGA-processing/scripts/gdc-client download",
+                      " -t /fs/scratch/PAS1479/controlled/gdc-download-token_2021-01-03.txt",
+                      " ${uuids[$PBS_ARRAY_INDEX]}"),
+               
+               # Create our working direcory
+               "mkdir $TMPDIR/intermediate/",
+               
+               # Manipulate to fastqs.
+               paste0("samtools view -b -f 4 --threads 28 ",
+                      "$TMPDIR/${uuids[$PBS_ARRAY_INDEX]}/${bnams[$PBS_ARRAY_INDEX]} >",
+                      " $TMPDIR/${uuids[$PBS_ARRAY_INDEX]}_unmapped.BAM"),
+               paste0("samtools sort -n --output-fmt BAM --threads 28 -o",
+                      " $TMPDIR/intermediate/${uuids[$PBS_ARRAY_INDEX]}.qsort",
+                      " $TMPDIR/${uuids[$PBS_ARRAY_INDEX]}_unmapped.BAM"),                     
+               paste0("bam2fastq -o $TMPDIR/intermediate/${uuids[$PBS_ARRAY_INDEX]}#.fastq",
+                      " $TMPDIR/intermediate/${uuids[$PBS_ARRAY_INDEX]}.qsort"),
+               "",
+               
+               # Run kraken2/bracken
+               "cd $TMPDIR/intermediate/",
+               "ls",
+               paste0('if [ -f "${uuids[$PBS_ARRAY_INDEX]}.fastq" ];', 
+                      "then /fs/ess/PAS1695/src/kraken2/kraken2 --db",
+                      " /fs/ess/PAS1695/db/kraken2_noplants --threads 28 --minimum-base-quality 20",
+                      " --output tmp.txt --report ${uuids[$PBS_ARRAY_INDEX]}.txt --confidence 0.1",
+                      " $TMPDIR/intermediate/${uuids[$PBS_ARRAY_INDEX]}.fastq;fi"), 
+               paste0('if [ -f "${uuids[$PBS_ARRAY_INDEX]}_1.fastq" ];',
+                      'then /fs/ess/PAS1695/src/kraken2/kraken2 --db',
+                      " /fs/ess/PAS1695/db/kraken2_noplants --threads 28 --minimum-base-quality 20",
+                      " --output tmp.txt --report ${uuids[$PBS_ARRAY_INDEX]}.txt --confidence 0.1 --paired",
+                      " $TMPDIR/intermediate/${uuids[$PBS_ARRAY_INDEX]}_1.fastq",
+                      " $TMPDIR/intermediate/${uuids[$PBS_ARRAY_INDEX]}_2.fastq;fi"),
+               "",
+               "source activate kraken2",
+               paste0("bracken -d /fs/ess/PAS1695/db/kraken2_noplants -l S -i ${uuids[$PBS_ARRAY_INDEX]}.txt",
+                      " -o /fs/ess/PAS1695/generate-inputs_v2/TCGA-processing/data/", cname,
+                      "/bracken-out/${uuids[$PBS_ARRAY_INDEX]}.txt"),
+               "",
+                # Capture number of reads in initial BAM for percentages
+               paste0("samtools flagstat --threads 20 ",
+                      "$TMPDIR/${uuids[$PBS_ARRAY_INDEX]}/${bnams[$PBS_ARRAY_INDEX]} > ",
+                      " /fs/ess/PAS1695/generate-inputs_v2/TCGA-processing/data/",
+                      cname, "/unaligned_extraction-stats/",
+                      "${uuids[$PBS_ARRAY_INDEX]}.txt")
+               
+  ),
+  
+  fileOut
+  )
+  
+}
+```
+
+```{r make.expressionpull.batch}
+make.expressionpull.batch <- function(cname, filemanifest){
+  
+  gdc_set_cache(paste0("/fs/ess/PAS1695/generate-inputs_v2/TCGA-processing/data/",cname,
+                      "/tmp-expression"))
+  
+  files.to.download <- filemanifest %>%
+    dplyr::filter(grepl("counts", file_name.expression)) 
+  gdcdata(uuids = files.to.download$file_id.expression)
+ 
+  # system("module load R/4.0.2-gnu9.1")
+  paste0('Rscript /fs/ess/PAS1695/generate-inputs_v2/TCGA-processing/scripts/TCGA-expression-pull.R ',
+                      ' -d /fs/ess/PAS1695/generate-inputs_v2/TCGA-processing/data/', cname, "/tmp-expression",
+                      ' -o /fs/ess/PAS1695/generate-inputs_v2/TCGA-processing/data/', cname, "/",
+                      "expression-counts.txt")
+
+}
+```
+
+# Run the process
+
+
+```{r}
+
+setup.TCGA.data.pulls("PAAD")
+
+```
+
