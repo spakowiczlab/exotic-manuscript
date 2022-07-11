@@ -1,0 +1,83 @@
+---
+title: "get tmesig scores"
+author: "Rebecca Hoyd"
+date: "2/18/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tmesig)
+```
+
+# Load data
+
+```{r}
+datadir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08"
+
+expr.tcga <- readRDS(file.path(datadir, "tcga.expr.norm.RDS"))
+expr.tcc <- readRDS(file.path(datadir, "tcc.expr.norm.RDS"))
+```
+
+# Formatting 
+
+```{r get gene matrices}
+inmat.tcga <- expr.tcga %>%
+  column_to_rownames(var = "sample") %>%
+  t() %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Gene")
+
+inmat.tcc <- expr.tcc %>%
+  column_to_rownames(var = "sample") %>%
+  t() %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Gene")
+```
+
+```{r return to cpm for mitoscore}
+inmat.counts.tcga <- bind_cols(lapply(inmat.tcga[,-1], function(x) (2^x)*1e8))
+inmat.counts.tcc <- bind_cols(lapply(inmat.tcc[,-1], function(x) (2^x)*1e8))
+
+inmat.counts.tcga$Gene <- inmat.tcga$Gene
+inmat.counts.tcc$Gene <- inmat.tcc$Gene
+```
+
+```{r check gene names}
+checkGenes(inmat.tcga$Gene, "Buffa")
+checkGenes(inmat.tcga$Gene, "Mitoscore")
+
+checkGenes(inmat.tcc$Gene, "Buffa")
+checkGenes(inmat.tcc$Gene, "Mitoscore")
+```
+
+```{r fixed gene names}
+revised.genes <- c("PNP", "HILPDA", "AK3", "ESRP1")
+```
+
+# Run scores
+
+```{r buffa}
+buffa.tcga <- calculateBuffa(inmat.tcga, c(inputGenes("Buffa"), revised.genes))
+buffa.tcc <- calculateBuffa(inmat.tcc, c(inputGenes("Buffa"), revised.genes))
+```
+
+```{r mito}
+mito.tcga <- calculateMitoscore(inmat.counts.tcga)
+mito.tcc <- calculateMitoscore(inmat.counts.tcc)
+```
+
+```{r combine}
+tmesig.tcga <- buffa.tcga %>%
+  left_join(mito.tcga)
+tmesig.tcc <- buffa.tcc %>%
+  left_join(mito.tcc)
+
+write.csv(tmesig.tcga, "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/tcga_tmesig1.csv", row.names = F)
+write.csv(tmesig.tcc, "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/tcc_tmesig1.csv", row.names = F)
+```
+
+
+

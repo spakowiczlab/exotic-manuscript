@@ -1,0 +1,52 @@
+---
+title: "Building the sample set"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl)
+library(dplyr)
+library(tableone)
+```
+
+# Pull in all TCC data
+```{r}
+tcc.linkage <- read_excel("/fs/ess/PAS1695/exoticpipe/external-data/Additional Data_Spakowicz_SLids.xlsx")
+tcc.meta <-read_excel("/fs/ess/PAS1695/exoticpipe/external-data/OSU.RNAseq.sequencing.QC.metrics.xlsx")
+
+tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_aggregated.csv", 
+                     stringsAsFactors = F)
+```
+
+# Format to set we have
+
+```{r}
+combined.metdat <- tcc.clin %>%
+  rename("tcc_id" = "RNA.SL.ID") %>%
+  left_join(tcc.linkage)
+
+combined.metdat.form <- combined.metdat %>%
+  mutate(ffpe.stat = `Tumor Tissue Sequenced Specimen Category`,
+         tumor.location = `Tumor Tissue Sequenced Collection Site`)
+```
+
+# Make table 1
+
+```{r}
+allvars <- c("BMI.at.Collection", "Age.at.Collection", "Gender", 
+             # "Cancer.Stage.at.Collection",
+             # "Chemotherapy", "I.O.Drug.Name", "Radiation", "Surgery", 
+             "Vital.Status", 
+             "ffpe.stat"
+             # "tumor.location"
+             )
+
+catvars <- c("Gender", "Cancer.Stage.at.Collection", "Chemotherapy", "I.O.Drug.Name", "Radiation",
+             "Surgery", "Vital.Status", "ffpe.stat", "tumor.location")
+
+CreateTableOne(allvars, strata = "Cancer", data = combined.metdat.form)
+  
+```
+

@@ -1,0 +1,178 @@
+---
+title: "Waterfall plot"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl)
+library(tidyverse)
+```
+
+# Access starting targets
+
+```{r}
+drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/"
+# Counts, before any manipulation
+raw.tcc.counts <- readRDS(file.path(drakedir, "raw.tcc.counts.RDS")) %>%
+  select(-Homo.sapiens)
+raw.tcga.counts <- readRDS(file.path(drakedir, "raw.tcga.counts.RDS")) %>%
+  select(-Homo.sapiens)
+
+
+# Counts, removing samples that fail to resolve batches (missing info, etc.)
+tcc.batchres <- readRDS(file.path(drakedir, "tcc.batchres.RDS"))
+tcga.batchres <- readRDS(file.path(drakedir, "tcga.batchres.RDS"))
+
+tcc.batchres[[1]] <- tcc.batchres[[1]] %>%
+  select(-Homo.sapiens)
+tcga.batchres[[1]] <- tcga.batchres[[1]] %>%
+  select(-Homo.sapiens)
+
+#Counts,after removing contaminants and all microbes not found in TCGA
+# loadd(tcc.counts)
+# loadd(tcga.counts)
+tcc.counts <- readRDS(file.path(drakedir, "tcc.counts.RDS")) %>%
+  select(-Homo.sapiens)
+tcga.counts <- readRDS(file.path(drakedir, "tcga.counts.RDS")) %>%
+  select(-Homo.sapiens)
+
+#Contaminants found in each of the groups
+tcc.contams <- readRDS(file.path(drakedir, "tcc.contams.RDS"))
+tcga.contams <-readRDS(file.path(drakedir, "tcga.contams.RDS"))
+
+
+
+salter.decontam <- read_excel("/fs/ess/PAS1695/exoticpipe/external-data/41586_2020_2095_MOESM2_ESM.xlsx",
+                              sheet = 6, skip = 1)
+salter.blanks <- read_excel("/fs/ess/PAS1695/exoticpipe/external-data/41586_2020_2095_MOESM2_ESM.xlsx", 
+                            sheet = 7, skip = 1)
+
+salter.eval <- bind_rows(salter.decontam, salter.blanks)
+
+salter.eval.rem <- salter.eval %>%
+  dplyr::filter(Category == "LIKELY CONTAMINANT")
+salter.eval.rem <- unique(salter.eval.rem$Genera) 
+
+```
+
+```{r functions}
+resolve_contaminants <- function(decontam.contams, filt.counts, threshold){
+  # If the decontam result is in salter, I want to use salter's judgment,otherwise the contaminant is removed
+  decontam.badmics <- decontam.contams %>%
+    dplyr::filter(p < threshold | is.na(p)) %>%
+    dplyr::select(microbe, Genera)
+  decontam.unq <- decontam.badmics[!duplicated(decontam.badmics[ , c("microbe", "Genera")]),]
+  decontam.rem <- subset(decontam.unq, !(decontam.unq$Genera%in%salter.eval$Genera))
+  
+  approved <- filt.counts %>%
+    tidyr::gather(-sample, key = "microbe", value = "counts") %>%
+    dplyr::filter(!microbe %in% decontam.rem$microbe) %>%
+    tidyr::separate(microbe, into = c("Genera"), remove = F, sep = "\\.") %>%
+    dplyr::filter(!Genera %in% salter.eval.rem) %>%
+    dplyr::select(-Genera) %>%
+    spread(key = "microbe", value = "counts")
+  
+ return(approved) 
+}
+```
+
+# 1A - Portion of reads excluded at each step
+
+Steps: start with raw counts. Remove the samples that don't have information required for batches used in decontam, or are in too small batches for decontam to handle. Use decontam to identify contaminant, then adjust by including Poore et. al. blacklist and whitelist information. Contaminants are combined between TCGA and TCC.
+```{r}
+#Start: sum all raw counts
+tcc.startcount = sum(colSums(raw.tcc.counts[, -1]))
+tcga.startcount = sum(colSums(raw.tcga.counts[, -1]))
+
+#How many lost when batches fixed?
+# tcc.batchcount <- sum(colSums(tcc.batchres$counts[,-1]))
+tcc.batchcount <- tcc.startcount
+tcga.batchcount <- sum(colSums(tcga.batchres$counts[,-1]))
+# Need to split up the contaminant phase, I think
+
+## Remove decontam found contaminants
+bad.contams.tcc <- tcc.contams %>%
+  filter(contaminant == TRUE)
+bad.contams.tcga <- tcga.contams %>%
+  filter(contaminant == TRUE)
+tcc.rem.decontam <- raw.tcc.counts %>%
+  select(-any_of(bad.contams.tcc$microbe))
+tcga.rem.decontam <- tcga.batchres$counts %>%
+  select(-any_of(bad.contams.tcga$microbe))
+
+tcc.rem.decontam.count <- sum(colSums(tcc.rem.decontam[,-1], na.rm = T))
+tcga.rem.decontam.count <- sum(colSums(tcga.rem.decontam[,-1], na.rm = T))
+
+## After the inclusion of the blacklist (additions and subtractions)
+tcc.rem.salter <- resolve_contaminants(bind_rows(tcc.contams, tcga.contams), raw.tcc.counts, 0.1)
+tcga.rem.salter <- resolve_contaminants(bind_rows(tcc.contams, tcga.contams), tcga.batchres$counts, 0.1)
+
+
+tcc.rem.salter.count <- sum(colSums(tcc.rem.salter[,-1], na.rm = T))
+tcga.rem.salter.count <- sum(colSums(tcga.rem.salter[,-1], na.rm = T))
+
+# remove mics from TCC only
+tcc.finprep <- tcc.counts
+tcc.fincount <- sum(colSums(tcc.finprep[,-1]))
+tcga.fincount <- sum(colSums(tcga.counts[,-1]))
+```
+
+```{r get waterfall counts into ggplotable df}
+waterfall.df <- as.data.frame(cbind(step = c("start", "batch resolution",
+                                             "initial decontam",
+                                             "literature altered decontam", 
+                                             "Remove TCC only"),
+                                    tcc = c(tcc.startcount, tcc.batchcount,
+                                            tcc.rem.decontam.count,
+                                            tcc.rem.salter.count, tcc.fincount),
+                                    tcga = c(tcga.startcount, tcga.batchcount,
+                                             tcga.rem.decontam.count,
+                                             tcga.rem.salter.count, tcga.fincount)))
+
+ymin.tcc <- c(2.8e7, waterfall.df$tcc[1:4])
+ymin.tcga <- c(9e8, waterfall.df$tcga[1:4])
+
+waterfall.df <- waterfall.df %>%
+  tidyr::gather(-step, key = "Data.Source", value = "count")
+waterfall.df$y.min <- c(ymin.tcc, ymin.tcga)
+```
+
+
+## Waterfall format - only TCGA
+
+```{r}
+tcga.waterfall.df <- waterfall.df %>%
+  mutate(id = rep(1:5, 2),
+         y.min = as.numeric(y.min),
+         count = as.numeric(count),
+         changedir = ifelse(y.min < count, "Gain", "Loss"),
+         Data.Source = toupper(Data.Source)) %>%
+  filter(id != 5 & Data.Source == "TCGA")
+```
+
+```{r}
+tcga.waterfall.df %>%
+  mutate(id = 6-id,
+         y.min = ifelse(id == 5, 0, y.min)) %>%
+  ggplot(aes(x = id, y = count)) +
+  geom_rect(aes(ymin = 0, ymax = 805457002, xmin = 1 - .45 ,
+            xmax = 1 + .45)) +
+  geom_rect(aes(ymin = y.min, ymax = count, xmin = id - .45 ,
+            xmax = id + .45, fill = changedir)) +
+  scale_fill_manual(breaks = c("Gain", "Loss"), values = c("darkgreen", "darkred"), 
+                    name = "Effect on\nread count") +
+  labs(x = "", y = "") +
+  scale_x_continuous(breaks = c(5,4,3,2,1), 
+                     labels = c("Initial read count",
+                                "Remove samples \nfrom small batches",
+                                "Remove contaminants \nfrom decontam",
+                                "Adjust contaminants \nwith literature review",
+                                "Final read count")) +
+  coord_flip() +
+  theme_bw() +
+  theme(text = element_text(size = 10))
+ggsave("../figures/waterfall_TCGA-combine-types.pdf", height = 3.5, width = 5)
+```
+

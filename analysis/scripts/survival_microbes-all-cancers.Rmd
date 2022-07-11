@@ -1,0 +1,180 @@
+---
+title: "Survival by microbes"
+author: "Rebecca Hoyd"
+date: "2/18/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(survival)
+library(rlist)
+```
+
+# Load data
+
+```{r}
+data.dir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08"
+tcc.prev <- readRDS(file.path(data.dir, "tcc_prevalence-taxonomy.RDS"))
+tcga.prev <- readRDS(file.path(data.dir, "tcga_prevalence-taxonomy.RDS"))
+
+tcga.clin <- readRDS(file.path(data.dir, "tcga.clin.tum.RDS"))
+tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_aggregated.csv")
+
+tcc.cancer.labs <- read.csv("../../../exploratory/data/members-of-TCGA-groups.csv")
+tcc.meta.linkage <- readRDS(file.path(data.dir, "tcc.meta.linkage.RDS"))
+```
+
+# Functions
+```{r}
+exoRAtowideprev <- function(data, taxlev){
+  tmp <- data
+  tmp$Taxa <- tmp[[taxlev]]
+  tmp.wide<- tmp %>%
+    filter(!is.na(Taxa)) %>%
+    group_by(sample, Taxa) %>%
+    summarise(ra = sum(prev, na.rm = T)) %>%
+    mutate(ra = ifelse(ra > 0, 1, 0)) %>%
+    spread(key = "Taxa", value = "ra")
+
+  return(tmp.wide)
+}
+
+exoToDF <- function(taxalevels = c("domain", "kingdom", "phylum", "class", 
+                                    "order", "family", "genus", "species"), 
+                     data){
+  w.ls <- lapply(taxalevels, function(x) exoRAtowideprev(data, x))
+  w.df <- reduce(w.ls, function(x,y) left_join(x,y)) 
+  return(w.df)
+}
+```
+
+```{r}
+extract_coxph_results <- function(cp.form, int.term.name, dattab){
+    tmp <- coxph(as.formula(cp.form), data = dattab) %>%
+      summary()
+  pvals <- tmp$coefficients %>%
+    as.data.frame() %>%
+    rownames_to_column(var = "term") %>%
+    mutate(p.value = `Pr(>|z|)`) %>%
+    select(term, p.value)
+  conf.int <- tmp$conf.int %>%
+    as.data.frame() %>%
+    rownames_to_column(var = "term") %>%
+    mutate(hazard.ratio = `exp(coef)`,
+           confint.low = `lower .95`,
+           confint.high = `upper .95`) %>%
+    select(term, hazard.ratio, confint.low, confint.high) %>%
+    left_join(pvals)
+    # filter(term == int.term.name)
+  return(conf.int)
+}
+
+run_many_coxph <- function(mics, datset, datlab){
+  tally.prevs <- datset %>%
+    select(c("sample", mics)) %>%
+    gather(-sample, key = "microbe", value = "prevalence") %>%
+    group_by(microbe, prevalence) %>%
+    tally() %>%
+    mutate(prevalence = paste0("prevalence.", prevalence)) %>%
+    spread(key = prevalence, value = n)
+  
+  surv.forms <- paste0("Surv(days, vitalstatus) ~ `", mics, "`")
+  names(surv.forms) <- mics
+  
+  model.results <- lapply(mics, function(x) try(extract_coxph_results(surv.forms[[x]],
+                                                                      x,
+                                                                      datset) %>%
+                                                  mutate(microbe = x))) %>%
+    list.clean(., function(x) any(grepl("Error", x))) %>%
+    bind_rows() %>%
+    # select(-term) %>%
+    left_join(tally.prevs) %>%
+    mutate(datset = datlab)
+  
+  return(model.results)
+}
+```
+
+# Formatting
+
+```{r wide microbe data}
+tcc.w <- exoToDF(data = tcc.prev)
+tcga.w <- exoToDF(data = tcga.prev)
+
+microbes <- colnames(tcc.w)[-1]
+```
+
+```{r combine with clinical data}
+names(tcc.meta.linkage) <- make.names(names(tcc.meta.linkage))
+tcc.samp.cancers <- tcc.meta.linkage %>%
+  left_join(tcc.cancer.labs) %>%
+  mutate(sample = LibraryID) %>%
+  select(sample, TCGA.code)
+tcc.modin <- tcc.clin %>%
+  mutate(days = Overall.Survival.from.Dx..days.,
+         vitalstatus = ifelse(Vital.Status == "Deceased", 1, 0),
+         sample = RNA.SL.ID) %>%
+  select(sample,days,vitalstatus, Cancer) %>%
+  left_join(tcc.samp.cancers) %>%
+  inner_join(tcc.w) %>%
+  filter(!is.na(TCGA.code))
+
+tcga.modin <- tcga.clin %>%
+   mutate(days = days_to_death,
+          vitalstatus = ifelse(vital_status == "Dead", 1, 0),
+          sample = file_id.BAM) %>%
+  select(sample,days,vitalstatus, cancer) %>%
+  inner_join(tcga.w)
+
+```
+
+# Survival test
+
+```{r run for all cancers together, warning=FALSE, message=FALSE}
+tcc.cph <- run_many_coxph(microbes, tcc.modin, "TCC")
+tcga.cph <- run_many_coxph(microbes, tcga.modin, "TCGA")
+```
+
+```{r split out cancers}
+tcc.cancers <- unique(tcc.modin$TCGA.code)
+tcga.cancers <- unique(tcga.modin$cancer)
+
+tcc.cph.cancer <- lapply(tcc.cancers, function(y) run_many_coxph(microbes, 
+                                                                 filter(tcc.modin,
+                                                                        TCGA.code ==
+                                                                          y),
+                                                                 y))
+tcga.cph.cancer <- lapply(tcga.cancers, function(y) run_many_coxph(microbes, 
+                                                                 filter(tcga.modin,
+                                                                        cancer == y),
+                                                                 y))
+```
+
+```{r format split cancer results}
+tcc.cph.cancer.form <- bind_rows(list.clean(tcc.cph.cancer, 
+                                            function(x) any(grepl("Error", x)),
+                                            recursive = T)) %>%
+  mutate(cancer = datset,
+         datset = "TCC") 
+tcga.cph.cancer.form <- bind_rows(tcga.cph.cancer) %>%
+  mutate(cancer = datset,
+         datset = "TCGA") 
+```
+
+# Save
+
+```{r}
+saveRDS(tcc.cph, "../data/survival_tcc_all-cancers.RDS")
+saveRDS(tcga.cph, "../data/survival_tcga_all-cancers.RDS")
+
+saveRDS(tcc.cph.cancer.form, "../data/survival_tcc_split-cancers.RDS")
+saveRDS(tcga.cph.cancer.form, "../data/survival_tcga_split-cancers.RDS")
+```
+
+
+
+
+

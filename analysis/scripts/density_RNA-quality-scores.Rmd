@@ -1,0 +1,82 @@
+---
+title: "Quality score summaries"
+author: "Rebecca Hoyd"
+date: "3/17/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+# Load data
+
+```{r}
+drakedir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/"
+
+# Meta data including sequencing QC and technical sample details
+tcc.meta <- readRDS(file.path(drakedir, "tcc.meta.RDS"))
+tcga.meta <- readRDS(file.path(drakedir, "tcga.meta.RDS"))
+
+samps <- readRDS(file.path(drakedir, "normalized.cpm.RDS"))$sample
+```
+
+# Format
+
+```{r}
+concentration.df <- tcc.meta %>%
+  mutate(sample = LibraryID,
+         concentration = Concentration) %>%
+  bind_rows(tcga.meta) %>%
+  select(sample, concentration) %>%
+  filter(sample %in% samps) %>%
+  mutate(datset = ifelse(grepl("^SL", sample), "TCC", "TCGA"))
+
+othscores.df <- tcc.meta %>%
+  filter(LibraryID %in% samps)
+```
+
+# Plots
+
+```{r}
+concentration.df %>%
+  ggplot(aes(x = concentration)) +
+  facet_wrap(~datset, scale = "free") +
+  geom_density(fill = "grey50") +
+  labs(x = "RNA Concentration", y = "") +
+  theme_bw()
+
+ggsave("../figures/density_RNA-concentration.pdf")
+```
+
+```{r}
+othscores.df %>%
+  ggplot(aes(x = RIN)) +
+  geom_density(fill = "grey50") +
+  labs(x = "RIN", y = "") +
+  theme_bw()
+
+ggsave("../figures/density_RIN.pdf")
+```
+
+```{r}
+othscores.df %>%
+  ggplot(aes(x = DV200)) +
+  geom_density(fill = "grey50") +
+  labs(x = "DV200", y = "") +
+  theme_bw()
+
+ggsave("../figures/density_DV200.pdf")
+```
+
+```{r}
+othscores.df %>%
+  ggplot(aes(x =qscore)) +
+  geom_density(fill = "grey50") +
+  labs(x = "Q score", y = "") +
+  theme_bw()
+
+ggsave("../figures/density_qscore.pdf")
+```
