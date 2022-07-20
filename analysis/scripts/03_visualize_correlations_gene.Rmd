@@ -54,9 +54,9 @@ head(hub.m)
 ```
 
 ```{r}
-write.csv(hub.g, "../tables/network_gene-hubbiness.csv",
+write.csv(hub.g, "../tables/network_gene_degree-centrality.csv",
           row.names = F)
-write.csv(hub.m, "../tables/network_microbe-hubbiness.csv",
+write.csv(hub.m, "../tables/S2_network_microbe_degree-centrality.csv",
           row.names = F)
 ```
 
