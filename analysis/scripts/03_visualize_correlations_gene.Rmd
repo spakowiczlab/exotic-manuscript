@@ -1,0 +1,211 @@
+---
+title: "Microbe and gene correlations"
+author: "Rebecca Hoyd"
+date: "4/4/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidygraph)
+library(ggraph)
+library(igraph)
+library(ggtext)
+library(Hmisc)
+```
+
+# Load data
+
+```{r}
+edges.raw <- readRDS("/fs/ess/PAS1695/projects/exotic/data/network_TCC-corr-in.RDS")
+exprs.norm <- readRDS("/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/tcc.expr.norm.RDS")
+```
+
+# Filter low variance genes
+
+```{r}
+exprs.var <- unlist(lapply(exprs.norm[,-1], var))
+table(exprs.var > 1)
+genes.keep <- names(subset(exprs.var, exprs.var > 1))
+```
+
+# Some quick queries for network characteristics
+
+## Degree centrality
+
+```{r calculate hubbiness}
+hub.m <- edges.raw %>%
+  filter(Gene %in% genes.keep) %>%
+  group_by(microbe) %>%
+  tally() %>%
+  arrange(desc(n)) %>%
+  mutate(rank = row_number())
+
+hub.g <- edges.raw %>%
+  filter(Gene %in% genes.keep) %>%
+  group_by(Gene) %>%
+  tally() %>%
+  arrange(desc(n)) %>%
+  mutate(rank = row_number())
+
+head(hub.m)
+```
+
+```{r}
+write.csv(hub.g, "../tables/network_gene-hubbiness.csv",
+          row.names = F)
+write.csv(hub.m, "../tables/network_microbe-hubbiness.csv",
+          row.names = F)
+```
+
+## Path centrality
+
+This block of code makes objects that are then used in the scripts network_find-shortest-path.R to calculate betweenness centality before coming back to this document.
+```{r format the igraph}
+# weighted.graph <- edges.raw %>%
+#   filter(Gene %in% genes.keep) %>%
+#   mutate(new.weight = 1/abs(estimate))
+# hist(weighted.graph$new.weight)
+# 
+# 
+# edges.for.weight <- weighted.graph %>%
+#   select(Gene, microbe)%>%
+#   as.matrix() %>%
+#   graph_from_edgelist(directed = F)
+# 
+# weighted.edges <- set.edge.attribute(edges.for.weight,
+#                                      "weight",
+#                                      E(edges.for.weight),
+#                                      weighted.graph$new.weight)
+
+```
+
+```{r format betweenness results}
+betweencent <- readRDS("/fs/ess/PAS1695/projects/exotic/data/network_betweenness-centrality.RDS")
+betweencent.df <- as.data.frame(betweencent) %>%
+  rownames_to_column(var = "node")
+write.csv(betweencent.df, "../tables/network_betweenness-centrality.csv",
+          row.names = F)
+```
+
+
+# Format for network
+
+```{r}
+hubgenes <- hub.g %>%
+  filter(rank <= 500) %>%
+  mutate(rank.g = rank) %>%
+  select(Gene, rank.g)
+
+netmics <- as.data.frame(cbind(microbe = c("g__Alistipes", 
+                                           "s__Bifidobacterium adolescentis", 
+                                           "s__Escherichia fergusonii",
+                                           "s__Salmonella bongori",
+                                           "s__Fusobacterium canifelinum"),
+                               rank.m = c(1,125,250,375,500)),
+                         stringsAsFactors = F) %>%
+  mutate(rank.m = as.numeric(rank.m))
+
+edges.lim.mics <- edges.raw %>%
+  inner_join(netmics) %>%
+  inner_join(hubgenes) %>%
+  mutate(colcode = gsub(".*__", "",microbe), NA)
+
+nodes.lim.mics <- bind_rows(netmics, hubgenes) %>%
+  mutate(rank = coalesce(rank.m, rank.g)) %>%
+  mutate(xval = ifelse(is.na(microbe), 10, 0),
+         colcode = gsub(".*__", "",microbe), NA) %>%
+  as.data.frame()
+```
+
+# Plot network
+
+```{r}
+ggplot(nodes.lim.mics, aes(x = xval, y = -rank, color = colcode)) +
+  geom_point(show.legend = F) +
+  geom_segment(data = edges.lim.mics, inherit.aes = F, 
+             aes(x = 0, xend = 10, y = -rank.m, yend = -rank.g, 
+                 color = colcode), alpha = .5,
+             show.legend = F) +
+  geom_richtext(aes(label = colcode), angle = 90, show.legend = F)+
+  scale_color_manual(values = c("red", "darkblue", "darkgreen", "orange", "brown"),
+                     name = "", na.value = "grey70") +
+  theme_void()
+ggsave("../figures/network_microbe-gene_lit-mics.pdf", height = 20, width = 10)
+```
+
+
+# Pathway analysis
+
+## Prepare database
+
+```{r}
+library(msigdbr)
+library(fgsea)
+```
+
+```{r prepare hallmark database}
+msig.human <- msigdbr(species = "Homo sapiens") %>%
+  dplyr::select(gs_cat, entrez_gene, gs_name, gene_symbol, gs_description) %>%
+  dplyr::rename("pathname" = gs_name, "genes" = gene_symbol, "desc" = gs_description,
+                "category" = gs_cat, "NCBI Entrez ID" = entrez_gene) 
+
+msig.hlmrk <- msig.human %>%
+    filter(category=="H") %>%
+    unique()
+
+hlmrk.paths <- msig.hlmrk %>%
+     dplyr::select(genes, pathname) %>%
+     split(x = .$genes, f = .$pathname)
+
+```
+
+```{r some quick functions}
+edgesToFGSEA <- function(m){
+  edges.microbe <- edges.raw %>%
+    filter(microbe == m) %>%
+    filter(Gene %in% genes.keep) %>%
+    arrange(p.value)
+  
+  fgsea.ranks <- edges.microbe$estimate
+  names(fgsea.ranks) <- edges.microbe$Gene
+  
+  fgsea.res <- fgsea(hlmrk.paths, fgsea.ranks)
+  return(fgsea.res)
+}
+
+fgseaEnrichPlot <- function(fres, nranks, colname){
+  fres %>%
+    arrange(pval) %>%
+    mutate(rank = row_number(),
+           pathway = gsub("HALLMARK_", "", pathway),
+           pathway = gsub("_", " ", pathway),
+           pathway = capitalize(tolower(pathway)),
+           pathway = gsub("Dna", "DNA", pathway),
+           pathway = gsub("E2f", "E2F", pathway)) %>%
+    filter(rank <= nranks) %>%
+    mutate(pathway = fct_reorder(pathway, NES)) %>%
+    ggplot(aes(x = NES, y = pathway)) +
+    geom_col(fill = colname) +
+    labs(x = "Normalized Enrichment", y = "") +
+    theme_bw()
+}
+```
+
+## Run an plot pathway analyses
+
+```{r run on interesting microbes}
+fgsea.allistipes <- edgesToFGSEA("g__Alistipes")
+fgsea.bifido <- edgesToFGSEA("s__Bifidobacterium adolescentis")
+```
+
+```{r format for effect size plots}
+fgseaEnrichPlot(fgsea.allistipes, 10, "red")
+ggsave("../figures/fgsea_alistipes.pdf", height= 3, width = 4)
+
+fgseaEnrichPlot(fgsea.bifido, 10, "darkblue")
+ggsave("../figures/fgsea_bifido.pdf", height= 3, width = 4)
+```
+

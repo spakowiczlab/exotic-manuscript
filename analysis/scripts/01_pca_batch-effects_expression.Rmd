@@ -1,0 +1,83 @@
+---
+title: "PCAs for batch effects"
+author: "Rebecca Hoyd"
+date: "2/9/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(readxl)
+```
+
+# Load data
+
+```{r}
+drakedir.new <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/"
+
+norm.inputs.new <- readRDS(file.path(drakedir.new, "normalization.inputs.expr.RDS"))
+norm.result.new <- readRDS(file.path(drakedir.new, "normalized.expr.RDS"))
+
+```
+
+# Format and run PCA
+
+```{r}
+new.counts <- norm.inputs.new[[1]] %>%
+  as.data.frame()
+counts.lowvar <- unlist(lapply(new.counts, function(x) var(x)))
+summary(counts.lowvar)
+counts.higvar <- names(subset(counts.lowvar,
+                              counts.lowvar > quantile(counts.lowvar, .5)))
+
+
+```
+
+```{r}
+new.counts.pc <- norm.inputs.new[[1]] %>%
+  as.data.frame() %>%
+  select(counts.higvar) 
+
+new.counts.res  <- prcomp(new.counts.pc, scale. = T)$x %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "sample") %>%
+  select(sample, PC1, PC2) %>%
+  mutate(datset = "counts")
+
+new.norm.pc <-  norm.result.new %>%
+  select(c("sample", counts.higvar)) %>%
+  remove_rownames() %>%
+  column_to_rownames(var = "sample")
+  # select(-Vibrio.phage.ValB1MD.2, -Staphylococcus.virus.Andhra)
+
+new.norm.res  <- prcomp(new.norm.pc, scale. = T)$x%>%
+  as.data.frame() %>%
+  rownames_to_column(var = "sample") %>%
+  select(sample, PC1, PC2) %>%
+  mutate(datset = "normalized")
+```
+
+# Plot
+
+```{r}
+new.pcs.res <- bind_rows(new.counts.res, new.norm.res) %>%
+  left_join(norm.inputs.new[[2]])
+
+new.pcs.res %>%
+  mutate(datset = ifelse(datset == "counts", "Counts", "Normalized")) %>%
+  ggplot(aes(x = PC1, y = PC2, color = SequencingCenter, fill = SequencingCenter)) +
+  facet_wrap(vars(datset), scales = "free") +
+  geom_point(alpha = .4) +
+  stat_ellipse(geom = "polygon", alpha = .2) +
+  scale_fill_viridis_d(aesthetics = c("color", "fill"),
+                       name = "Sequencing\ncenter") +
+  theme_bw() +
+  theme(text = element_text(size = 10))
+ggsave("../figures/pca_compare-FFPE_expr_new.pdf", height = 3, width = 4.5)
+```
+
+
+
+

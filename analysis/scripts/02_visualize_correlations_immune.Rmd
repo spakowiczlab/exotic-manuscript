@@ -1,0 +1,129 @@
+---
+title: "Visualize correlations"
+author: "Rebecca Hoyd"
+date: "3/10/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(ggplot2)
+library(viridis)
+
+library(vegan)
+library(ggdendro)
+```
+
+# Load data
+
+```{r}
+tcc.all <- read.csv("/fs/ess/PAS1695/projects/exotic/data/correlations_mic-immune_TCC.csv",
+                    stringsAsFactors = F)
+tcc.split <- read.csv("/fs/ess/PAS1695/projects/exotic/data/correlations_mic-immune_TCC_split-cancer.csv",
+                      stringsAsFactors = F)
+tcga.all <- read.csv("/fs/ess/PAS1695/projects/exotic/data/correlations_mic-immune_TCGA.csv",
+                     stringsAsFactors = F)
+tcga.split <- read.csv("/fs/ess/PAS1695/projects/exotic/data/correlations_mic-immune_TCGA_split-cancer.csv",
+                       stringsAsFactors = F)
+```
+
+# Format
+
+```{r}
+tcc.res <- tcc.all %>%
+  mutate(cancer = "All") %>%
+  bind_rows(tcc.split)
+
+tcga.res <- tcga.all %>%
+  mutate(cancer = "All") %>%
+  bind_rows(tcga.split)
+
+corr.res <- bind_rows(tcc.res, tcga.res)
+```
+
+```{r}
+matched.cancers <- unique(subset(corr.res, corr.res$datset == "TCGA")$cancer)
+```
+
+# Agreement heatmap version
+
+```{r label correlation results}
+cor.res.sum <- corr.res %>%
+  filter(cancer %in% matched.cancers) %>%
+  mutate(sig = ifelse(p.value < 0.05, "Yes", "No"),
+         dir = ifelse(estimate < 0, "Negative", "Positive"),
+         sigdir = paste(sig, dir),
+         datset = ifelse(datset == "TCGA", "TCGA", "ORIEN")) %>%
+  select(microbe, ImmuneCell, cancer, datset, sigdir) %>%
+  pivot_wider(names_from = datset, values_from = sigdir) %>%
+  separate(ORIEN, into = c("ORIEN.sig", "ORIEN.dir")) %>%
+  separate(TCGA, into = c("TCGA.sig", "TCGA.dir"))
+
+match.map.dat <- cor.res.sum %>%
+  mutate(dirmatch = TCGA.dir == ORIEN.dir,
+         heatcode = case_when(dirmatch == T & ORIEN.sig == "Yes" & 
+                                TCGA.sig == "Yes" ~ "Match",
+                              dirmatch == F & ORIEN.sig == "Yes" & 
+                                TCGA.sig == "Yes" ~ "Disagree",
+                              xor(ORIEN.sig  == "Yes", TCGA.sig == "Yes") ~
+                                "One significant"))
+```
+
+```{r cluster rows and columns}
+order.sumheat <- match.map.dat %>%
+  filter(cancer == "All") %>%
+  mutate(heatcode = ifelse(is.na(heatcode), "Zsig", heatcode),
+         heatcode = as.numeric(as.factor(heatcode))) %>%
+  select(microbe, ImmuneCell, heatcode)
+
+order.sumheat.mics <- order.sumheat %>%
+  pivot_wider(names_from = ImmuneCell, values_from = heatcode) %>%
+  column_to_rownames(var = 'microbe') %>%
+  dist() %>%
+  hclust() 
+sumheat.micord <- order.sumheat.mics$labels[order.sumheat.mics$order]
+
+order.sumheat.ic <- order.sumheat %>%
+  pivot_wider(names_from = microbe, values_from = heatcode) %>%
+  column_to_rownames(var = 'ImmuneCell') %>%
+  dist() %>%
+  hclust() 
+sumheat.icord <- order.sumheat.ic$labels[order.sumheat.ic$order]
+```
+
+
+```{r fix immune cell names}
+oldlabs <- unique(match.map.dat$ImmuneCell)
+oldlabs
+newlabs <- c("Naive B Cells", "Memory B Cells", 
+             "CD8 T Cells", "Naive CD4 T Cells", 
+             "Resting Memory CD4 T Cells", "Activated Memory CD4 T Cells",
+             "Follicular Helper T Cells", "Regulatory T Cells",
+             "Gamma Delta T Cells", "Resting NK Cells", 
+             "Activated NK Cells", "M0 Macrophages",
+             "M1 Macrophages", "M2 Macrophages", "Resting Dendritic Cells", 
+             "Activated Dendritic Cells", "Resting Mast Cells", "Activated Mast Cells",
+             "Eosonophils", "Neutrophils")
+```
+
+```{r plot}
+match.map.dat %>%
+  ggplot(aes(x = fct_relevel(microbe, sumheat.micord), 
+             y = fct_relevel(ImmuneCell, sumheat.icord), 
+             fill = heatcode)) +
+  facet_wrap(vars(cancer)) +
+  geom_tile() +
+  labs( x = "Microbe", y = "") +
+  scale_fill_viridis_d(name = "") +
+  scale_y_discrete(breaks = oldlabs, labels = newlabs) +
+  theme_bw() +
+  theme(text = element_text(size = 10),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        panel.grid = element_blank())
+
+ggsave("../figures/heatmap_sigsum_mic-immune.pdf")
+```
+
