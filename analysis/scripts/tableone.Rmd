@@ -7,8 +7,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(readxl)
-library(dplyr)
+library(tidyverse)
 library(tableone)
+library(flextable)
 ```
 
 # Pull in all TCC data
@@ -28,25 +29,44 @@ combined.metdat <- tcc.clin %>%
   left_join(tcc.linkage)
 
 combined.metdat.form <- combined.metdat %>%
-  mutate(ffpe.stat = `Tumor Tissue Sequenced Specimen Category`,
-         tumor.location = `Tumor Tissue Sequenced Collection Site`)
+  mutate(FFPE = `Tumor Tissue Sequenced Specimen Category`,
+         tumor.location = `Tumor Tissue Sequenced Collection Site`,
+         `BMI at Collection` = BMI.at.Collection,
+         `Age at Collection` = Age.at.Collection,
+         `Vital Status` = Vital.Status)
 ```
 
 # Make table 1
 
 ```{r}
-allvars <- c("BMI.at.Collection", "Age.at.Collection", "Gender", 
+allvars <- c("BMI at Collection", "Age at Collection", "Gender", 
              # "Cancer.Stage.at.Collection",
              # "Chemotherapy", "I.O.Drug.Name", "Radiation", "Surgery", 
-             "Vital.Status", 
-             "ffpe.stat"
+             "Vital Status", 
+             "FFPE"
              # "tumor.location"
              )
 
 catvars <- c("Gender", "Cancer.Stage.at.Collection", "Chemotherapy", "I.O.Drug.Name", "Radiation",
-             "Surgery", "Vital.Status", "ffpe.stat", "tumor.location")
+             "Surgery", "Vital Status", "FFPE", "tumor.location")
 
 CreateTableOne(allvars, strata = "Cancer", data = combined.metdat.form)
   
 ```
 
+```{r}
+tab1 <- CreateTableOne(allvars, strata = "Cancer", data = combined.metdat.form)
+tab1 <- print(tab1, printToggle = F)
+
+tab1.flex <- tab1 %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Variables") %>%
+  select(-test) %>%
+  flextable()
+
+tab1.flex
+```
+
+```{r}
+save_as_docx(tab1.flex, path = "../tables/table1.docx")
+```
