@@ -109,19 +109,6 @@ tcga.crc.prev <- mean(prev.tcga.crc$g__Fusobacterium)
 # Plot 
 
 ```{r}
-# combined.dat %>%
-#   ggplot(aes(x = prevalence, y = Taxon, fill = prev.type)) +
-#   facet_wrap(vars(Ref), scales = "free_y") +
-#   geom_col(position = "dodge") +
-#   scale_fill_manual(breaks = c("ORIEN.prev", "Prevalence", "TCGA.prev"),
-#                     labels = c("ORIEN", "Reference", "TCGA"),
-#                     values = c("green", "black", "blue"),
-#                     name = "Prevalence \nsource") +
-#   labs(x = "", y = "") +
-#   theme_classic() +
-#   theme(axis.text.y = element_blank(),
-#         axis.ticks.y = element_blank())
-
 
 fuso_only_dat <- prev.res.tcc %>%
   left_join(prev.res.tcga) %>%
@@ -143,4 +130,31 @@ combined.dat %>%
   theme_classic() +
   theme(text = element_text(size = 10))
 ggsave("../figures/barplot_prevalence_lit-compare.pdf", height = 3.5, width = 4)
+```
+
+# Check other percentages
+
+```{r}
+prev.tcga.split <- prev.tcga.w %>%
+  left_join(TCGA.meta) %>%
+  mutate(crc.stat = ifelse(TCGA.code %in% c("COAD", "READ"), "CRC", "other"),
+         source = "TCGA") %>%
+  select(sample, crc.stat, source, g__Fusobacterium)
+
+
+prev.tcc.split <- prev.tcc.w %>%
+  left_join(tcc.joincodes) %>%
+  mutate(crc.stat = ifelse(TCGA.code %in% c("COAD", "READ", "OtherCR"), 
+                           "CRC", "other"),
+         source = "ORIEN") %>%
+  select(sample, crc.stat, source, g__Fusobacterium)
+
+
+combine.splits <- bind_rows(prev.tcc.split, prev.tcga.split)
+```
+
+```{r}
+combine.splits %>%
+  group_by(source, crc.stat) %>%
+  summarise(prevalence = mean(g__Fusobacterium))
 ```
