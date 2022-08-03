@@ -19,6 +19,8 @@ tcc.meta <-read_excel("/fs/ess/PAS1695/exoticpipe/external-data/OSU.RNAseq.seque
 
 tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_aggregated.csv", 
                      stringsAsFactors = F)
+tcga.clin <- readRDS("/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/tcga.clin.tum.RDS")
+tcga.pass <- readRDS("/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/tcga.counts.norm.RDS")
 ```
 
 # Format to set we have
@@ -69,4 +71,28 @@ tab1.flex
 
 ```{r}
 save_as_docx(tab1.flex, path = "../tables/table1.docx")
+```
+
+# Check against TCGA
+
+```{r}
+tcc.met <- combined.metdat.form %>%
+  mutate(metastatic = ifelse(grepl("4", Cancer.Stage.at.Collection), 1, 0),
+         source = "ORIEN",
+         sample = tcc_id) %>%
+  select(sample, source, metastatic)
+
+tcga.met <- tcga.clin %>%
+  mutate(metastatic = ifelse(grepl("iv", tumor_stage), 1, 0),
+         source = "TCGA",
+         sample = file_id.BAM) %>%
+  filter(sample %in% tcga.pass$sample) %>%
+  select(sample, metastatic, source)
+
+
+met.compare <- bind_rows(tcc.met, tcga.met)
+```
+
+```{r}
+CreateTableOne("metastatic", "source", met.compare, "metastatic")
 ```
