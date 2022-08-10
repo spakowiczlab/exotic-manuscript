@@ -32,6 +32,8 @@ tcga.all.join <- tcga.all %>%
   mutate(cancer = "All")
 
 surv.res <- bind_rows(tcc.all.join, tcga.all.join, tcc.split, tcga.split)
+
+write.csv(surv.res, "../tables/S1_survival-results.csv", row.names = F)
 ```
 
 ```{r}
