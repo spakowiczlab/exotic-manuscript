@@ -76,21 +76,21 @@ ggsave("../figures/histogram_node-edges-count.png")
 
 This block of code makes objects that are then used in the scripts network_find-shortest-path.R to calculate betweenness centality before coming back to this document.
 ```{r format the igraph}
-# weighted.graph <- edges.raw %>%
-#   filter(Gene %in% genes.keep) %>%
-#   mutate(new.weight = 1/abs(estimate))
-# hist(weighted.graph$new.weight)
-# 
-# 
-# edges.for.weight <- weighted.graph %>%
-#   select(Gene, microbe)%>%
-#   as.matrix() %>%
-#   graph_from_edgelist(directed = F)
-# 
-# weighted.edges <- set.edge.attribute(edges.for.weight,
-#                                      "weight",
-#                                      E(edges.for.weight),
-#                                      weighted.graph$new.weight)
+weighted.graph <- edges.raw %>%
+  filter(Gene %in% genes.keep) %>%
+  mutate(new.weight = 1/abs(estimate))
+hist(weighted.graph$new.weight)
+
+
+edges.for.weight <- weighted.graph %>%
+  select(Gene, microbe)%>%
+  as.matrix() %>%
+  graph_from_edgelist(directed = F)
+
+weighted.edges <- set.edge.attribute(edges.for.weight,
+                                     "weight",
+                                     E(edges.for.weight),
+                                     weighted.graph$new.weight)
 
 ```
 
@@ -99,6 +99,20 @@ betweencent <- readRDS("/fs/ess/PAS1695/projects/exotic/data/network_betweenness
 betweencent.df <- as.data.frame(betweencent) %>%
   rownames_to_column(var = "node")
 write.csv(betweencent.df, "../tables/network_betweenness-centrality.csv",
+          row.names = F)
+```
+
+```{r get closeness}
+closeness.measure <- closeness(weighted.edges, normalized = T)
+closeness.form <- closeness.measure %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "node")
+colnames(closeness.form)[2] <- "closeness"
+  
+closeness.form <- closeness.form %>%
+  arrange(desc(closeness))
+
+write.csv(closeness.form, "../tables/network_closeness-centrality.csv",
           row.names = F)
 ```
 
