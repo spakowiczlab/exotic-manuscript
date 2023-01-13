@@ -14,6 +14,7 @@ library(ggraph)
 library(igraph)
 library(ggtext)
 library(Hmisc)
+library(ggalluvial)
 ```
 
 # Load data
@@ -58,6 +59,17 @@ write.csv(hub.g, "../tables/network_gene_degree-centrality.csv",
           row.names = F)
 write.csv(hub.m, "../tables/S2_network_microbe_degree-centrality.csv",
           row.names = F)
+```
+
+```{r histogram degree centrality}
+degree.cent <- bind_rows(hub.g, hub.m)
+
+degree.cent %>%
+  ggplot(aes(x = n)) +
+  geom_histogram(bins = 50) +
+  labs(x  = "Number of edges per node", y = "Node count") +
+  theme_bw()
+ggsave("../figures/histogram_node-edges-count.png")
 ```
 
 ## Path centrality
@@ -209,3 +221,159 @@ fgseaEnrichPlot(fgsea.bifido, 10, "darkblue")
 ggsave("../figures/fgsea_bifido.pdf", height= 3, width = 4)
 ```
 
+# New figure 3C
+
+```{r}
+mics.for.path <- c("g__Alistipes", 
+                   "s__Bifidobacterium adolescentis", 
+                   "s__Escherichia fergusonii",
+                   "s__Salmonella bongori",
+                   "s__Fusobacterium canifelinum")
+
+paths.allmics <- lapply(mics.for.path, edgesToFGSEA)
+names(paths.allmics) <- mics.for.path
+
+unpackFSGEAgenes <- function(fgsea.res, m){
+  fres.tmp <- fgsea.res %>%
+    filter(pval < 0.1)
+  glist <- fres.tmp$leadingEdge
+  names(glist) <- fres.tmp$pathway
+  
+  sigpathgenes <- bind_rows(unlist(glist)) %>%
+    t() %>%
+    as.data.frame() %>%
+    rownames_to_column(var = "pathway") %>%
+    mutate(pathway = gsub("\\d$", "", pathway),
+           microbe = m) %>%
+    rename("gene" = "V1")
+  
+  return(sigpathgenes)
+}
+
+pathgenes.long <- lapply(mics.for.path, function(x) unpackFSGEAgenes(paths.allmics[[x]], x)) %>%
+  bind_rows()
+```
+
+## manual network version
+
+```{r, eval = F}
+pathgenes.long %>%
+  group_by(pathway, microbe) %>%
+  tally() %>%
+  ggplot(aes(y = microbe, x = n, fill = microbe)) +
+  facet_wrap(vars(pathway), ncol = 1, strip.position = "left") +
+  geom_col() +
+  labs(x = "Number of Genes", y = "") +
+  scale_fill_manual(values = c("red", "darkblue", "darkgreen", "orange", "brown"),
+                    name = "Microbe") +
+  theme_bw()+
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+ggsave("../figures/barplot_genes-in-pathways.png")
+```
+
+```{r, eval = F}
+pathgenes.ylev <- pathgenes.long %>%
+  select(pathway, gene) %>%
+  distinct() %>%
+  mutate(pathlev = -as.numeric(as.factor(pathway)) * 10) %>%
+  group_by(pathlev) %>%
+  mutate(gene.y = pathlev + row_number()) %>%
+  ungroup() %>%
+  select(pathway, gene, gene.y)
+
+pathmics.ylev <- as.data.frame(cbind(microbe = mics.for.path,
+                                     mic.y = -c(5,11,16,20,25)))
+
+pathgenes.long %>%
+  left_join(pathgenes.ylev) %>%
+  left_join(pathmics.ylev) %>%
+  mutate(mic.y = as.numeric(mic.y),
+         gene.y = gene.y.y) %>%
+  ggplot(aes(color = microbe)) +
+  geom_segment(aes(x = 1, xend = 2, y = mic.y, yend = gene.y),
+               show.legend = F) +
+  geom_point(data = pathgenes.ylev, inherit.aes = F, aes(x = 2, y = gene.y),
+             show.legend = F) +
+  geom_richtext(data = pathmics.ylev, aes(x = 1, y = as.numeric(mic.y), 
+                                      label = microbe, angle = 90),
+                show.legend = F) +
+  scale_color_manual(values = c("red", "darkblue", "darkgreen", "orange", "brown")) +
+  theme_void()
+
+ggsave("../figures/network_minimal-paths.png")
+```
+
+```{r}
+pathgenes.long %>%
+  mutate(Freq = 1,
+         pathway = gsub("_", "\n", gsub("HALLMARK_", "", pathway)),
+         microbe = gsub(" ", "\n", gsub("\\w__","", microbe))) %>%
+  ggplot(aes(axis1 = microbe, axis2 = gene, axis3 = pathway,
+             y = Freq, fill = microbe)) +
+  geom_alluvium(show.legend = F) +
+  geom_stratum(fill = "white") +
+  geom_text(stat = "stratum", aes(label = after_stat(stratum)))+
+  scale_fill_manual(values = c("red", "darkblue", "darkgreen", "orange", "brown")) +
+  theme_void() +
+  theme(text = element_text(size = 8))
+ggsave("../figures/alluvial_network-pathways.png", width = 10.5)
+```
+
+## Facetted Network version
+
+```{r}
+pathgene.edgelist <- pathgenes.long %>%
+  select(pathway, gene) %>%
+  distinct() %>%
+  as.matrix()
+
+pathgene.igraph <- igraph::graph_from_edgelist(pathgene.edgelist,
+                                               directed = F)
+
+plot.igraph(pathgene.igraph)
+
+nodecoord <- layout_nicely(pathgene.igraph)
+nodelab <- vertex_attr(pathgene.igraph)
+
+nodecoord.form <- nodecoord %>%
+  as.data.frame() %>%
+  mutate(nodename = nodelab$name)
+
+pathgene.edgelist.anno <- pathgene.edgelist %>%
+  as.data.frame() %>%
+  rename("nodename" = "pathway") %>%
+  left_join(nodecoord.form) %>%
+  rename("pathway" = "nodename",
+         "path.x" = "V1",
+         "path.y" = "V2") %>%
+  rename("nodename" = "gene") %>%
+  left_join(nodecoord.form) %>%
+  rename("gene" = "nodename",
+         "gene.x" = "V1",
+         "gene.y" = "V2")
+
+pathgene.edgelist.facet.ls <-
+  lapply(mics.for.path, function(x){
+    pathgene.edgelist.anno %>%
+      mutate(microbe = x) %>%
+      left_join(mutate(pathgenes.long, include.edge = T))
+  } 
+  ) %>%
+  bind_rows() %>%
+  mutate(colcode = ifelse(include.edge == T, microbe, NA))
+```
+
+```{r}
+ggplot() +
+  geom_point(data = nodecoord.form,
+             aes(x = V1, y = V2)) +
+  geom_segment(data = pathgene.edgelist.facet.ls, 
+               aes(x = path.x, xend = gene.x, y = path.y, yend = gene.y, color = colcode), show.legend = F) +
+  facet_wrap(vars(microbe)) +
+  scale_color_manual(values = c("red", "darkblue", "darkgreen", "orange", "brown"), na.value = "grey80") +
+  theme_void()
+
+ggsave("../figures/network_path-gene_highlight-mic.png")
+```
