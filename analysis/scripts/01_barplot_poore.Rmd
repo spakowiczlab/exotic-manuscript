@@ -1,0 +1,211 @@
+---
+title: "compare TCGA prevalences"
+author: "Rebecca Hoyd"
+date: "9/2/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(stringr)
+library(glue)
+library(ggtext)
+library(gridtext)
+```
+
+# Load data
+
+```{r}
+exotic <- read.csv("/fs/ess/PAS1695/projects/exorien/data/drake-output/2022-03-16/2022-03-16_TCGA_RA-with-taxonomy.csv")
+exotic.clin <- read.csv("/fs/ess/PAS1695/projects/exorien/data/drake-output/2022-03-16/2022-03-16_TCGA_clinical-data.csv", stringsAsFactors = F)
+
+poore <- read.csv("/fs/ess/PAS1695/projects/exorien/data/literature-data/poore/Kraken-TCGA-Voom-SNM-Likely-Contaminants-Removed-Data.csv")
+poore.meta <- read.csv("/fs/ess/PAS1695/projects/exorien/data/literature-data/poore/Metadata-TCGA-Kraken-17625-Samples.csv", stringsAsFactors = F)
+
+exotic.rarprev <- read.csv("/fs/ess/PAS1695/projects/exorien/data/drake-output/2022-03-16/combined_prevalence.csv", stringsAsFactors = F)
+```
+
+# Format
+
+```{r define common vars always run}
+highevgen <- c("Fusobacterium", "Bifidobacterium", "Propionobacterium", "Lactobacillus", "Bacteroides", "Prevotella", "Escherichia", "Malassezia", "Roseolovirus"
+# EBV
+)
+highevgen <- paste0("g__", highevgen)
+```
+
+```{r sample matching base object}
+# This function handles the construction of the base object for most of this document
+
+exoticPooreMatching <- function(){
+  
+  # 1 sample per exotic patient
+  exosamps <- exotic.clin %>%
+    add_count(case_id) %>%
+    filter(n ==1) %>%
+    select(case_id, file_id.BAM) %>%
+    rename("case_uuid" = "case_id",
+           "sample" = "file_id.BAM")
+  
+  # Check on whether we can match file ids, we can't
+  # poore.fileids <- tolower(poore.meta$gdc_file_uuid)
+  # any(poore.fileids %in% exotic$sample)
+  
+  # Check whether we can match cases, we can
+  # table(poore.meta$case_uuid %in% exotic.clin$case_id)
+  
+  poore.rnaseq <- poore.meta %>%
+    filter(experimental_strategy == "RNA-Seq" & platform =="Illumina HiSeq") %>%
+    filter(case_uuid %in% exotic.clin$case_id) %>%
+    filter(sample_type == "Primary Tumor") %>%
+    add_count(case_uuid) %>%
+    filter(n == 1)
+  # Testing that we only have one sample per case
+  # table(duplicated(poore.rnaseq$case_uuid))
+  
+  poor.casejoin <- poore.rnaseq %>%
+    select(X, case_uuid)
+  
+  # Send everything to genus level
+  exotic.gen <- exotic %>%
+    group_by(sample, genus) %>%
+    summarise(exotic.ra = sum(exo.ra)) %>%
+    inner_join(exosamps) 
+  
+  poore.g <- poore %>%
+    pivot_longer(-X, names_to = "genus", values_to = "poore.ra") %>%
+    mutate(genus = gsub(".*\\.(g__.*)", "\\1", genus)) %>%
+    inner_join(poor.casejoin) %>%
+    mutate(poore.ra = 2^poore.ra) %>%
+    group_by(case_uuid) %>%
+    mutate(total.ra = sum(poore.ra)) %>%
+    ungroup() %>%
+    mutate(poore.ra = poore.ra/total.ra) %>%
+    select(-total.ra)
+  
+  joined.data <- full_join(exotic.gen, poore.g) %>%
+    ungroup() %>%
+    drop_na(sample) %>%
+    select(case_uuid,genus, exotic.ra, poore.ra) %>%
+    mutate(exotic.ra = replace_na(exotic.ra, 0),
+           poore.ra = replace_na(poore.ra, 0))
+  
+  any(is.na(joined.data$exotic.ra))
+  any(is.na(joined.data$poore.ra))
+  
+  return(joined.data)
+}
+
+```
+
+```{r checking effects of prevalence cutoffs}
+prev_one_threshold <- function(threshold){
+  tmp <- joined.data %>%
+  mutate(prev.poore = ifelse(poore.ra < threshold, 0, 1),
+         prev.exotic = ifelse(exotic.ra < threshold, 0, 1)) %>%
+  group_by(genus) %>%
+  summarise(exotic.prev = mean(prev.exotic),
+            poore.prev = mean(prev.poore)) %>%
+  filter(genus %in%highevgen) %>%
+    mutate(threshold = threshold)
+  
+  return(tmp)
+}
+
+# These were used to determine the range of thresholds I wanted to check
+# min(joined.data$exotic.ra[joined.data$exotic.ra>0])
+# min(joined.data$poore.ra[joined.data$poore.ra>0])
+
+# max(joined.data$exotic.ra[joined.data$exotic.ra<0.95])
+# max(joined.data$poore.ra)
+
+
+prev_many_thresholds <- function(t.list = c(1e-11,1e-10,1e-9,1e-8,1e-7,1e-6,1e-5,1e-4,1e-3,1e-2)){
+  tmp <- lapply(t.list, prev_one_threshold) %>%
+    bind_rows()
+  return(tmp)
+}
+
+avgRarefiedPrevalences <-function(){
+  exotic.avgprev <-exotic.rarprev %>%
+  filter(genus %in% highevgen & sample %in% exosamps$sample) %>%
+  group_by(sample, genus) %>%
+  summarise(prev = ifelse(sum(prev) > 0, 1, 0)) %>%
+  ungroup() %>%
+  group_by(genus) %>%
+  summarize(meanprev = mean(prev))
+  
+  return(exotic.avgprev)
+}
+
+prepPrevalenceCurve <- function(){
+  joined.data <- exoticPooreMatching()
+  test.prevthresh <-prev_many_thresholds()
+  exotic.avgprev <- avgRarefiedPrevalences()
+  plot.inputs <- list(test.prevthresh, exotic.avgprev)
+  names(plot.inputs) <- c("prevthresh", "exotic.avgprev")
+  return(plot.inputs)
+}
+
+```
+
+```{r}
+assignPrevalenceValues <- function(poore.cut, exotic.cut){
+  joined.data <- exoticPooreMatching()
+  prev.compare <- joined.data %>%
+  mutate(prev.poore = ifelse(poore.ra < poore.cut, 0, 1),
+         prev.exotic = ifelse(exotic.ra < exotic.cut, 0, 1)) %>%
+  group_by(genus) %>%
+  summarise(exotic.prev = mean(prev.exotic),
+            poore.prev = mean(prev.poore)) %>%
+  filter(grepl("^g__", genus))
+  return(prev.compare)
+}
+```
+
+
+# Plot
+
+```{r prevalence curves}
+# prev.curve.data <- prepPrevalenceCurve()
+# saveRDS(prev.curve.data, "../data/R01_prevalence-curve.RDS")
+
+prev.curve.data <- readRDS("../data/R01_prevalence-curve.RDS")
+
+prev.curve.data$prevthresh %>%
+  pivot_longer(c("exotic.prev", "poore.prev"), names_to = "dataset", values_to = "prev") %>%
+  ggplot(aes(x = log(threshold, base = 10), y = prev, color = dataset)) +
+  facet_wrap(vars(genus)) +
+  geom_path() +
+  geom_hline(data = prev.curve.data$exotic.avgprev, aes(yintercept = meanprev), lty = 2) +
+  theme_bw()
+# ggsave("../figures/R01_test-thresholds-for-prev.png")
+```
+
+```{r prevalence comparisons between datasets}
+# We get the cutoff values using the prevalence threshold curves
+prev.compare <- assignPrevalenceValues(poore.cut = 1.5e-5, exotic.cut = 1e-7)
+
+prev.compare %>%
+  filter(genus %in% highevgen) %>%
+  pivot_longer(-genus, names_to = "dataset", values_to = "prev")  %>% 
+  mutate(genus = gsub("g__", "", genus),
+         genus.ital = glue("<i>{genus}</i>")) %>%
+  ggplot(aes(x = genus, y = prev, fill = dataset)) +
+  geom_col(position = "dodge") +
+  labs(x = "", y = "Prevalence") +
+  scale_fill_manual(breaks = c("exotic.prev", "poore.prev"),
+                    labels = c("{exotic}", "Poore et al. Nature (2020)"),
+                    values = c("blue", "red"),
+                    name = "Processed By") +
+  theme(axis.text.x = ggtext::element_markdown()) +
+  coord_flip()  +
+  theme_bw()
+  
+
+ggsave("../figures/barplot_exotic-poore.png")
+```
+
+

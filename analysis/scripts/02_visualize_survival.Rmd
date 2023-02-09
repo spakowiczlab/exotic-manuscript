@@ -225,3 +225,23 @@ poss.choices %>%
 
 ggsave("../figures/forest_example-microbes.pdf", height = 4, width = 4)
 ```
+
+
+# Check Phylum labels
+
+```{r}
+agree.input %>%
+  filter(taxalev == "p") %>%
+  filter(cancer %in% good.cancers) %>%
+  mutate(cancer.code = ifelse(agree.code == T, cancer, NA),
+         cancer = as.numeric(as.factor(cancer)) + 23) %>%
+  ggplot(aes(x = microbe, y = cancer, fill = cancer.code)) +
+  geom_tile() +
+  geom_text(aes(label = ifelse(agree.code == T, microbe, NA))) +
+  ylim(c(0,100)) +
+  scale_fill_manual(values = vir.cols, name = "", na.value = "grey95") +
+  theme_void() +
+  theme(axis.text.x = element_blank(),
+        axis.ticks = element_blank()) +
+  coord_polar()
+```

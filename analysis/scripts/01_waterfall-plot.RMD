@@ -20,13 +20,18 @@ raw.tcc.counts <- readRDS(file.path(drakedir, "raw.tcc.counts.RDS")) %>%
 raw.tcga.counts <- readRDS(file.path(drakedir, "raw.tcga.counts.RDS")) %>%
   select(-Homo.sapiens)
 
+# Counts, removing samples with low human percentages
+# tcc.counts.passHS <- dreadRDS(file.path(drakedir, "tcc.counts.passHS.RDS"))  %>%
+#   select(-Homo.sapiens)
+tcga.counts.passHS <- readRDS(file.path(drakedir, "tcga.counts.passHS.RDS"))  %>%
+  select(-Homo.sapiens)
 
 # Counts, removing samples that fail to resolve batches (missing info, etc.)
-tcc.batchres <- readRDS(file.path(drakedir, "tcc.batchres.RDS"))
+# tcc.batchres <- readRDS(file.path(drakedir, "tcc.batchres.RDS"))
 tcga.batchres <- readRDS(file.path(drakedir, "tcga.batchres.RDS"))
 
-tcc.batchres[[1]] <- tcc.batchres[[1]] %>%
-  select(-Homo.sapiens)
+# tcc.batchres[[1]] <- tcc.batchres[[1]] %>%
+#   select(-Homo.sapiens)
 tcga.batchres[[1]] <- tcga.batchres[[1]] %>%
   select(-Homo.sapiens)
 
@@ -86,6 +91,9 @@ Steps: start with raw counts. Remove the samples that don't have information req
 tcc.startcount = sum(colSums(raw.tcc.counts[, -1]))
 tcga.startcount = sum(colSums(raw.tcga.counts[, -1]))
 
+# How many lost to HS filter?
+tcc.humcount <- tcc.startcount
+tcga.humcount <- sum(colSums(tcga.counts.passHS[, -1]))
 #How many lost when batches fixed?
 # tcc.batchcount <- sum(colSums(tcc.batchres$counts[,-1]))
 tcc.batchcount <- tcc.startcount
@@ -120,19 +128,25 @@ tcga.fincount <- sum(colSums(tcga.counts[,-1]))
 ```
 
 ```{r get waterfall counts into ggplotable df}
-waterfall.df <- as.data.frame(cbind(step = c("start", "batch resolution",
+waterfall.df <- as.data.frame(cbind(step = c("start",
+                                             "human percent",
+                                             "batch resolution",
                                              "initial decontam",
                                              "literature altered decontam", 
                                              "Remove TCC only"),
-                                    tcc = c(tcc.startcount, tcc.batchcount,
+                                    tcc = c(tcc.startcount,
+                                            tcc.humcount,
+                                            tcc.batchcount,
                                             tcc.rem.decontam.count,
                                             tcc.rem.salter.count, tcc.fincount),
-                                    tcga = c(tcga.startcount, tcga.batchcount,
+                                    tcga = c(tcga.startcount,
+                                             tcga.humcount,
+                                             tcga.batchcount,
                                              tcga.rem.decontam.count,
                                              tcga.rem.salter.count, tcga.fincount)))
 
-ymin.tcc <- c(2.8e7, waterfall.df$tcc[1:4])
-ymin.tcga <- c(9e8, waterfall.df$tcga[1:4])
+ymin.tcc <- c(2.5e7, waterfall.df$tcc[1:5])
+ymin.tcga <- c(9e8, waterfall.df$tcga[1:5])
 
 waterfall.df <- waterfall.df %>%
   tidyr::gather(-step, key = "Data.Source", value = "count")
@@ -144,18 +158,19 @@ waterfall.df$y.min <- c(ymin.tcc, ymin.tcga)
 
 ```{r}
 tcga.waterfall.df <- waterfall.df %>%
-  mutate(id = rep(1:5, 2),
+  mutate(id = rep(1:6, 2),
          y.min = as.numeric(y.min),
          count = as.numeric(count),
          changedir = ifelse(y.min < count, "Gain", "Loss"),
          Data.Source = toupper(Data.Source)) %>%
-  filter(id != 5 & Data.Source == "TCGA")
+  filter(id != 6 & Data.Source == "TCGA")
 ```
 
 ```{r}
+# saveRDS(tcga.waterfall.df, "../data/waterfall-data.RDS")
 tcga.waterfall.df %>%
-  mutate(id = 6-id,
-         y.min = ifelse(id == 5, 0, y.min)) %>%
+  mutate(id = 7-id,
+         y.min = ifelse(id == 6, 0, y.min)) %>%
   ggplot(aes(x = id, y = count)) +
   geom_rect(aes(ymin = 0, ymax = 805457002, xmin = 1 - .45 ,
             xmax = 1 + .45)) +
@@ -164,11 +179,12 @@ tcga.waterfall.df %>%
   scale_fill_manual(breaks = c("Gain", "Loss"), values = c("darkgreen", "darkred"), 
                     name = "Effect on\nread count") +
   labs(x = "", y = "") +
-  scale_x_continuous(breaks = c(5,4,3,2,1), 
+  scale_x_continuous(breaks = c(6,5,4,3,2,1), 
                      labels = c("Initial read count",
-                                "Remove samples \nfrom small batches",
-                                "Remove contaminants \nfrom decontam",
-                                "Adjust contaminants \nwith literature review",
+                                "Maximum exogenous\nthreshold",
+                                "Batch threshold",
+                                "Statisctical filter",
+                                "Literature review",
                                 "Final read count")) +
   coord_flip() +
   theme_bw() +

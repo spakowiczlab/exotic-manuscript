@@ -1,0 +1,210 @@
+---
+title: "Effects of cancer on correlations"
+author: "Rebecca Hoyd"
+date: "2/2/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(glmm)
+library(broom)
+library(rlist)
+```
+
+# Load data
+
+```{r}
+data.dir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08"
+tcc.exo.ra <- readRDS(file.path(data.dir, "tcc.exora.taxonomy.RDS"))
+tcga.exo.ra <- readRDS(file.path(data.dir, "tcga.exora.taxonomy.RDS"))
+
+tcc.expr <- readRDS(file.path(data.dir, "tcc.expr.norm.RDS"))
+tcga.expr <- readRDS(file.path(data.dir, "tcga.expr.norm.RDS"))
+
+tcga.clin <- readRDS(file.path(data.dir, "tcga.clin.tum.RDS"))
+tcc.sites <- read.csv("/fs/ess/PAS1695/exoticpipe/external-data/members-of-TCGA-groups.csv") %>%
+  select(-n)
+tcc.linkage <- readRDS(file.path(data.dir, "tcc.meta.linkage.RDS"))
+```
+
+# Functions
+
+```{r}
+exoRAtowide <- function(data, taxlev){
+  tmp <- data
+  tmp$Taxa <- tmp[[taxlev]]
+  tmp.wide<- tmp %>%
+    dplyr::filter(!is.na(Taxa)) %>%
+    group_by(sample, Taxa) %>%
+    summarise(ra = sum(exo.ra, na.rm = T)) %>%
+    spread(key = "Taxa", value = "ra")
+  
+  tmp.wide[is.na(tmp.wide)] <- 0
+  return(tmp.wide)
+}
+
+```
+
+```{r}
+capture.models.univ <- function(modin){
+  mods.list <- lapply(genes, function(x) try({glm(as.formula(paste0("g__Alistipes", " ~ `", x, "`")), family = "Gamma", data = modin) %>%
+                        tidy() %>%
+      mutate(gene = x)})
+                      )
+                      
+  mods.list.clean <- list.clean(mods.list, function(x) is.character(x))
+  mods.df <- bind_rows(mods.list.clean) %>%
+    filter(term != "(Intercept)")
+  return(mods.df)
+}
+
+capture.models.cancer <- function(modin){
+  mods.list <- lapply(genes, function(x) try({glm(as.formula(paste0("g__Alistipes", " ~ `", x, "` + TCGA.code")), family = "Gamma", data = modin) %>%
+                        tidy() %>%
+      mutate(gene = x)})
+                      )
+                      
+  mods.list.clean <- list.clean(mods.list, function(x) is.null(x))
+  mods.df <- bind_rows(mods.list.clean)
+  return(mods.df)
+}
+```
+
+# Formatting
+
+```{r wide microbe data}
+tcc.w <- exoRAtowide(tcc.exo.ra, "genus") %>%
+  select(sample, "g__Alistipes")
+tcga.w <- exoRAtowide(tcga.exo.ra, "genus") %>%
+  select(sample, "g__Alistipes")
+```
+
+```{r combine with expression}
+names(tcc.linkage) <-make.names(names(tcc.linkage))
+tcc.cancers <- tcc.linkage %>%
+  left_join(tcc.sites) %>%
+  rename("sample" = "LibraryID") %>%
+  select(sample, TCGA.code)
+
+tcc.modin <- inner_join(tcc.expr, tcc.w) %>%
+  left_join(tcc.cancers)
+
+tcga.modin <- tcga.clin %>%
+  select(file_id.BAM, file_id.expression, cancer) %>%
+  rename("TCGA.code" = "cancer") %>%
+  mutate(sample = file_id.BAM) %>%
+  inner_join(tcga.w) %>%
+  mutate(sample = file_id.expression) %>%
+  inner_join(tcga.expr)
+
+genes <- intersect(colnames(tcc.expr[,-1]), colnames(tcga.expr[,-1]))
+
+```
+
+# Correlations
+
+```{r, eval = F}
+tcc.noreg <- capture.models.univ(tcc.modin)
+write.csv(tcc.noreg, "../data/correlation_alistipes-genes.csv", row.names = F)
+```
+
+```{r, eval = F}
+tcga.noreg <- capture.models.univ(tcga.modin)
+write.csv(tcga.noreg, "../data/correlation_alistipes-genes_TCGA.csv", row.names = F)
+```
+
+
+# Regressions
+
+```{r, eval = F}
+tcc.reg <- capture.models.cancer(tcc.modin)
+write.csv(tcc.reg, "../data/regression_alistipes-genes.csv", row.names = F)
+```
+
+```{r, eval = F}\
+tcga.reg <- capture.models.cancer(tcga.modin)
+write.csv(tcga.reg, "../data/regression_alistipes-genes_TCGA.csv", row.names = F)
+```
+
+# Comparisons
+
+```{r}
+tcc.noreg <- read.csv("../data/correlation_alistipes-genes.csv")
+tcga.noreg <- read.csv("../data/correlation_alistipes-genes_TCGA.csv")
+
+tcc.reg <- read.csv("../data/regression_alistipes-genes.csv")
+tcga.reg <- read.csv("../data/regression_alistipes-genes_TCGA.csv")
+```
+
+```{r ORIEN comparisons}
+tcc.noreg.sum <- tcc.noreg %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"),
+         corr.sig = ifelse(padj < 0.05, 1,0),
+         corr.dir = ifelse(estimate < 0, "neg", "pos")) %>%
+  select(Gene, corr.sig, corr.dir)
+
+tcc.reg.sum <- tcc.reg %>%
+  filter(term != "(Intercept)" & !grepl("TCGA", term)) %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"),
+         reg.sig = ifelse(padj < 0.05, 1,0),
+         reg.dir = ifelse(estimate < 0, "neg", "pos"),
+         Gene = gene) %>%
+  select(Gene, reg.sig, reg.dir)
+
+
+tcc.noreg.sum %>%
+  left_join(tcc.reg.sum) %>%
+  group_by(corr.sig, reg.sig) %>%
+  tally()
+
+tcc.noreg.sum %>%
+  left_join(tcc.reg.sum) %>%
+  group_by(corr.dir, reg.dir) %>%
+  tally()
+
+tcc.reg %>%
+  filter(grepl("TCGA", term)) %>%
+  mutate(term = gsub("TCGA.code", "", term)) %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"),
+         cancer.sig = ifelse(padj < 0.05, 1, 0)) %>%
+  group_by(term) %>%
+  summarise(times.significant = sum(cancer.sig))
+```
+
+```{r TCGA comparisons}
+tcga.noreg.sum <- tcga.noreg %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"),
+         corr.sig = ifelse(padj < 0.05, 1,0),
+         corr.dir = ifelse(estimate < 0, "neg", "pos")) %>%
+  select(Gene, corr.sig, corr.dir)
+
+tcga.reg.sum <- tcga.reg %>%
+  filter(term != "(Intercept)" & !grepl("TCGA", term)) %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"),
+         reg.sig = ifelse(padj < 0.05, 1,0),
+         reg.dir = ifelse(estimate < 0, "neg", "pos"),
+         Gene = gene) %>%
+  select(Gene, reg.sig, reg.dir)
+
+
+tcga.noreg.sum %>%
+  left_join(tcga.reg.sum) %>%
+  group_by(corr.sig, reg.sig) %>%
+  tally()
+
+tcga.noreg.sum %>%
+  left_join(tcga.reg.sum) %>%
+  group_by(corr.dir, reg.dir) %>%
+  tally()
+
+tcga.reg %>%
+  filter(grepl("TCGA", term)) %>%
+  mutate(term = gsub("TCGA.code", "", term)) %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"),
+         cancer.sig = ifelse(padj < 0.05, 1, 0)) %>%
+  group_by(term) %>%
+  summarise(times.significant = sum(cancer.sig))
+```

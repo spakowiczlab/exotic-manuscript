@@ -111,8 +111,10 @@ tcga.modin <- tcga.clin.form %>%
 # Run correlations
 
 ```{r, warning=FALSE}
-tcc.res <- correlate_mics_clin(microbes, clin.vars, tcc.modin, "ORIEN")
-tcga.res <- correlate_mics_clin(microbes, clin.vars, tcga.modin, "TCGA")
+tcc.res <- correlate_mics_clin(microbes, clin.vars, tcc.modin, "ORIEN") %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"))
+tcga.res <- correlate_mics_clin(microbes, clin.vars, tcga.modin, "TCGA") %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"))
 ```
 
 ```{r}
@@ -135,10 +137,12 @@ tcga.cph.cancer <- lapply(tcga.cancers, function(y)
 ```{r format split cancer results}
 tcc.cancer.form <- bind_rows(tcc.cph.cancer) %>%
   mutate(cancer = datset,
-         datset = "TCC") 
+         datset = "TCC",
+         padj = p.adjust(p.value, method = "fdr")) 
 tcga.cancer.form <- bind_rows(tcga.cph.cancer) %>%
   mutate(cancer = datset,
-         datset = "TCGA") 
+         datset = "TCGA",
+         padj = p.adjust(p.value, method = "fdr")) 
 ```
 
 
