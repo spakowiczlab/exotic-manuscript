@@ -1,4 +1,4 @@
-# exotic [![DOI](https://zenodo.org/badge/512768083.svg)](https://zenodo.org/badge/latestdoi/512768083)
+# exotic-manuscript [![DOI](https://zenodo.org/badge/512768083.svg)](https://zenodo.org/badge/latestdoi/512768083)
 
 Code related to data processing and analysis for the manuscript: 
 
