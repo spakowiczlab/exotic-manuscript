@@ -67,7 +67,8 @@ corrs.matched <- tcc.newlab %>%
 
 corrs.matched %>%
   group_by(cancer, score) %>%
-  tally()
+  tally() %>%
+  filter(score == "age")
 ```
 
 # Plot
@@ -101,3 +102,75 @@ matched.long %>%
         legend.position = "top")
 ggsave("../figures/lollipop_mic-clin.pdf", height = 6, width = 4)
 ```
+
+# Randomized
+
+```{r}
+randir <- "/fs/ess/PAS1695/projects/exotic/data/correlations_mic-age"
+ranfiles <- list.files(randir, full.names = T)
+rand.res <- lapply(ranfiles, read.csv)
+
+rand.res.df <- bind_rows(rand.res) %>%
+  mutate(datset = ifelse(datset == "TCGA", "TCGA", "ORIEN"))
+```
+
+```{r}
+rand.tcc <- rand.res.df %>%
+  filter(datset == "ORIEN") %>%
+  filter(p.value < 0.05) %>%
+  mutate(TCC.est = estimate, 
+         dir = TCC.est >= 0) %>%
+  select(TCC.est, dir, microbe, score, cancer)
+
+rand.tcga <- rand.res.df %>%
+  filter(datset == "TCGA") %>%
+  filter(p.value < 0.05) %>%
+  mutate(TCGA.est = estimate, 
+         dir = TCGA.est >= 0) %>%
+  select(TCGA.est, dir, microbe, score, cancer)
+
+rand.corrs.matched <- inner_join(rand.tcc, rand.tcga)
+  
+```
+
+```{r}
+rand.dir <- rand.corrs.matched %>%
+  mutate(dir = TCC.est > 0) %>%
+  group_by(cancer, score) %>%
+  summarise(dir.percent = mean(dir))
+
+rand.dir %>%
+  ggplot(aes(x = dir.percent)) +
+  facet_wrap(vars(cancer)) +
+  geom_histogram()
+```
+
+
+```{r}
+age.tally <- corrs.matched %>%
+  group_by(cancer, score) %>%
+  tally() %>%
+  filter(score == "age")
+
+rand.corrs.matched %>%
+  group_by(cancer, score) %>%
+  tally() %>%
+  ggplot(aes(x = n)) +
+  facet_wrap(vars(cancer), scales = "free") +
+  geom_histogram() +
+  geom_vline(data = age.tally, aes(xintercept = n), color = "red", lty = 2) +
+  theme_bw()
+ggsave("../figures/histogram_mic-age_cancers.png")
+
+rand.corrs.matched %>%
+  group_by(score) %>%
+  tally() %>%
+  ggplot(aes(x = n)) +
+  # facet_wrap(vars(cancer), scales = "free") +
+  geom_histogram() +
+  geom_vline(xintercept = sum(age.tally$n), color = "red", lty = 2) +
+  theme_bw()
+ggsave("../figures/histogram_mic-age_total.png")
+```
+
+

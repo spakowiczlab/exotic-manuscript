@@ -31,7 +31,8 @@ tcc.all.join <- tcc.all %>%
 tcga.all.join <- tcga.all %>%
   mutate(cancer = "All")
 
-surv.res <- bind_rows(tcc.all.join, tcga.all.join, tcc.split, tcga.split)
+surv.res <- bind_rows(tcc.all.join, tcga.all.join, tcc.split, tcga.split) %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"))
 
 write.csv(surv.res, "../tables/S1_survival-results.csv", row.names = F)
 ```
@@ -148,6 +149,8 @@ agree.input <- surv.res %>%
   separate(TCGA, into = c("TCGA.dir", "TCGA.sig")) %>%
   mutate(agree.code = TCC.sig == T & TCGA.sig == T & TCC.dir == TCGA.dir) %>%
   mutate(taxalev = str_sub(microbe,1,1))
+
+saveRDS(agree.input, "../data/survival_concordance-table.RDS")
 ```
 
 ```{r}
