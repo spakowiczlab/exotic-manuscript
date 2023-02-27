@@ -1,0 +1,139 @@
+---
+title: "02_mtsurv"
+author: "Rebecca Hoyd"
+date: "2/10/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(mt.surv)
+```
+
+# Load data
+
+```{r}
+data.dir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08"
+tcc.exo.ra <- readRDS(file.path(data.dir, "tcc.exora.taxonomy.RDS"))
+tcga.exo.ra <- readRDS(file.path(data.dir, "tcga.exora.taxonomy.RDS"))
+
+tcga.clin <- readRDS(file.path(data.dir, "tcga.clin.tum.RDS"))
+tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_aggregated.csv")
+
+tcc.cancer.labs <- read.csv("../data/members-of-TCGA-groups.csv")
+tcc.meta.linkage <- readRDS(file.path(data.dir, "tcc.meta.linkage.RDS"))
+
+choosetests <- readRDS("../data/survival_concordance-table.RDS")
+```
+
+# Format
+
+```{r}
+exoRAtowide <- function(data, taxlev){
+  tmp <- data
+  tmp$Taxa <- tmp[[taxlev]]
+  tmp.wide<- tmp %>%
+    dplyr::filter(!is.na(Taxa)) %>%
+    group_by(sample, Taxa) %>%
+    summarise(ra = sum(exo.ra, na.rm = T)) %>%
+    spread(key = "Taxa", value = "ra")
+  
+  tmp.wide[is.na(tmp.wide)] <- 0
+  return(tmp.wide)
+}
+
+exoToDF <- function(taxalevels = c("domain", "kingdom", "phylum", "class", 
+                                    "order", "family", "genus", "species"), 
+                     data){
+  w.ls <- lapply(taxalevels, function(x) exoRAtowide(data, x))
+  w.df <- reduce(w.ls, function(x,y) left_join(x,y)) 
+  return(w.df)
+}
+```
+
+```{r}
+tcc.w <- exoToDF(data = tcc.exo.ra)
+tcga.w <- exoToDF(data = tcga.exo.ra)
+```
+
+```{r}
+names(tcc.meta.linkage) <- make.names(names(tcc.meta.linkage))
+tcc.samp.cancers <- tcc.meta.linkage %>%
+  left_join(tcc.cancer.labs) %>%
+  mutate(sample = LibraryID) %>%
+  select(sample, TCGA.code)
+tcc.modin <- tcc.clin %>%
+  mutate(days = Overall.Survival.from.Dx..days.,
+         vitalstatus = ifelse(Vital.Status == "Deceased", 1, 0),
+         sample = RNA.SL.ID) %>%
+  select(sample,days,vitalstatus, Cancer) %>%
+  left_join(tcc.samp.cancers) %>%
+  inner_join(tcc.w) %>%
+  filter(!is.na(TCGA.code))
+
+tcga.modin <- tcga.clin %>%
+   mutate(days = days_to_death,
+          vitalstatus = ifelse(vital_status == "Dead", 1, 0),
+          sample = file_id.BAM) %>%
+  select(sample,days,vitalstatus, cancer) %>%
+  inner_join(tcga.w)
+
+sigmics <- choosetests %>%
+  filter(agree.code == T)
+
+names(tcc.modin) <- make.names(names(tcc.modin))
+names(tcga.modin) <- make.names(names(tcga.modin))
+
+save(tcc.modin, tcga.modin, sigmics,
+     file = "/fs/ess/PAS1695/projects/exotic/data/survquant-inputs.rda")
+```
+
+# survByQuant
+
+```{r}
+
+
+# tcc.survquant <- lapply(mics, function(x)
+#   survivalByQuantile(x, tcc.modin, tcc.modin) %>%
+#     mutate(microbe = x, datset = "ORIEN"))
+# 
+# tcga.survquant <- lapply(mics, function(x)
+#   survivalByQuantile(x, tcga.modin, tcga.modin) %>%
+#     mutate(microbe = x, datset = "TCGA"))
+```
+
+# mtsurv plots
+
+```{r}
+# bind_rows(tcc.survquant,tcga.survquant) %>%
+#   ggplot(aes(x = percentile, y = -log(pval), color = hazard.direction, group = 1)) +
+#   facet_wrap(vars(datset, microbe)) +
+#   geom_path() +
+#   geom_hline(yintercept = -log(0.05), lty = 2) +
+#   scale_color_manual(values = c("black", "red")) +
+#   theme_bw()
+# ggsave("../figures/mtsurv_check-survival-agree.png")
+```
+
+```{r}
+load("/fs/ess/PAS1695/projects/exotic/data/survquant-inputs.rda")
+
+for(i in 1:nrow(sigmics)){
+  mtsurv.res <- read.csv(paste0("/fs/ess/PAS1695/projects/exotic/data/survquant_agree/microbe_", i, ".csv"), stringsAsFactors = F)
+  
+  p <- mtsurv.res %>%
+    ggplot(aes(x = percentile, y = -log(pval), color = hazard.direction, group = 1)) +
+    facet_wrap(vars(datset)) +
+    geom_path() +
+    geom_hline(yintercept = -log(0.05), lty = 2) +
+    scale_color_manual(values = c("black", "red")) +
+    theme_bw()
+  
+  fname <- paste0("../figures/mtsurv_concordance/", 
+                  sigmics$microbe[i],"_", sigmics$cancer[i], ".png")
+  
+  ggsave(plot = p, filename = fname)
+}
+```

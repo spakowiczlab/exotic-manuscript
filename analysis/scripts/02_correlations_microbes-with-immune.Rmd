@@ -97,7 +97,7 @@ correlate_mics_immune <- function(mics, immune, data, datalab){
 # Formatting
 
 ```{r wide microbe data}
-tcc.w <- exoToDF(data = tcc.exo.ra)
+tcc.w <- exoToDF(data = tcc.exo.ra) 
 tcga.w <- exoToDF(data = tcga.exo.ra)
 ```
 
@@ -121,11 +121,13 @@ imcells <- colnames(ciber.tcc)[1:20]
 # Run correlations
 
 ```{r, warning=FALSE}
-tcc.res <- correlate_mics_immune(microbes, imcells, tcc.modin, "ORIEN")
-tcga.res <- correlate_mics_immune(microbes, imcells, tcga.modin, "TCGA")
+tcc.res <- correlate_mics_immune(microbes, imcells, tcc.modin, "ORIEN") %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"))
+tcga.res <- correlate_mics_immune(microbes, imcells, tcga.modin, "TCGA") %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"))
 ```
 
-```{r}
+```{r, warning=FALSE}
 tcc.cancers <- unique(tcc.modin$TCGA.code)
 tcga.cancers <- unique(tcga.modin$cancer)
 
@@ -145,10 +147,12 @@ tcga.cph.cancer <- lapply(tcga.cancers, function(y)
 ```{r format split cancer results}
 tcc.cancer.form <- bind_rows(tcc.cph.cancer) %>%
   mutate(cancer = datset,
-         datset = "TCC") 
+         datset = "TCC",
+         padj = p.adjust(p.value, method = "fdr")) 
 tcga.cancer.form <- bind_rows(tcga.cph.cancer) %>%
   mutate(cancer = datset,
-         datset = "TCGA") 
+         datset = "TCGA",
+         padj = p.adjust(p.value, method = "fdr")) 
 ```
 
 

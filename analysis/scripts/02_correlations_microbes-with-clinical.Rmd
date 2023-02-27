@@ -157,3 +157,160 @@ write.csv(tcc.cancer.form, "../data/correlations_mic-clin_TCC_split-cancer.csv",
 write.csv(tcga.cancer.form, "../data/correlations_mic-clin_TCGA_split-cancer.csv",
           row.names = F)
 ```
+
+# Randomize Age
+
+```{r}
+
+randomAge <- function(s, dat){
+  set.seed(s)
+  tmp <- sample(dat$age, replace = F)
+  return(tmp)
+}
+
+set.seed(8675309)
+seeds <- runif(100, 1000000,9999999)
+snames <- paste0("seed", 1:100)
+
+tcc.rcols <- lapply(seeds, function(x) randomAge(x,tcc.modin))
+tcga.rcols <- lapply(seeds, function(x) randomAge(x,tcga.modin))
+
+names(tcc.rcols) <- snames
+tcc.modin.r <- bind_cols(tcc.modin, tcc.rcols)
+
+names(tcga.rcols) <- snames
+tcga.modin.r <- bind_cols(tcga.modin, tcga.rcols)
+
+save(tcc.modin.r, tcga.modin.r, microbes, file = "/fs/ess/PAS1695/projects/exotic/data/corr-inputs_mic-age-random.rda")
+```
+
+```{r, eval = FALSE}
+tcc.res.r <- correlate_mics_clin(microbes, snames, tcc.modin.r, "ORIEN") %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"))
+tcga.res.r <- correlate_mics_clin(microbes, snames, tcga.modin.r, "TCGA") %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"))
+```
+
+```{r, eval = FALSE}
+tcc.cancers <- unique(tcc.modin.r$TCGA.code)
+tcga.cancers <- unique(tcga.modin.r$cancer)
+
+tcc.cph.cancer.r <- lapply(tcc.cancers, function(y)
+  correlate_mics_clin(microbes, snames,
+                      filter(tcc.modin.r,
+                             TCGA.code == y),
+                      y))
+
+tcga.cph.cancer.r <- lapply(tcga.cancers, function(y) 
+  try(correlate_mics_clin(microbes, snames,
+                      filter(tcga.modin.r,
+                             cancer == y),
+                      y)))
+```
+
+```{r format split cancer results, eval = FALSE}
+tcc.cancer.form.r <- bind_rows(tcc.cph.cancer.r) %>%
+  mutate(cancer = datset,
+         datset = "TCC",
+         padj = p.adjust(p.value, method = "fdr")) 
+tcga.cancer.form.r <- bind_rows(tcga.cph.cancer.r) %>%
+  mutate(cancer = datset,
+         datset = "TCGA",
+         padj = p.adjust(p.value, method = "fdr")) 
+```
+
+
+## Set up visualization
+
+```{r, eval = FALSE}
+tcc.res <- tcc.res.r %>%
+  mutate(cancer = "All") %>%
+  bind_rows(tcc.cancer.form.r)
+
+tcga.res <- tcga.res.r %>%
+  mutate(cancer = "All") %>%
+  bind_rows(tcga.cancer.form.r)
+
+corr.res <- bind_rows(tcc.res, tcga.res)
+
+matched.cancers <- unique(subset(corr.res, corr.res$datset == "TCGA")$cancer)
+```
+
+```{r, eval = FALSE}
+tcc.newlab <- tcc.res %>%
+  filter(p.value < 0.05) %>%
+  mutate(TCC.est = estimate, 
+         dir = TCC.est >= 0) %>%
+  select(TCC.est, dir, microbe, score, cancer)
+
+tcga.newlab <- tcga.res %>%
+  filter(p.value < 0.05) %>%
+  mutate(TCGA.est = estimate, 
+         dir = TCGA.est >= 0) %>%
+  select(TCGA.est, dir, microbe, score, cancer)
+
+corrs.matched.1 <- inner_join(tcc.newlab, tcga.newlab)
+
+# corrs.matched <- tcc.newlab %>%
+#   filter(cancer %in% c("LUAD", "LUSC", "SARC", "KIRC", "BLCA") & score == "bmi") %>%
+#   bind_rows(corrs.matched.1)
+
+corrs.matched.1 %>%
+  group_by(cancer, score) %>%
+  tally() %>%
+  arrange(score)
+
+saveRDS(corrs.matched.1, "../data/correlations_mic-clin_randomized.RDS")
+```
+
+```{r, eval = FALSE}
+matched.long <- corrs.matched.1 %>%
+  pivot_longer(cols = c(TCC.est, TCGA.est),
+               names_to = "datset", values_to = "estimate")
+
+matched.long %>%
+  ggplot(aes(y = microbe,x = estimate,
+             yend = microbe, xend = 0)) +
+  facet_grid(cancer ~ score) +
+  geom_segment() +
+  geom_point(aes(color = datset)) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Correlation estimate", y = "") +
+  scale_color_manual(breaks = c("TCC.est", "TCGA.est"),
+                     labels = c("ORIEN", "TCGA"),
+                     values = c("red", "blue"),
+                     name = "",
+                     ) +
+  theme_classic() +
+  theme(text = element_text(size = 10),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = "top")
+ggsave("../figures/lollipop_mic-clin_randomize.pdf", height = 6, width = 4)
+```
+
+# Randomize Buffa
+
+```{r}
+randomBuffa <- function(s, dat){
+  set.seed(s)
+  tmp <- sample(dat$buffa.score, replace = F)
+  return(tmp)
+}
+
+set.seed(8675309)
+seeds <- runif(100, 1000000,9999999)
+snames <- paste0("seed", 1:100)
+
+tcc.rcols <- lapply(seeds, function(x) randomBuffa(x,tcc.modin))
+tcga.rcols <- lapply(seeds, function(x) randomBuffa(x,tcga.modin))
+
+names(tcc.rcols) <- snames
+tcc.modin.r <- bind_cols(tcc.modin, tcc.rcols)
+
+names(tcga.rcols) <- snames
+tcga.modin.r <- bind_cols(tcga.modin, tcga.rcols)
+
+save(tcc.modin.r, tcga.modin.r, microbes, file = "/fs/ess/PAS1695/projects/exotic/data/corr-inputs_mic-buffa-random.rda")
+```
+

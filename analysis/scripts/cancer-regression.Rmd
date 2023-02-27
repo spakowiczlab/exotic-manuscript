@@ -16,7 +16,7 @@ library(rlist)
 
 # Load data
 
-```{r}
+```{r, eval = F}
 data.dir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08"
 tcc.exo.ra <- readRDS(file.path(data.dir, "tcc.exora.taxonomy.RDS"))
 tcga.exo.ra <- readRDS(file.path(data.dir, "tcga.exora.taxonomy.RDS"))
@@ -62,12 +62,12 @@ capture.models.univ <- function(modin){
 }
 
 capture.models.cancer <- function(modin){
-  mods.list <- lapply(genes, function(x) try({glm(as.formula(paste0("g__Alistipes", " ~ `", x, "` + TCGA.code")), family = "Gamma", data = modin) %>%
+  mods.list <- lapply(genes, function(x) try({glm(as.formula(paste0("g__Alistipes", " ~ `", x, "`*TCGA.code")), family = "Gamma", data = modin) %>%
                         tidy() %>%
       mutate(gene = x)})
                       )
                       
-  mods.list.clean <- list.clean(mods.list, function(x) is.null(x))
+  mods.list.clean <- list.clean(mods.list, function(x) is.character(x))
   mods.df <- bind_rows(mods.list.clean)
   return(mods.df)
 }
@@ -75,14 +75,14 @@ capture.models.cancer <- function(modin){
 
 # Formatting
 
-```{r wide microbe data}
+```{r wide microbe data, eval = F}
 tcc.w <- exoRAtowide(tcc.exo.ra, "genus") %>%
   select(sample, "g__Alistipes")
 tcga.w <- exoRAtowide(tcga.exo.ra, "genus") %>%
   select(sample, "g__Alistipes")
 ```
 
-```{r combine with expression}
+```{r combine with expression, eval = F}
 names(tcc.linkage) <-make.names(names(tcc.linkage))
 tcc.cancers <- tcc.linkage %>%
   left_join(tcc.sites) %>%
@@ -124,7 +124,7 @@ tcc.reg <- capture.models.cancer(tcc.modin)
 write.csv(tcc.reg, "../data/regression_alistipes-genes.csv", row.names = F)
 ```
 
-```{r, eval = F}\
+```{r, eval = F}
 tcga.reg <- capture.models.cancer(tcga.modin)
 write.csv(tcga.reg, "../data/regression_alistipes-genes_TCGA.csv", row.names = F)
 ```
@@ -144,7 +144,7 @@ tcc.noreg.sum <- tcc.noreg %>%
   mutate(padj = p.adjust(p.value, method = "fdr"),
          corr.sig = ifelse(padj < 0.05, 1,0),
          corr.dir = ifelse(estimate < 0, "neg", "pos")) %>%
-  select(Gene, corr.sig, corr.dir)
+  select(gene, corr.sig, corr.dir)
 
 tcc.reg.sum <- tcc.reg %>%
   filter(term != "(Intercept)" & !grepl("TCGA", term)) %>%
@@ -152,7 +152,7 @@ tcc.reg.sum <- tcc.reg %>%
          reg.sig = ifelse(padj < 0.05, 1,0),
          reg.dir = ifelse(estimate < 0, "neg", "pos"),
          Gene = gene) %>%
-  select(Gene, reg.sig, reg.dir)
+  select(gene, reg.sig, reg.dir)
 
 
 tcc.noreg.sum %>%
@@ -166,12 +166,20 @@ tcc.noreg.sum %>%
   tally()
 
 tcc.reg %>%
-  filter(grepl("TCGA", term)) %>%
+  filter(grepl("^TCGA", term)) %>%
   mutate(term = gsub("TCGA.code", "", term)) %>%
   mutate(padj = p.adjust(p.value, method = "fdr"),
          cancer.sig = ifelse(padj < 0.05, 1, 0)) %>%
   group_by(term) %>%
   summarise(times.significant = sum(cancer.sig))
+
+tcc.reg %>%
+  filter(grepl("TCGA", term) & !grepl("^TCGA", term)) %>%
+  mutate(term = gsub(".*TCGA.code", "", term)) %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"),
+         cancer.sig = ifelse(padj < 0.05, 1, 0)) %>%
+  group_by(term) %>%
+  summarise(times.significant = sum(cancer.sig, na.rm = T))
 ```
 
 ```{r TCGA comparisons}
@@ -179,7 +187,7 @@ tcga.noreg.sum <- tcga.noreg %>%
   mutate(padj = p.adjust(p.value, method = "fdr"),
          corr.sig = ifelse(padj < 0.05, 1,0),
          corr.dir = ifelse(estimate < 0, "neg", "pos")) %>%
-  select(Gene, corr.sig, corr.dir)
+  select(gene, corr.sig, corr.dir)
 
 tcga.reg.sum <- tcga.reg %>%
   filter(term != "(Intercept)" & !grepl("TCGA", term)) %>%
@@ -187,7 +195,7 @@ tcga.reg.sum <- tcga.reg %>%
          reg.sig = ifelse(padj < 0.05, 1,0),
          reg.dir = ifelse(estimate < 0, "neg", "pos"),
          Gene = gene) %>%
-  select(Gene, reg.sig, reg.dir)
+  select(gene, reg.sig, reg.dir)
 
 
 tcga.noreg.sum %>%
@@ -201,10 +209,18 @@ tcga.noreg.sum %>%
   tally()
 
 tcga.reg %>%
-  filter(grepl("TCGA", term)) %>%
+  filter(grepl("^TCGA", term)) %>%
   mutate(term = gsub("TCGA.code", "", term)) %>%
   mutate(padj = p.adjust(p.value, method = "fdr"),
          cancer.sig = ifelse(padj < 0.05, 1, 0)) %>%
   group_by(term) %>%
   summarise(times.significant = sum(cancer.sig))
+
+tcga.reg %>%
+  filter(grepl("TCGA", term) & !grepl("^TCGA", term)) %>%
+  mutate(term = gsub(".*TCGA.code", "", term)) %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"),
+         cancer.sig = ifelse(padj < 0.05, 1, 0)) %>%
+  group_by(term) %>%
+  summarise(times.significant = sum(cancer.sig, na.rm = T))
 ```

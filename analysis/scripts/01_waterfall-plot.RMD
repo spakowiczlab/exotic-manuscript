@@ -183,7 +183,7 @@ tcga.waterfall.df %>%
                      labels = c("Initial read count",
                                 "Maximum exogenous\nthreshold",
                                 "Batch threshold",
-                                "Statisctical filter",
+                                "Statistical filter",
                                 "Literature review",
                                 "Final read count")) +
   coord_flip() +

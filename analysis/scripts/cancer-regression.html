@@ -199,24 +199,25 @@ tcc.linkage &lt;- readRDS(file.path(data.dir, &quot;tcc.meta.linkage.RDS&quot;))
   tmp.wide[is.na(tmp.wide)] &lt;- 0
   return(tmp.wide)
 }</code></pre>
-<pre class="r"><code>correlate_mic_genes &lt;- function(mic, genes, data, datalab){
-  cor.res &lt;- lapply(genes, function(i)
-    try(cor.test(data[[mic]], data[[i]],
-                 method = &quot;spearman&quot;) %&gt;%
-          tidy() %&gt;%
-          mutate(Gene = i, microbe = mic, datset = datalab)))
-  
-  cor.df &lt;- bind_rows(cor.res)
-  return(cor.df)
-}
-
-capture.models.univ &lt;- function(modin){
-  mods.list &lt;- lapply(genes, function(x) try({glm(as.formula(paste0(&quot;g__Alistipes&quot;, &quot; ~ `&quot;, x, &quot;` + TCGA.code&quot;)), family = &quot;gaussian&quot;, data = modin) %&gt;%
+<pre class="r"><code>capture.models.univ &lt;- function(modin){
+  mods.list &lt;- lapply(genes, function(x) try({glm(as.formula(paste0(&quot;g__Alistipes&quot;, &quot; ~ `&quot;, x, &quot;`&quot;)), family = &quot;Gamma&quot;, data = modin) %&gt;%
                         tidy() %&gt;%
       mutate(gene = x)})
                       )
                       
-  mods.list.clean &lt;- list.clean(mods.list, function(x) is.null(x))
+  mods.list.clean &lt;- list.clean(mods.list, function(x) is.character(x))
+  mods.df &lt;- bind_rows(mods.list.clean) %&gt;%
+    filter(term != &quot;(Intercept)&quot;)
+  return(mods.df)
+}
+
+capture.models.cancer &lt;- function(modin){
+  mods.list &lt;- lapply(genes, function(x) try({glm(as.formula(paste0(&quot;g__Alistipes&quot;, &quot; ~ `&quot;, x, &quot;`*TCGA.code&quot;)), family = &quot;Gamma&quot;, data = modin) %&gt;%
+                        tidy() %&gt;%
+      mutate(gene = x)})
+                      )
+                      
+  mods.list.clean &lt;- list.clean(mods.list, function(x) is.character(x))
   mods.df &lt;- bind_rows(mods.list.clean)
   return(mods.df)
 }</code></pre>
@@ -248,16 +249,16 @@ genes &lt;- intersect(colnames(tcc.expr[,-1]), colnames(tcga.expr[,-1]))</code><
 </div>
 <div id="correlations" class="section level1">
 <h1>Correlations</h1>
-<pre class="r"><code>tcc.noreg &lt;- correlate_mic_genes(&quot;g__Alistipes&quot;, genes = genes, tcc.modin, &quot;ORIEN&quot;)
+<pre class="r"><code>tcc.noreg &lt;- capture.models.univ(tcc.modin)
 write.csv(tcc.noreg, &quot;../data/correlation_alistipes-genes.csv&quot;, row.names = F)</code></pre>
-<pre class="r"><code>tcga.noreg &lt;- correlate_mic_genes(&quot;g__Alistipes&quot;, genes = genes, tcga.modin, &quot;TCGA&quot;)
+<pre class="r"><code>tcga.noreg &lt;- capture.models.univ(tcga.modin)
 write.csv(tcga.noreg, &quot;../data/correlation_alistipes-genes_TCGA.csv&quot;, row.names = F)</code></pre>
 </div>
 <div id="regressions" class="section level1">
 <h1>Regressions</h1>
-<pre class="r"><code>tcc.reg &lt;- capture.models.univ(tcc.modin)
+<pre class="r"><code>tcc.reg &lt;- capture.models.cancer(tcc.modin)
 write.csv(tcc.reg, &quot;../data/regression_alistipes-genes.csv&quot;, row.names = F)</code></pre>
-<pre class="r"><code>tcga.reg &lt;- capture.models.univ(tcga.modin)
+<pre class="r"><code>tcga.reg &lt;- capture.models.cancer(tcga.modin)
 write.csv(tcga.reg, &quot;../data/regression_alistipes-genes_TCGA.csv&quot;, row.names = F)</code></pre>
 </div>
 <div id="comparisons" class="section level1">
@@ -271,7 +272,7 @@ tcga.reg &lt;- read.csv(&quot;../data/regression_alistipes-genes_TCGA.csv&quot;)
   mutate(padj = p.adjust(p.value, method = &quot;fdr&quot;),
          corr.sig = ifelse(padj &lt; 0.05, 1,0),
          corr.dir = ifelse(estimate &lt; 0, &quot;neg&quot;, &quot;pos&quot;)) %&gt;%
-  select(Gene, corr.sig, corr.dir)
+  select(gene, corr.sig, corr.dir)
 
 tcc.reg.sum &lt;- tcc.reg %&gt;%
   filter(term != &quot;(Intercept)&quot; &amp; !grepl(&quot;TCGA&quot;, term)) %&gt;%
@@ -279,43 +280,41 @@ tcc.reg.sum &lt;- tcc.reg %&gt;%
          reg.sig = ifelse(padj &lt; 0.05, 1,0),
          reg.dir = ifelse(estimate &lt; 0, &quot;neg&quot;, &quot;pos&quot;),
          Gene = gene) %&gt;%
-  select(Gene, reg.sig, reg.dir)
+  select(gene, reg.sig, reg.dir)
 
 
 tcc.noreg.sum %&gt;%
   left_join(tcc.reg.sum) %&gt;%
   group_by(corr.sig, reg.sig) %&gt;%
   tally()</code></pre>
-<pre><code>## Joining, by = &quot;Gene&quot;</code></pre>
-<pre><code>## # A tibble: 7 × 3
+<pre><code>## Joining, by = &quot;gene&quot;</code></pre>
+<pre><code>## # A tibble: 5 × 3
 ## # Groups:   corr.sig [3]
 ##   corr.sig reg.sig     n
 ##      &lt;dbl&gt;   &lt;dbl&gt; &lt;int&gt;
-## 1        0       0 10469
-## 2        0       1     7
-## 3        0      NA     8
-## 4        1       0 11935
-## 5        1       1     7
-## 6        1      NA     6
-## 7       NA      NA 41418</code></pre>
+## 1        0       0  7062
+## 2        0      NA  1830
+## 3        1       0   370
+## 4        1      NA    95
+## 5       NA      NA 41432</code></pre>
 <pre class="r"><code>tcc.noreg.sum %&gt;%
   left_join(tcc.reg.sum) %&gt;%
   group_by(corr.dir, reg.dir) %&gt;%
   tally()</code></pre>
-<pre><code>## Joining, by = &quot;Gene&quot;</code></pre>
+<pre><code>## Joining, by = &quot;gene&quot;</code></pre>
 <pre><code>## # A tibble: 7 × 3
 ## # Groups:   corr.dir [3]
 ##   corr.dir reg.dir     n
 ##   &lt;chr&gt;    &lt;chr&gt;   &lt;int&gt;
-## 1 neg      neg      6879
-## 2 neg      pos      5297
-## 3 neg      &lt;NA&gt;        8
-## 4 pos      neg      4132
-## 5 pos      pos      6110
-## 6 pos      &lt;NA&gt;        6
-## 7 &lt;NA&gt;     &lt;NA&gt;    41418</code></pre>
+## 1 neg      neg       887
+## 2 neg      pos      1144
+## 3 neg      &lt;NA&gt;      797
+## 4 pos      neg      2234
+## 5 pos      pos      3167
+## 6 pos      &lt;NA&gt;     1128
+## 7 &lt;NA&gt;     &lt;NA&gt;    41432</code></pre>
 <pre class="r"><code>tcc.reg %&gt;%
-  filter(grepl(&quot;TCGA&quot;, term)) %&gt;%
+  filter(grepl(&quot;^TCGA&quot;, term)) %&gt;%
   mutate(term = gsub(&quot;TCGA.code&quot;, &quot;&quot;, term)) %&gt;%
   mutate(padj = p.adjust(p.value, method = &quot;fdr&quot;),
          cancer.sig = ifelse(padj &lt; 0.05, 1, 0)) %&gt;%
@@ -324,7 +323,30 @@ tcc.noreg.sum %&gt;%
 <pre><code>## # A tibble: 13 × 2
 ##    term      times.significant
 ##    &lt;chr&gt;                 &lt;dbl&gt;
-##  1 COAD                  63248
+##  1 COAD                  43267
+##  2 KIRC                      0
+##  3 LUAD                      0
+##  4 LUSC                      0
+##  5 NSCLC                     0
+##  6 OtherCR                   0
+##  7 OtherGI               44233
+##  8 OtherLung                 0
+##  9 READ                      4
+## 10 SARC                      0
+## 11 SCLC                      0
+## 12 SKCM                      0
+## 13 UCEC                      0</code></pre>
+<pre class="r"><code>tcc.reg %&gt;%
+  filter(grepl(&quot;TCGA&quot;, term) &amp; !grepl(&quot;^TCGA&quot;, term)) %&gt;%
+  mutate(term = gsub(&quot;.*TCGA.code&quot;, &quot;&quot;, term)) %&gt;%
+  mutate(padj = p.adjust(p.value, method = &quot;fdr&quot;),
+         cancer.sig = ifelse(padj &lt; 0.05, 1, 0)) %&gt;%
+  group_by(term) %&gt;%
+  summarise(times.significant = sum(cancer.sig, na.rm = T))</code></pre>
+<pre><code>## # A tibble: 13 × 2
+##    term      times.significant
+##    &lt;chr&gt;                 &lt;dbl&gt;
+##  1 COAD                      0
 ##  2 KIRC                      0
 ##  3 LUAD                      0
 ##  4 LUSC                      0
@@ -341,7 +363,7 @@ tcc.noreg.sum %&gt;%
   mutate(padj = p.adjust(p.value, method = &quot;fdr&quot;),
          corr.sig = ifelse(padj &lt; 0.05, 1,0),
          corr.dir = ifelse(estimate &lt; 0, &quot;neg&quot;, &quot;pos&quot;)) %&gt;%
-  select(Gene, corr.sig, corr.dir)
+  select(gene, corr.sig, corr.dir)
 
 tcga.reg.sum &lt;- tcga.reg %&gt;%
   filter(term != &quot;(Intercept)&quot; &amp; !grepl(&quot;TCGA&quot;, term)) %&gt;%
@@ -349,43 +371,43 @@ tcga.reg.sum &lt;- tcga.reg %&gt;%
          reg.sig = ifelse(padj &lt; 0.05, 1,0),
          reg.dir = ifelse(estimate &lt; 0, &quot;neg&quot;, &quot;pos&quot;),
          Gene = gene) %&gt;%
-  select(Gene, reg.sig, reg.dir)
+  select(gene, reg.sig, reg.dir)
 
 
 tcga.noreg.sum %&gt;%
   left_join(tcga.reg.sum) %&gt;%
   group_by(corr.sig, reg.sig) %&gt;%
   tally()</code></pre>
-<pre><code>## Joining, by = &quot;Gene&quot;</code></pre>
+<pre><code>## Joining, by = &quot;gene&quot;</code></pre>
 <pre><code>## # A tibble: 7 × 3
 ## # Groups:   corr.sig [3]
 ##   corr.sig reg.sig     n
 ##      &lt;dbl&gt;   &lt;dbl&gt; &lt;int&gt;
-## 1        0       0  9725
-## 2        0       1  2759
-## 3        0      NA  1661
-## 4        1       0  9567
-## 5        1       1  3171
-## 6        1      NA  1571
-## 7       NA      NA 35396</code></pre>
+## 1        0       0  3751
+## 2        0       1     1
+## 3        0      NA  2582
+## 4        1       0  1024
+## 5        1       1     1
+## 6        1      NA  1794
+## 7       NA      NA 38628</code></pre>
 <pre class="r"><code>tcga.noreg.sum %&gt;%
   left_join(tcga.reg.sum) %&gt;%
   group_by(corr.dir, reg.dir) %&gt;%
   tally()</code></pre>
-<pre><code>## Joining, by = &quot;Gene&quot;</code></pre>
+<pre><code>## Joining, by = &quot;gene&quot;</code></pre>
 <pre><code>## # A tibble: 7 × 3
 ## # Groups:   corr.dir [3]
 ##   corr.dir reg.dir     n
 ##   &lt;chr&gt;    &lt;chr&gt;   &lt;int&gt;
-## 1 neg      neg      7347
-## 2 neg      pos      6886
-## 3 neg      &lt;NA&gt;     1627
-## 4 pos      neg      6636
-## 5 pos      pos      4353
-## 6 pos      &lt;NA&gt;     1605
-## 7 &lt;NA&gt;     &lt;NA&gt;    35396</code></pre>
+## 1 neg      neg       218
+## 2 neg      pos       901
+## 3 neg      &lt;NA&gt;     1016
+## 4 pos      neg       881
+## 5 pos      pos      2777
+## 6 pos      &lt;NA&gt;     3360
+## 7 &lt;NA&gt;     &lt;NA&gt;    38628</code></pre>
 <pre class="r"><code>tcga.reg %&gt;%
-  filter(grepl(&quot;TCGA&quot;, term)) %&gt;%
+  filter(grepl(&quot;^TCGA&quot;, term)) %&gt;%
   mutate(term = gsub(&quot;TCGA.code&quot;, &quot;&quot;, term)) %&gt;%
   mutate(padj = p.adjust(p.value, method = &quot;fdr&quot;),
          cancer.sig = ifelse(padj &lt; 0.05, 1, 0)) %&gt;%
@@ -394,13 +416,30 @@ tcga.noreg.sum %&gt;%
 <pre><code>## # A tibble: 7 × 2
 ##   term  times.significant
 ##   &lt;chr&gt;             &lt;dbl&gt;
-## 1 COAD              63844
-## 2 KIRC                112
-## 3 LUAD                 17
-## 4 LUSC                  4
-## 5 READ                243
-## 6 SARC                 15
-## 7 SKCM                  6</code></pre>
+## 1 COAD              40044
+## 2 KIRC                  2
+## 3 LUAD                  0
+## 4 LUSC                  1
+## 5 READ              39820
+## 6 SARC                  1
+## 7 SKCM                  0</code></pre>
+<pre class="r"><code>tcga.reg %&gt;%
+  filter(grepl(&quot;TCGA&quot;, term) &amp; !grepl(&quot;^TCGA&quot;, term)) %&gt;%
+  mutate(term = gsub(&quot;.*TCGA.code&quot;, &quot;&quot;, term)) %&gt;%
+  mutate(padj = p.adjust(p.value, method = &quot;fdr&quot;),
+         cancer.sig = ifelse(padj &lt; 0.05, 1, 0)) %&gt;%
+  group_by(term) %&gt;%
+  summarise(times.significant = sum(cancer.sig, na.rm = T))</code></pre>
+<pre><code>## # A tibble: 7 × 2
+##   term  times.significant
+##   &lt;chr&gt;             &lt;dbl&gt;
+## 1 COAD                 29
+## 2 KIRC                  1
+## 3 LUAD                  0
+## 4 LUSC                  0
+## 5 READ                  0
+## 6 SARC                  0
+## 7 SKCM                  0</code></pre>
 </div>
 
 

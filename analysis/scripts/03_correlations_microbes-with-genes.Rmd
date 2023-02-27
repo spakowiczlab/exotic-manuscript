@@ -22,6 +22,10 @@ tcc.expr <- readRDS(file.path(data.dir, "tcc.expr.norm.RDS"))
 tcga.expr <- readRDS(file.path(data.dir, "tcga.expr.norm.RDS"))
 
 tcga.clin <- readRDS(file.path(data.dir, "tcga.clin.tum.RDS"))
+
+tcc.sites <- read.csv("/fs/ess/PAS1695/exoticpipe/external-data/members-of-TCGA-groups.csv") %>%
+  select(-n)
+tcc.linkage <- readRDS(file.path(data.dir, "tcc.meta.linkage.RDS"))
 ```
 
 # Functions
@@ -73,10 +77,18 @@ tcga.w <- exoToDF(data = tcga.exo.ra)
 ```
 
 ```{r combine with expression}
-tcc.modin <- inner_join(tcc.expr, tcc.w)
+names(tcc.linkage) <-make.names(names(tcc.linkage))
+tcc.cancers <- tcc.linkage %>%
+  left_join(tcc.sites) %>%
+  rename("sample" = "LibraryID") %>%
+  select(sample, TCGA.code)
+
+tcc.modin <- inner_join(tcc.expr, tcc.w) %>%
+  left_join(tcc.cancers)
 
 tcga.modin <- tcga.clin %>%
-  select(file_id.BAM, file_id.expression) %>%
+  select(file_id.BAM, file_id.expression, cancer) %>%
+  rename("TCGA.code" = "cancer") %>%
   mutate(sample = file_id.BAM) %>%
   inner_join(tcga.w) %>%
   mutate(sample = file_id.expression) %>%
