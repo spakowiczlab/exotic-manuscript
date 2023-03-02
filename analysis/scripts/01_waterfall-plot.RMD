@@ -168,6 +168,7 @@ tcga.waterfall.df <- waterfall.df %>%
 
 ```{r}
 # saveRDS(tcga.waterfall.df, "../data/waterfall-data.RDS")
+tcga.waterfall.df <- readRDS("../data/waterfall-data.RDS")
 tcga.waterfall.df %>%
   mutate(id = 7-id,
          y.min = ifelse(id == 6, 0, y.min)) %>%
@@ -188,7 +189,7 @@ tcga.waterfall.df %>%
                                 "Final read count")) +
   coord_flip() +
   theme_bw() +
-  theme(text = element_text(size = 10))
-ggsave("../figures/waterfall_TCGA-combine-types.pdf", height = 3.5, width = 5)
+  theme(text = element_text(size = 7))
+ggsave("../figures/waterfall_TCGA-combine-types.pdf", height = 2.5, width = 3.5)
 ```
 
