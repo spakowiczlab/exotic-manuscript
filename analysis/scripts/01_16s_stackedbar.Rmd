@@ -1,0 +1,161 @@
+---
+title: "16s stacked bar"
+author: "Caroline Wheeler"
+date: "3/2/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+read in data
+```{r}
+samp_match <- read.csv("../data/16s_sample_matching.csv")
+krakenmet = read.delim("/fs/ess/PAS1695/exoticpipe/external-data/kraken2-metaphlan-noplants.txt",
+                         header = F, stringsAsFactors = F) %>%
+    rename("Taxonomy" = "V1")
+exogieo <- read.csv("../data/16s_counts_long.csv") %>%
+  rename("microbe" = name,
+         "counts" = new_est_reads)
+exotic <- readRDS("/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/tcc.counts.RDS")
+```
+
+crop 16s sample labels
+```{r}
+samp_match <- samp_match %>%
+  mutate(crop16s = substr(samp16s, 9, length(samp16s)))
+```
+
+exotic <- wide to long
+```{r}
+exotic <- gather(exotic, key="microbe", value="counts", 2:ncol(exotic))
+```
+
+```{r}
+taxkey <- krakenmet %>%
+  dplyr::filter(grepl("s__", Taxonomy)) %>%
+  mutate(microbe = gsub(".*s__(.*)", "\\1", Taxonomy),
+          microbe = make.names(microbe))
+```
+
+combine with taxkey
+```{r}
+exogieo.all <- merge(exogieo, taxkey)
+exotic.all <- merge(exotic, taxkey)
+```
+
+function separate taxa into levels 
+```{r}
+get_levels <- function(exora){
+  exora <- exora %>%
+   dplyr::select(sample, microbe, Taxonomy, counts) %>%
+    mutate(domain = gsub("(d__\\w+).*", "\\1", Taxonomy),
+           kingdom = ifelse(grepl("k__", Taxonomy),gsub(".*(k__\\w+).*", "\\1", Taxonomy), NA),
+           phylum = ifelse(grepl("p__", Taxonomy),gsub(".*(p__\\w+).*", "\\1", Taxonomy), NA),
+           order = ifelse(grepl("o__", Taxonomy),gsub(".*(o__\\w+).*", "\\1", Taxonomy), NA),
+           class = ifelse(grepl("c__", Taxonomy),gsub(".*(c__\\w+).*", "\\1", Taxonomy), NA),
+           family = ifelse(grepl("f__", Taxonomy),gsub(".*(f__\\w+).*", "\\1", Taxonomy), NA),
+           genus = ifelse(grepl("g__", Taxonomy),gsub(".*(g__\\w+).*", "\\1", Taxonomy), NA),
+           species = gsub(".*(s__.*)", "\\1", Taxonomy)
+    ) %>%
+    mutate(genus = ifelse(is.na(genus), paste0("g__unclassified-", species), genus),
+           family = ifelse(is.na(family), paste0("f__unclassified-", gsub("g__unclassified-", "", genus)), family),
+           order = ifelse(is.na(order), paste0("o__unclassified-", gsub("f__unclassified-", "", family)), order),
+           class = ifelse(is.na(class), paste0("c__unclassified-", gsub("o__unclassified-", "", order)), class),
+           phylum = ifelse(is.na(phylum), paste0("p__unclassified-", gsub("c__unclassified-", "", class)),phylum),
+           kingdom = ifelse(is.na(kingdom), paste0("k__unclassified-", gsub("p__unclassified-", "", phylum)), kingdom),
+           domain = ifelse(is.na(domain), paste0("d__unclassified-", gsub("k__unclassified-", "", kingdom)), domain)) %>%
+    dplyr::select(sample, microbe, Taxonomy, domain, kingdom, phylum, class, order, family, genus, species, counts)
+  return(exora)
+}
+```
+
+```{r}
+exotic.all <- get_levels(exotic.all)
+exogieo.all <- get_levels(exogieo.all)
+```
+
+function to calculate relative abundance - at given level
+```{r}
+get_ra <- function(exora, level){
+  exora <- exora %>%
+  filter(microbe != "Homo.sapiens") %>%
+  select(sample, !! sym(level), counts) %>%
+  group_by(sample, !! sym(level)) %>%
+  summarize(count = sum(counts)) %>%
+  ungroup() %>%
+  group_by(sample) %>%
+  mutate(rel.abun = count / sum(count)) %>%
+  ungroup()
+  
+  return(exora)
+}
+```
+
+calculate phylum relabun
+```{r}
+exogieo.ra.phyl <- get_ra(exogieo.all, "phylum")
+exotic.ra.phyl <- get_ra(exotic.all, "phylum")
+```
+```{r}
+exotic.ra.phyl <- exotic.ra.phyl %>%
+  filter(rel.abun != 0)
+```
+
+combine exotic and exogieo
+```{r}
+exotic.ra.phyl$sample_type <- "RNAseq"
+exogieo.ra.phyl$sample_type <- "16s"
+comb <- rbind(exotic.ra.phyl, exogieo.ra.phyl)
+```
+
+```{r}
+large.phyl <- comb %>%
+  group_by(phylum) %>%
+  summarize(median.ra = median(rel.abun)) %>%
+  arrange(desc(median.ra)) %>%
+  mutate(x = row_number()) %>%
+  dplyr::filter(x <= 8)
+```
+
+```{r}
+get_samp_ord <- function(exoking, desking){
+  tmp <- exoking %>%
+    dplyr::filter(phylum == desking) %>%
+    arrange(desc(rel.abun))
+  return(tmp$sample)
+}
+
+sampord <- get_samp_ord(comb, "p__Firmicutes")
+```
+
+```{r}
+comb <- comb %>%
+  mutate(phylum = ifelse(phylum %in% large.phyl$phylum, phylum, "Other"),
+         phylum = gsub("^p__", "", phylum),
+         phylum = gsub("unclassified-\\w__", "", phylum))
+comb$phylum <- factor(comb$phylum, levels = c("Actinobacteria", "Apicomplexa", "Ascomycota", "Cryptophyceae", "Firmicutes", "Proteobacteria", "Uroviricota", "Verrucomicrobia", "Other"))
+```
+
+```{r}
+comb %>%
+  ggplot(aes(x = fct_relevel(sample, sampord),
+             y = rel.abun,
+             fill = phylum)) +
+  geom_bar(position="fill", stat = "identity") +
+    labs(x = "", y = "") +
+  scale_fill_manual(values = c("darkorange4", "darkseagreen", "red3","darkslateblue", "salmon2", "cornflowerblue", "cyan4","deeppink4", "darkgoldenrod2"), name = "Taxa") +
+  theme_minimal(base_size = 7) +
+  theme(axis.text.x = element_blank(), 
+          axis.ticks.x = element_blank(),
+          axis.text.y = element_blank(),
+          panel.grid.major = element_blank()) +
+    # facet_row(vars(sample_type), scales = "free_x", space = "free") 
+  facet_grid(. ~ sample_type, scales = "free_x", space = "free")
+
+ggsave(file = "../figures/16sValidation_stackedBar.png", dev = "png", width = 4, height = 3)
+```
+
