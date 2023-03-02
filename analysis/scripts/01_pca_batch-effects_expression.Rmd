@@ -71,11 +71,12 @@ new.pcs.res %>%
   facet_wrap(vars(datset), scales = "free") +
   geom_point(alpha = .4) +
   stat_ellipse(geom = "polygon", alpha = .2) +
+  labs(x= "", y = "") +
   scale_fill_viridis_d(aesthetics = c("color", "fill"),
                        name = "Sequencing\ncenter") +
   theme_bw() +
-  theme(text = element_text(size = 10))
-ggsave("../figures/pca_compare-seqcen_expr_new.pdf", height = 3, width = 4.5)
+  theme(text = element_text(size = 6))
+ggsave("../figures/pca_compare-seqcen_expr_new.pdf", height = 1.35, width = 3.5)
 
 new.pcs.res %>%
   mutate(datset = ifelse(datset == "counts", "Counts", "Normalized")) %>%
@@ -83,11 +84,12 @@ new.pcs.res %>%
   facet_wrap(vars(datset), scales = "free") +
   geom_point(alpha = .4) +
   stat_ellipse(geom = "polygon", alpha = .2) +
+  labs(x= "", y = "") +
   scale_fill_viridis_d(aesthetics = c("color", "fill"),
                        name = "FFPE", option = "C") +
   theme_bw() +
-  theme(text = element_text(size = 10))
-ggsave("../figures/pca_compare-FFPE_expr_new.pdf", height = 3, width = 4.5)
+  theme(text = element_text(size = 6))
+ggsave("../figures/pca_compare-FFPE_expr_new.pdf", height = 1.35, width = 3.5)
 ```
 
 

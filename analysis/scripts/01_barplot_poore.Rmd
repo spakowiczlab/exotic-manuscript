@@ -194,6 +194,27 @@ prev.compare %>%
   mutate(genus = gsub("g__", "", genus),
          genus.ital = glue("<i>{genus}</i>")) %>%
   ggplot(aes(x = genus, y = prev, fill = dataset)) +
+  geom_col(position = "dodge", show.legend = F) +
+  labs(x = "", y = "Prevalence") +
+  scale_fill_manual(breaks = c("exotic.prev", "poore.prev"),
+                    labels = c("{exotic}", "Poore et al. Nature (2020)"),
+                    values = c("blue", "red"),
+                    name = "Processed By") +
+  theme(axis.text.x = ggtext::element_markdown()) +
+  coord_flip()  +
+  theme_bw() +
+  theme(text = element_text(size = 7))
+  
+
+ggsave("../figures/barplot_exotic-poore.pdf", height = 2.5, width = 2)
+
+
+prev.compare %>%
+  filter(genus %in% highevgen) %>%
+  pivot_longer(-genus, names_to = "dataset", values_to = "prev")  %>% 
+  mutate(genus = gsub("g__", "", genus),
+         genus.ital = glue("<i>{genus}</i>")) %>%
+  ggplot(aes(x = genus, y = prev, fill = dataset)) +
   geom_col(position = "dodge") +
   labs(x = "", y = "Prevalence") +
   scale_fill_manual(breaks = c("exotic.prev", "poore.prev"),
@@ -202,10 +223,11 @@ prev.compare %>%
                     name = "Processed By") +
   theme(axis.text.x = ggtext::element_markdown()) +
   coord_flip()  +
-  theme_bw()
+  theme_bw() +
+  theme(text = element_text(size = 7))
   
 
-ggsave("../figures/barplot_exotic-poore.png")
+ggsave("../figures/barplot_exotic-poore.pdf", height = 2.5, width = 2.5)
 ```
 
 

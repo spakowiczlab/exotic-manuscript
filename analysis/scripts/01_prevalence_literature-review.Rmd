@@ -120,7 +120,9 @@ fuso_only_dat <- prev.res.tcc %>%
 combined.dat %>%
   filter(Taxon == "g__Fusobacterium") %>%
   filter(prev.type == "Prevalence")  %>%
-  mutate(Reference = gsub("et al.", "et al.\n", Reference)) %>%
+  mutate(Reference = gsub("et al.", "et al.\n", Reference),
+         Reference = gsub("Clinical Colorectal Cancer", "ClinColCan", Reference),
+         Reference = gsub("Genome Research", "GenRes", Reference)) %>%
   bind_rows(fuso_only_dat) %>%
   add_row(Reference = "ORIEN (CRC)", prevalence = tcc.crc.prev) %>%
   add_row(Reference = "TCGA (CRC)", prevalence = tcga.crc.prev) %>%
@@ -128,8 +130,8 @@ combined.dat %>%
   geom_col(width = .8) +
   labs(x = "", y = "") +
   theme_classic() +
-  theme(text = element_text(size = 10))
-ggsave("../figures/barplot_prevalence_lit-compare.pdf", height = 3.5, width = 4)
+  theme(text = element_text(size = 7))
+ggsave("../figures/barplot_prevalence_lit-compare.pdf", height = 2.5, width = 2.1)
 ```
 
 # Check other percentages

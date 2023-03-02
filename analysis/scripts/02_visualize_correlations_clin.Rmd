@@ -51,7 +51,7 @@ tcc.newlab <- tcc.res %>%
   filter(p.value < 0.05) %>%
   mutate(TCC.est = estimate, 
          dir = TCC.est >= 0) %>%
-  select(TCC.est, dir, microbe, score, cancer)
+  select(TCC.est, dir, microbe, score, cancer, padj)
 
 tcga.newlab <- tcga.res %>%
   filter(p.value < 0.05) %>%
@@ -59,10 +59,13 @@ tcga.newlab <- tcga.res %>%
          dir = TCGA.est >= 0) %>%
   select(TCGA.est, dir, microbe, score, cancer)
 
-corrs.matched.1 <- inner_join(tcc.newlab, tcga.newlab)
+corrs.matched.1 <- inner_join(tcc.newlab, tcga.newlab) %>%
+  select(-padj)
 
 corrs.matched <- tcc.newlab %>%
-  filter(cancer %in% c("LUAD", "LUSC", "SARC", "KIRC", "BLCA") & score == "bmi") %>%
+  filter(cancer %in% c("LUAD", "LUSC", "SARC", "KIRC", "BLCA") &
+           score == "bmi" &
+           padj < 0.05) %>%
   bind_rows(corrs.matched.1)
 
 corrs.matched %>%
@@ -71,39 +74,10 @@ corrs.matched %>%
   filter(score == "age")
 ```
 
-# Plot
-
-```{r}
-matched.long <- corrs.matched %>%
-  pivot_longer(cols = c(TCC.est, TCGA.est),
-               names_to = "datset", values_to = "estimate") %>%
-  filter(score != "MitoScore") %>%
-  mutate(score = case_when(score == "bmi" ~ "BMI",
-                           score == "age" ~ "Age",
-                           score == "buffa.score" ~ "Buffa"))
-
-matched.long %>%
-  ggplot(aes(y = microbe,x = estimate,
-             yend = microbe, xend = 0)) +
-  facet_grid(cancer ~ score) +
-  geom_segment() +
-  geom_point(aes(color = datset)) +
-  geom_vline(xintercept = 0, lty = 2) +
-  labs(x = "Correlation estimate", y = "") +
-  scale_color_manual(breaks = c("TCC.est", "TCGA.est"),
-                     labels = c("ORIEN", "TCGA"),
-                     values = c("red", "blue"),
-                     name = "",
-                     ) +
-  theme_classic() +
-  theme(text = element_text(size = 10),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        legend.position = "top")
-ggsave("../figures/lollipop_mic-clin.pdf", height = 6, width = 4)
-```
 
 # Randomized
+
+## Age
 
 ```{r}
 randir <- "/fs/ess/PAS1695/projects/exotic/data/correlations_mic-age"
@@ -153,24 +127,134 @@ age.tally <- corrs.matched %>%
   filter(score == "age")
 
 rand.corrs.matched %>%
-  group_by(cancer, score) %>%
+  mutate(dir = ifelse(dir == F, "Negative", "Positive")) %>%
+  group_by(cancer, score, dir) %>%
   tally() %>%
-  ggplot(aes(x = n)) +
-  facet_wrap(vars(cancer), scales = "free") +
+  ggplot(aes(x = n, fill = dir)) +
+  facet_grid(cancer ~ dir, scales = "free") +
   geom_histogram() +
   geom_vline(data = age.tally, aes(xintercept = n), color = "red", lty = 2) +
+  scale_fill_viridis_d(option = "E", name = "Correlation direction") +
   theme_bw()
 ggsave("../figures/histogram_mic-age_cancers.png")
 
 rand.corrs.matched %>%
-  group_by(score) %>%
+  mutate(dir = ifelse(dir == F, "Negative", "Positive")) %>%
+  group_by(score, dir) %>%
   tally() %>%
-  ggplot(aes(x = n)) +
-  # facet_wrap(vars(cancer), scales = "free") +
+  ggplot(aes(x = n, fill = dir)) +
+  facet_wrap(vars(dir), scales = "free") +
   geom_histogram() +
   geom_vline(xintercept = sum(age.tally$n), color = "red", lty = 2) +
+  scale_fill_viridis_d(option = "E", name = "Correlation direction") +
   theme_bw()
 ggsave("../figures/histogram_mic-age_total.png")
 ```
 
+## Buffa
+
+```{r}
+randir <- "/fs/ess/PAS1695/projects/exotic/data/correlations_mic-buffa/"
+ranfiles <- list.files(randir, full.names = T)
+rand.res <- lapply(ranfiles, read.csv)
+
+rand.res.df <- bind_rows(rand.res) %>%
+  mutate(datset = ifelse(datset == "TCGA", "TCGA", "ORIEN"))
+```
+
+```{r}
+rand.tcc <- rand.res.df %>%
+  filter(datset == "ORIEN") %>%
+  filter(p.value < 0.05) %>%
+  mutate(TCC.est = estimate, 
+         dir = TCC.est >= 0) %>%
+  select(TCC.est, dir, microbe, score, cancer)
+
+rand.tcga <- rand.res.df %>%
+  filter(datset == "TCGA") %>%
+  filter(p.value < 0.05) %>%
+  mutate(TCGA.est = estimate, 
+         dir = TCGA.est >= 0) %>%
+  select(TCGA.est, dir, microbe, score, cancer)
+
+rand.corrs.matched <- inner_join(rand.tcc, rand.tcga)
+  
+```
+
+```{r}
+rand.dir <- rand.corrs.matched %>%
+  mutate(dir = TCC.est > 0) %>%
+  group_by(cancer, score) %>%
+  summarise(dir.percent = mean(dir))
+
+rand.dir %>%
+  ggplot(aes(x = dir.percent)) +
+  facet_wrap(vars(cancer)) +
+  geom_histogram()
+```
+
+
+```{r}
+age.tally <- corrs.matched %>%
+  group_by(cancer, score) %>%
+  tally() %>%
+  filter(score == "buffa.score")
+
+rand.corrs.matched %>%
+  mutate(dir = ifelse(dir == F, "Negative", "Positive")) %>%
+  group_by(cancer, score, dir) %>%
+  tally() %>%
+  ggplot(aes(x = n, fill = dir)) +
+  facet_grid(cancer ~ dir, scales = "free") +
+  geom_histogram() +
+  geom_vline(data = age.tally, aes(xintercept = n), color = "red", lty = 2) +
+  scale_fill_viridis_d(option = "E", name = "Correlation direction") +
+  theme_bw()
+ggsave("../figures/histogram_mic-buffa_cancers.png")
+
+rand.corrs.matched %>%
+  mutate(dir = ifelse(dir == F, "Negative", "Positive")) %>%
+  group_by(score, dir) %>%
+  tally() %>%
+  ggplot(aes(x = n, fill = dir)) +
+  facet_wrap(vars(dir), scales = "free") +
+  geom_histogram() +
+  geom_vline(xintercept = sum(age.tally$n), color = "red", lty = 2) +
+  scale_fill_viridis_d(option = "E", name = "Correlation direction") +
+  theme_bw()
+ggsave("../figures/histogram_mic-buffa_total.png")
+```
+
+# Plot
+
+```{r}
+matched.long <- corrs.matched %>%
+  pivot_longer(cols = c(TCC.est, TCGA.est),
+               names_to = "datset", values_to = "estimate") %>%
+  filter(score != "MitoScore") %>%
+  mutate(score = case_when(score == "bmi" ~ "BMI",
+                           score == "age" ~ "Age",
+                           score == "buffa.score" ~ "Buffa")) %>%
+  filter(score == "BMI" | (score == "Age" & cancer %in% c("BLCA", "SKCM")) | (score == "Buffa" & cancer %in% c("All", "LUAD")))
+
+matched.long %>%
+  ggplot(aes(y = microbe,x = estimate,
+             yend = microbe, xend = 0)) +
+  facet_grid(cancer ~ score) +
+  geom_segment() +
+  geom_point(aes(color = datset)) +
+  geom_vline(xintercept = 0, lty = 2) +
+  labs(x = "Correlation estimate", y = "") +
+  scale_color_manual(breaks = c("TCC.est", "TCGA.est"),
+                     labels = c("ORIEN", "TCGA"),
+                     values = c("red", "blue"),
+                     name = "",
+                     ) +
+  theme_classic() +
+  theme(text = element_text(size = 10),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = "top")
+ggsave("../figures/lollipop_mic-clin.pdf")
+```
 
