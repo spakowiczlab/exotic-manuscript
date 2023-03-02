@@ -1,0 +1,152 @@
+---
+title: "table 1 revision"
+author: "Caroline Wheeler"
+date: "2/23/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl)
+library(tidyverse)
+library(tableone)
+library(flextable)
+# library(table1)
+library(magrittr)
+library(fastDummies)
+```
+
+# Pull in all data
+```{r}
+# pull in TCC data
+tcc.linkage <- read_excel("/fs/ess/PAS1695/exoticpipe/external-data/Additional Data_Spakowicz_SLids.xlsx")
+tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_aggregated.csv", 
+                     stringsAsFactors = F)
+
+# tcc to tcga codes and link
+tcc.cancer.labs <- read.csv("/users/PAS1695/whee57/Github/exotic-exploratory/exploratory/data/members-of-TCGA-groups.csv")
+tcc.meta.linkage <- readRDS("/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/tcc.meta.linkage.RDS")
+
+# pull in TCGA data
+tcga.clin <- readRDS("/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/tcga.clin.tum.RDS")
+tcga.meta <- readRDS("/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/tcga.meta.RDS") %>%
+  select(file_id.expression, ffpe.status)
+```
+
+# Format to set we have
+```{r}
+tcc.clin <- tcc.clin %>%
+  rename("tcc_id" = "RNA.SL.ID") %>%
+  left_join(tcc.linkage) 
+```
+
+# Join tcc with TCGA cancer codes
+```{r}
+names(tcc.meta.linkage) <- make.names(names(tcc.meta.linkage))
+
+tcc.samp.cancers <- tcc.meta.linkage %>%
+  left_join(tcc.cancer.labs) %>%
+  mutate(sample = LibraryID) %>%
+  select(sample, TCGA.code) %>%
+  rename("tcc_id" = sample) %>%
+  filter(tcc_id %in% tcc.clin$tcc_id)
+
+tcc.clin <- tcc.clin %>%
+  left_join(tcc.samp.cancers)
+```
+
+join FFPE to TCGA
+```{r}
+tcga.clin <- tcga.clin %>%
+  left_join(tcga.meta)
+```
+
+
+TCGA rename and select cols of interest
+```{r}
+tcga <- tcga.clin %>%
+  mutate(`Age at Collection` = age_at_index,
+         Gender = ifelse(gender == "female", "Female", ifelse(gender == "male", "Male", gender)),
+         `BMI at Collection` = bmi,
+         Preservation = ifelse(ffpe.status == TRUE, "Ambient", "Frozen"), # where is this info??
+         Cancer = cancer,
+         `Tumor Stage` = tumor_stage,
+         `Tumor Grade` = tumor_grade,
+         `Overall Survival (Days)` = days_to_death,
+         `Tissue Source` = ifelse(grepl("iv", tumor_stage), 'Metastatic', 'Primary'),
+         Resource = "TCGA"
+         ) %>%
+  select(`Age at Collection`, Gender, `BMI at Collection`, Preservation, Cancer, `Tumor Stage`, `Tumor Grade`, `Overall Survival (Days)`, `Tissue Source`, Resource)
+```
+
+```{r}
+tcc <- tcc.clin %>%
+  mutate(`Age at Collection` = Age.at.Collection,
+         `BMI at Collection` = BMI.at.Collection,
+         Preservation = `Tumor Tissue Sequenced Specimen Category`,
+         `Tumor Stage` = Cancer.Stage.at.Collection,
+         `Tumor Grade` = NA, ## Do we have this? 
+         `Overall Survival (Days)` = Overall.Survival.from.Dx..days. ,
+         `Tissue Source` = `Tumor Tissue Sequenced Tissue Type`,
+         Resource = "ORIEN",
+         Cancer = ifelse(TCGA.code %in% tcga$Cancer, TCGA.code, "Other")) %>%
+  select(`Age at Collection`, Gender, `BMI at Collection`, Preservation, Cancer, `Tumor Stage`, `Tumor Grade`, `Overall Survival (Days)`, `Tissue Source`, Resource)
+```
+
+<!-- # Adjust Stage TCC -->
+<!-- ```{r} -->
+<!-- table(tcc$`Tumor Stage`) -->
+<!-- ``` -->
+
+<!-- # Adjust Stage TCGA -->
+<!-- ```{r} -->
+<!-- table(tcga$`Tumor Stage`) -->
+<!-- tcga <- tcga %>%  -->
+<!--   mutate(Stage = case_when(Stage == "0a" ~ 'Stage 0',  -->
+<!--                            Stage == "I" | Stage == "IA" | Stage == "IB" ~ "Stage 1",  -->
+<!--                            Stage == "II" | Stage == "IIA" | Stage == "IIB" | Stage == "IIC" ~ "Stage 2",  -->
+<!--                            Stage == "III" | Stage == "IIIB" | Stage == "IIIC" ~ "Stage 3",  -->
+<!--                            Stage == "IV" | Stage == "IVA" | Stage == "IVC" ~ "Stage 4",  -->
+<!--                           Stage == "Unknown/Not Reported" | Stage == "No TNM applicable for this site/histology combination" | Stage == "Unknown/Not Applicable" ~ "NA",)) -->
+<!-- ``` -->
+
+# Combine
+```{r}
+exotic <- rbind(tcc, tcga)
+```
+
+# Make 'Cancer' dummy vars
+```{r}
+exotic <- dummy_cols(exotic, select_columns = 'Cancer')
+names(exotic)[11:19] <- substring(names(exotic[,c(11:19)]), 8, 20)
+```
+
+# Make table one 
+```{r}
+allvars <- c("BLCA", "COAD", "KIRC", "LUAD", "LUSC", "READ", "SARC", "SKCM", "Other", "Age at Collection", "Gender", "BMI at Collection", "Preservation", "Overall Survival (Days)", "Tissue Source")
+
+catvars <- c("BLCA", "COAD", "KIRC", "LUAD", "LUSC", "READ", "SARC", "SKCM", "Other", "Gender", "Preservation", "Tissue Source")
+
+tab1 <- CreateTableOne(allvars, strata = c("Resource"), data = exotic, factorVars = catvars)
+tab1
+```
+
+```{r}
+tab1 <- print(tab1, printToggle = F)
+
+tab1.flex <- tab1 %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Variables") %>%
+  select(-test) %>%
+  flextable()
+
+tab1.flex
+```
+
+
+```{r}
+write.table (tab1 , "../tables/table1_revised.csv", col.names = T, row.names = F, append = T, sep=',')
+```
+
+
