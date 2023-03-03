@@ -197,20 +197,21 @@ dist.res <- dist.res %>%
 plot 
 ```{r}
 dist.res %>%
-  mutate(paired.char = if_else(is.na(specimen.type), 
+  mutate(paired.char = if_else(is.na(specimen.type),
                           true = "Control",
                           false = specimen.type)) %>%
+  filter(paired != "CONTROL") %>% # remove control for exotic fig
   mutate(paired.char = as.character(paired.char)) %>%
   ggplot(aes(x=paired, y=value)) +
   geom_boxplot(aes(fill = paired.char)) +
   theme_bw(base_size = 7) +
-  scale_fill_manual(values = c("salmon2", "cornflowerblue", "darkgoldenrod2")) + 
+  scale_fill_manual(values = c("salmon2", "cornflowerblue")) + 
   #scale_fill_viridis_d() +
   labs(x = "Paired Samples",
        y = "Bray-Curtis Distance from 16S to RNAseq",
        fill = "Tissue Source") +
   theme(legend.position = "top")
-ggsave("../figures/16s_distance_boxplot.png", height=2.5, width=3)
+ggsave("../figures/16s_distance_boxplot.png", height=2.5, width=2.5)
 ```
 
 ```{r}
