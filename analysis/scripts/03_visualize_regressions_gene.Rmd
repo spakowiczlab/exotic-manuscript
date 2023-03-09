@@ -1,0 +1,334 @@
+---
+title: "Microbe and gene correlations"
+author: "Rebecca Hoyd"
+date: "4/4/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tidygraph)
+library(ggraph)
+library(igraph)
+library(ggtext)
+library(Hmisc)
+library(ggalluvial)
+library(rlist)
+```
+
+# Load data
+
+```{r}
+edges.raw <- readRDS("/fs/ess/PAS1695/projects/exotic/data/network_TCC-reg-in.RDS")
+exprs.norm <- readRDS("/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/tcc.expr.norm.RDS")
+```
+
+# Filter low variance genes
+
+```{r}
+exprs.var <- unlist(lapply(exprs.norm[,-1], var))
+table(exprs.var > 1)
+genes.keep <- names(subset(exprs.var, exprs.var > 1))
+```
+
+# Some quick queries for network characteristics
+
+## Degree centrality
+
+```{r calculate hubbiness}
+hub.m <- edges.raw %>%
+  filter(gene %in% genes.keep) %>%
+  group_by(microbe) %>%
+  tally() %>%
+  arrange(desc(n)) %>%
+  mutate(rank = row_number())
+
+hub.g <- edges.raw %>%
+  filter(gene %in% genes.keep) %>%
+  group_by(gene) %>%
+  tally() %>%
+  arrange(desc(n)) %>%
+  mutate(rank = row_number())
+
+head(hub.m)
+```
+
+```{r}
+write.csv(hub.g, "../tables/network_gene_degree-centrality.csv",
+          row.names = F)
+write.csv(hub.m, "../tables/S2_network_microbe_degree-centrality.csv",
+          row.names = F)
+```
+
+```{r histogram degree centrality}
+degree.cent <- bind_rows(hub.g, hub.m)
+write.csv(degree.cent, "../tables/S5_degree-centrality_regression.csv", row.names = F)
+
+degree.cent %>%
+  ggplot(aes(x = n)) +
+  geom_histogram(bins = 50) +
+  labs(x  = "Number of edges per node", y = "Node count") +
+  theme_bw() +
+  theme(text = element_text(size = 8))
+ggsave("../figures/histogram_node-edges-count_reg.pdf", height = 2.5, width = 2.5)
+```
+
+## Path centrality
+
+This block of code makes objects that are then used in the scripts network_find-shortest-path.R to calculate betweenness centality before coming back to this document.
+```{r format the igraph}
+weighted.graph <- edges.raw %>%
+  filter(gene %in% genes.keep) %>%
+  mutate(new.weight = 1/abs(estimate))
+hist(weighted.graph$new.weight)
+
+
+edges.for.weight <- weighted.graph %>%
+  select(gene, microbe)%>%
+  as.matrix() %>%
+  graph_from_edgelist(directed = F)
+
+weighted.edges <- set.edge.attribute(edges.for.weight,
+                                     "weight",
+                                     E(edges.for.weight),
+                                     weighted.graph$new.weight)
+
+saveRDS(weighted.edges,
+        "/fs/ess/PAS1695/projects/exotic/data/network_igraph-data_regression.RDS")
+
+```
+
+```{r format betweenness results}
+betweencent <- readRDS("/fs/ess/PAS1695/projects/exotic/data/network_betweenness-centrality_regression.RDS")
+betweencent.df <- as.data.frame(betweencent) %>%
+  rownames_to_column(var = "node")
+write.csv(betweencent.df, "../tables/network_betweenness-centrality_regression.csv",
+          row.names = F)
+```
+
+```{r get closeness}
+closeness.measure <- closeness(weighted.edges, normalized = T)
+closeness.form <- closeness.measure %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "node")
+colnames(closeness.form)[2] <- "closeness"
+  
+closeness.form <- closeness.form %>%
+  arrange(desc(closeness))
+
+write.csv(closeness.form, "../tables/network_closeness-centrality_regression.csv",
+          row.names = F)
+```
+
+# Pathway analysis
+
+## Prepare database
+
+```{r}
+library(msigdbr)
+library(fgsea)
+```
+
+```{r prepare hallmark database}
+msig.human <- msigdbr(species = "Homo sapiens") %>%
+  dplyr::select(gs_cat, entrez_gene, gs_name, gene_symbol, gs_description) %>%
+  dplyr::rename("pathname" = gs_name, "genes" = gene_symbol, "desc" = gs_description,
+                "category" = gs_cat, "NCBI Entrez ID" = entrez_gene) 
+
+msig.hlmrk <- msig.human %>%
+    filter(category=="H") %>%
+    unique()
+
+hlmrk.paths <- msig.hlmrk %>%
+     dplyr::select(genes, pathname) %>%
+     split(x = .$genes, f = .$pathname)
+
+```
+
+```{r some quick functions}
+edgesToFGSEA <- function(m){
+  edges.microbe <- edges.raw %>%
+    filter(microbe == m) %>%
+    filter(gene %in% genes.keep) %>%
+    arrange(p.value)
+  
+  fgsea.ranks <- edges.microbe$estimate
+  names(fgsea.ranks) <- edges.microbe$gene
+  
+  fgsea.res <- fgsea(hlmrk.paths, fgsea.ranks)
+  return(fgsea.res)
+}
+
+fgseaEnrichPlot <- function(fres, nranks, colname){
+  fres %>%
+    arrange(pval) %>%
+    mutate(rank = row_number(),
+           pathway = gsub("HALLMARK_", "", pathway),
+           pathway = gsub("_", " ", pathway),
+           pathway = capitalize(tolower(pathway)),
+           pathway = gsub("Dna", "DNA", pathway),
+           pathway = gsub("E2f", "E2F", pathway)) %>%
+    filter(rank <= nranks) %>%
+    mutate(pathway = fct_reorder(pathway, NES)) %>%
+    ggplot(aes(x = NES, y = pathway)) +
+    geom_col(fill = colname) +
+    labs(x = "Normalized Enrichment", y = "") +
+    theme_bw()
+}
+```
+
+# New figure 3C
+
+```{r}
+mics.for.path <- c("s__Pseudomonas sp. SDM007",
+                   "s__Alistipes finegoldii", 
+                   "s__Bifidobacterium bifidum", 
+                   "s__Escherichia coli",
+                   "s__Fusobacterium ulcerans")
+
+paths.allmics <- lapply(mics.for.path, edgesToFGSEA)
+names(paths.allmics) <- mics.for.path
+
+unpackFSGEAgenes <- function(fgsea.res, m){
+  fres.tmp <- fgsea.res %>%
+    filter(pval < 0.1)
+  glist <- fres.tmp$leadingEdge
+  names(glist) <- fres.tmp$pathway
+  
+  sigpathgenes <- bind_rows(unlist(glist)) %>%
+    t() %>%
+    as.data.frame() %>%
+    rownames_to_column(var = "pathway") %>%
+    mutate(pathway = gsub("\\d$", "", pathway),
+           microbe = m) %>%
+    rename("gene" = "V1")
+  
+  return(sigpathgenes)
+}
+
+pathgenes.long <- lapply(mics.for.path, function(x) try(unpackFSGEAgenes(paths.allmics[[x]], x))) %>%
+  list.clean(., is.character) %>%
+  bind_rows()
+```
+
+## manual network version
+
+
+```{r, eval = F}
+pathgenes.long %>%
+  filter(grepl("V2", pathway) | !grepl("\\d$", pathway)) %>%
+  mutate(Freq = 1,
+         pathway = gsub("_", "\n", gsub("HALLMARK_", "", pathway)),
+         microbe = gsub(" ", "\n", gsub("\\w__","", microbe))) %>%
+  ggplot(aes(axis1 = microbe, axis2 = gene, axis3 = pathway,
+             y = Freq, fill = microbe)) +
+  geom_alluvium(show.legend = F) +
+  geom_stratum(fill = "white") +
+  geom_text(stat = "stratum", aes(label = after_stat(stratum)))+
+  scale_fill_manual(values = c("red", "darkblue", "darkgreen", "orange", "brown")) +
+  theme_void() +
+  theme(text = element_text(size = 8))
+ggsave("../figures/alluvial_network-pathways_regression.png", width = 10.5)
+```
+
+## Facetted Network version
+
+```{r}
+pathgene.edgelist <- pathgenes.long %>%
+  select(pathway, gene) %>%
+  distinct() %>%
+  as.matrix()
+
+pathgene.igraph <- igraph::graph_from_edgelist(pathgene.edgelist,
+                                               directed = F)
+
+# plot.igraph(pathgene.igraph)
+
+nodecoord <- layout_nicely(pathgene.igraph)
+nodelab <- vertex_attr(pathgene.igraph)
+
+nodecoord.form <- nodecoord %>%
+  as.data.frame() %>%
+  mutate(nodename = nodelab$name)
+
+pathgene.edgelist.anno <- pathgene.edgelist %>%
+  as.data.frame() %>%
+  rename("nodename" = "pathway") %>%
+  left_join(nodecoord.form) %>%
+  rename("pathway" = "nodename",
+         "path.x" = "V1",
+         "path.y" = "V2") %>%
+  rename("nodename" = "gene") %>%
+  left_join(nodecoord.form) %>%
+  rename("gene" = "nodename",
+         "gene.x" = "V1",
+         "gene.y" = "V2")
+
+pathgene.edgelist.facet.ls <-
+  lapply(mics.for.path, function(x){
+    pathgene.edgelist.anno %>%
+      mutate(microbe = x) %>%
+      left_join(mutate(pathgenes.long, include.edge = T))
+  } 
+  ) %>%
+  bind_rows() %>%
+  mutate(microbe = gsub("s__", "", microbe),
+         colcode = ifelse(include.edge == T, microbe, NA),
+         alphcode = ifelse(include.edge == T, "y", "n"))
+```
+
+```{r}
+ggplot() +
+  geom_point(data = nodecoord.form,
+             aes(x = V1, y = V2)) +
+  geom_segment(data = pathgene.edgelist.facet.ls, 
+               aes(x = path.x, xend = gene.x,
+                   y = path.y, yend = gene.y,
+                   color = colcode),
+               alpha = .5,
+               show.legend = F) +
+  facet_wrap(vars(microbe)) +
+  scale_color_manual(values = c("red", "darkblue", "darkgreen", "orange", "brown"),
+                     na.value = "grey80") +
+  theme_void() +
+  theme(text = element_text(size = 8))
+
+ggsave("../figures/network_path-gene_highlight-mic_regression.pdf", height = 3.3, width = 6.3)
+```
+
+## LDA style vis
+
+```{r}
+paths.effectsize <- lapply(
+  names(paths.allmics),
+  function(x) paths.allmics[[x]] %>%
+    mutate(microbe = x)) %>%
+  bind_rows() 
+
+concat.genes <- lapply(paths.effectsize$leadingEdge, function(x) paste(x, collapse = ","))
+paths.effectsize$leadingEdge <- unlist(concat.genes)
+write.csv(paths.effectsize, "../tables/S8_pathway-enrichment.csv", row.names = F)
+
+LDA.input <- paths.effectsize %>%
+  filter(pval < 0.05) %>%
+  group_by(microbe) %>%
+  arrange(desc(NES)) %>%
+  mutate(rank = row_number()) %>%
+  filter(rank <= 5)
+
+LDA.input %>%
+  filter(microbe %in% c("s__Pseudomonas sp. SDM007", "s__Alistipes finegoldii", "s__Bifidobacterium bifidum")) %>%
+  mutate(microbe = gsub("s__", "", microbe),
+         pathway = gsub("_", "\n", gsub("HALLMARK_", "", pathway))) %>%
+  ggplot(aes(x = pathway, y = NES, fill = microbe)) +
+  facet_wrap(vars(microbe), scales = "free_x", nrow = 1) +
+  geom_col(show.legend = F) +
+  labs(x = "", y = "Normalized effect size") +
+  scale_fill_manual(values = c("red", "darkblue", "brown")) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
+        text = element_text(size = 8))
+ggsave("../figures/barplot_LDA-regression-paths.pdf", height = 2.7, width = 6.3)
+```

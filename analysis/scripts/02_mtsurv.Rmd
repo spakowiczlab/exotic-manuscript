@@ -137,3 +137,22 @@ for(i in 1:nrow(sigmics)){
   ggsave(plot = p, filename = fname)
 }
 ```
+
+# Try for all
+
+```{r}
+load("/fs/ess/PAS1695/projects/exotic/data/survquant-inputs.rda")
+
+microbes <- colnames(tcga.modin)
+microbes <- subset(microbes, !(microbes %in% c("sample", "days", "vitalstatus", "cancer")))
+```
+
+```{r}
+tcc.res.all <- lapply(microbes, function(x) try(survivalByQuantile(x, tcc.modin, tcc.modin)))
+names(tcc.res.all) <- microbes
+tcc.area.all <- lapply(microbes, function(x) calculateArea(x, tcc.res.all, 0.05))
+
+tcga.res.all <- lapply(microbes, function(x) try(survivalByQuantile(x, tcga.modin, tcc.modin)))
+names(tcga.res.all) <- microbes
+tcc.area.all <- lapply(microbes, function(x) calculateArea(x, tcc.res.all, 0.05))
+```

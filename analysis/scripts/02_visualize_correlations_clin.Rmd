@@ -251,10 +251,11 @@ matched.long %>%
                      name = "",
                      ) +
   theme_classic() +
-  theme(text = element_text(size = 10),
+  theme(text = element_text(size = 7),
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank(),
+        axis.text.x = element_text(angle = 90, hjust = 1),
         legend.position = "top")
-ggsave("../figures/lollipop_mic-clin.pdf")
+ggsave("../figures/lollipop_mic-clin.pdf", width = 2.5, height = 5)
 ```
 
