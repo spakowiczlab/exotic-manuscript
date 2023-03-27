@@ -1,0 +1,132 @@
+---
+title: "Additional reviewer comments"
+author: "Rebecca Hoyd"
+date: "3/27/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+# Load data
+
+```{r}
+data.dir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08"
+orien.prev <- readRDS(file.path(data.dir, "tcc_prevalence-taxonomy.RDS"))
+tcga.prev <- readRDS(file.path(data.dir, "tcga_prevalence-taxonomy.RDS"))
+
+tcga.meta <- readRDS(file.path(data.dir, "tcga.meta.RDS"))
+orien.meta <- readRDS(file.path(data.dir, "tcc.meta.linkage.RDS"))
+
+site.resolutions <- read.csv("/fs/ess/PAS1695/exoticpipe/external-data/members-of-TCGA-groups.csv",
+                               stringsAsFactors = F, check.names = F) %>%
+    dplyr::select(-n)
+```
+
+# Formatting
+
+```{r}
+met <- orien.meta %>%
+  left_join(site.resolutions) %>%
+  mutate(ffpe = ifelse(`Tissue Preservation Method` == "Frozen", "FF", "FFPE")) %>%
+  rename("sample" = "LibraryID") %>%
+  select(sample, TCGA.code, ffpe)
+
+prev.with.groups <- orien.prev %>%
+  left_join(met) %>%
+  group_by(TCGA.code, ffpe, domain, kingdom, phylum, order, class, family, genus, species) %>%
+  summarise(prev = ifelse(sum(prev) > 0, 1,0))
+
+prev.nocan <- orien.prev %>%
+  left_join(met) %>%
+  group_by(ffpe, domain, kingdom, phylum, order, class, family, genus, species) %>%
+  summarise(prev = ifelse(sum(prev) > 0, 1,0))
+
+
+```
+
+```{r}
+tcga.can <- tcga.meta %>%
+  select(sample,TCGA.code) %>%
+  inner_join(tcga.prev) %>%
+  group_by(TCGA.code, domain, kingdom, phylum, order, class, family, genus, species) %>%
+  summarise(prev = ifelse(sum(prev) > 0, 1,0)) %>%
+  mutate(datset = "TCGA")
+
+orien.can <- orien.prev %>%
+  left_join(met) %>%
+  group_by(TCGA.code, domain, kingdom, phylum, order, class, family, genus, species) %>%
+  summarise(prev = ifelse(sum(prev) > 0, 1,0)) %>%
+  mutate(datset = "ORIEN")
+
+datset.compare <- bind_rows(tcga.can, orien.can)
+```
+
+
+
+# Prevalence all levels
+
+```{r}
+test <- lapply(c("domain", "kingdom", "phylum", "class", 
+                                    "order", "family", "genus", "species"),
+               function(x) length(unique(orien.prev[[x]])))
+
+names(test) <- c("domain", "kingdom", "phylum", "class", 
+                                    "order", "family", "genus", "species")
+test
+``` 
+
+# Prevalence all levels, FFPE split
+
+```{r}
+checkPrevDetectFFPE <- function(taxlev){
+  tmp <- prev.nocan %>%
+    ungroup() %>%
+    select(ffpe, !! taxlev, prev) %>%
+    filter(prev == 1) %>%
+    distinct() %>%
+    group_by(ffpe) %>%
+    summarise(n = sum(prev)) %>%
+    pivot_wider(names_from = ffpe, values_from = n) %>%
+    unlist()
+  return(tmp)
+}
+
+ffpe.detection <- lapply(c("domain", "kingdom", "phylum", "class", 
+                                    "order", "family", "genus", "species"),
+               function(x) checkPrevDetectFFPE(x))
+names(ffpe.detection) <- c("domain", "kingdom", "phylum", "class", 
+                                    "order", "family", "genus", "species")
+ffpe.detection
+```
+
+# Prevalence, split by cancer and ffpe
+
+```{r ffpe sample sizes}
+met %>% filter(sample %in% orien.prev$sample) %>% group_by(TCGA.code, ffpe) %>% tally()
+```
+
+```{r}
+checkPrevDetectCancer <- function(taxlev){
+  tmp <- datset.compare %>%
+    ungroup() %>%
+    select(datset, TCGA.code, !! taxlev, prev) %>%
+    filter(prev == 1) %>%
+    distinct() %>%
+    group_by(datset, TCGA.code) %>%
+    summarise(n = sum(prev, na.rm = T)) %>%
+    drop_na(TCGA.code) %>%
+    pivot_wider(names_from = datset, values_from = n) 
+  return(tmp)
+}
+
+cancer.detection <- lapply(c("domain", "kingdom", "phylum", "class", 
+                                    "order", "family", "genus", "species"),
+               function(x) checkPrevDetectCancer(x))
+names(cancer.detection) <- c("domain", "kingdom", "phylum", "class", 
+                                    "order", "family", "genus", "species")
+cancer.detection
+```
