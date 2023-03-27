@@ -211,12 +211,12 @@ poss.choices %>%
   mutate(microbe = gsub("s__(.*)", paste0("<i>", "\\1", "</i>"), microbe),
          microbe = gsub(" ", "<br>", microbe),
          microbe = gsub("sp.<br>", "sp.", microbe)) %>%
-  ggplot(aes(x = microbe, y = hazard.ratio, fill = datset, group = datset,
-             ymin = confint.low, ymax = confint.high)) +
+  ggplot(aes(x = microbe, y = log(hazard.ratio), fill = datset, group = datset,
+             ymin = log(confint.low), ymax = log(confint.high))) +
   geom_col(position = "dodge") +
   geom_point(shape = "diamond", show.legend = F) +
   geom_errorbar(position = "dodge") +
-  labs(x = "", y = "Hazard Ratio") +
+  labs(x = "", y = "log(Hazard Ratio)") +
   scale_fill_manual(breaks = c("TCC", "TCGA"),
                     values = c("red", "blue"),
                     labels = c("ORIEN", "TCGA"),
@@ -247,4 +247,9 @@ agree.input %>%
   theme(axis.text.x = element_blank(),
         axis.ticks = element_blank()) +
   coord_polar()
+```
+
+```{r}
+surv.res %>%
+  filter(microbe == "p__Spirochaetes" & cancer == "LUAD")
 ```

@@ -38,7 +38,7 @@ res.df %>%
   theme(axis.text.y = element_blank(),
         axis.ticks.y = element_blank()) +
   theme(text = element_text(size = 10))
-ggsave("~/Documents/repos/exoticpaper/analysisfigures/histogram_regression_mic-gene_TCC-dir-matched.pdf", 
+ggsave("~/Documents/repos/exoticpaper/analysis/figures/histogram_regression_mic-gene_TCC-dir-matched.pdf", 
        height = 3, width = 6)
 
 
