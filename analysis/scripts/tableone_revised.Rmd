@@ -102,7 +102,7 @@ exotic.tmp <- rbind(tcc, tcga)
 ### check tumor grade and stage
 ```{r}
 
-exotic <- exotic %>%
+exotic <- exotic.tmp %>%
   mutate("Tumor Stage" = case_when(`Tumor Stage` == "0a" ~ 'Stage 0',
                              `Tumor Stage` %in%  c("1", "1A", "1B", "i/ii", "stage i", "stage ia" , "stage ib") ~ 'Stage 1',
                              `Tumor Stage` %in% c("2" , "2A" , "2B" , "2C" , "stage ii" , "stage iia", "stage iib", "stage iic")  ~ "Stage 2",
@@ -111,10 +111,9 @@ exotic <- exotic %>%
                              `Tumor Stage` %in% c("nos not reported" , "undeterm." , "99" , "88") ~ "NA"))
 ```
 
-
 # Make 'Cancer' dummy vars
 ```{r}
-exotic <- dummy_cols(exotic.tmp, select_columns = 'Cancer')
+exotic <- dummy_cols(exotic, select_columns = 'Cancer')
 names(exotic)[11:19] <- substring(names(exotic[,c(11:19)]), 8, 20)
 ```
 
@@ -144,6 +143,7 @@ tab1.flex
 ```{r}
 write.table (tab1 , "../tables/table1_revised.csv", col.names = T, row.names = F, append = T, sep=',')
 ```
+
 
 # Supplement split by ffpe
 
