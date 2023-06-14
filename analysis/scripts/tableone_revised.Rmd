@@ -25,7 +25,7 @@ tcc.clin <- read.csv("/fs/ess/PAS1695/projects/exotic/data/2020-02-19_clinical_a
                      stringsAsFactors = F)
 
 # tcc to tcga codes and link
-tcc.cancer.labs <- read.csv("/users/PAS1695/whee57/Github/exotic-exploratory/exploratory/data/members-of-TCGA-groups.csv")
+tcc.cancer.labs <- read.csv("/fs/ess/PAS1695/exoticpipe/external-data/members-of-TCGA-groups.csv")
 tcc.meta.linkage <- readRDS("/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08/tcc.meta.linkage.RDS")
 
 # pull in TCGA data
@@ -94,39 +94,35 @@ tcc <- tcc.clin %>%
   select(`Age at Collection`, Gender, `BMI at Collection`, Preservation, Cancer, `Tumor Stage`, `Tumor Grade`, `Overall Survival (Days)`, `Tissue Source`, Resource)
 ```
 
-<!-- # Adjust Stage TCC -->
-<!-- ```{r} -->
-<!-- table(tcc$`Tumor Stage`) -->
-<!-- ``` -->
-
-<!-- # Adjust Stage TCGA -->
-<!-- ```{r} -->
-<!-- table(tcga$`Tumor Stage`) -->
-<!-- tcga <- tcga %>%  -->
-<!--   mutate(Stage = case_when(Stage == "0a" ~ 'Stage 0',  -->
-<!--                            Stage == "I" | Stage == "IA" | Stage == "IB" ~ "Stage 1",  -->
-<!--                            Stage == "II" | Stage == "IIA" | Stage == "IIB" | Stage == "IIC" ~ "Stage 2",  -->
-<!--                            Stage == "III" | Stage == "IIIB" | Stage == "IIIC" ~ "Stage 3",  -->
-<!--                            Stage == "IV" | Stage == "IVA" | Stage == "IVC" ~ "Stage 4",  -->
-<!--                           Stage == "Unknown/Not Reported" | Stage == "No TNM applicable for this site/histology combination" | Stage == "Unknown/Not Applicable" ~ "NA",)) -->
-<!-- ``` -->
-
 # Combine
 ```{r}
-exotic <- rbind(tcc, tcga)
+exotic.tmp <- rbind(tcc, tcga)
 ```
+
+### check tumor grade and stage
+```{r}
+
+exotic <- exotic %>%
+  mutate("Tumor Stage" = case_when(`Tumor Stage` == "0a" ~ 'Stage 0',
+                             `Tumor Stage` %in%  c("1", "1A", "1B", "i/ii", "stage i", "stage ia" , "stage ib") ~ 'Stage 1',
+                             `Tumor Stage` %in% c("2" , "2A" , "2B" , "2C" , "stage ii" , "stage iia", "stage iib", "stage iic")  ~ "Stage 2",
+                             `Tumor Stage` %in%  c("3" , "3A" , "3B" , "3C" , "stage iii" , "stage iiia" , "stage iiib" , "stage iiic")  ~ "Stage 3",
+                              `Tumor Stage` %in%  c("4" , "4A" , "4B" , "4C" , "stage iv" , "stage iva" , "stage ivb") ~ "Stage 4",
+                             `Tumor Stage` %in% c("nos not reported" , "undeterm." , "99" , "88") ~ "NA"))
+```
+
 
 # Make 'Cancer' dummy vars
 ```{r}
-exotic <- dummy_cols(exotic, select_columns = 'Cancer')
+exotic <- dummy_cols(exotic.tmp, select_columns = 'Cancer')
 names(exotic)[11:19] <- substring(names(exotic[,c(11:19)]), 8, 20)
 ```
 
 # Make table one 
 ```{r}
-allvars <- c("BLCA", "COAD", "KIRC", "LUAD", "LUSC", "READ", "SARC", "SKCM", "Other", "Age at Collection", "Gender", "BMI at Collection", "Preservation", "Overall Survival (Days)", "Tissue Source")
+allvars <- c("BLCA", "COAD", "KIRC", "LUAD", "LUSC", "READ", "SARC", "SKCM", "Other", "Age at Collection", "Gender", "BMI at Collection", "Preservation", "Overall Survival (Days)", "Tissue Source", "Tumor Stage")
 
-catvars <- c("BLCA", "COAD", "KIRC", "LUAD", "LUSC", "READ", "SARC", "SKCM", "Other", "Gender", "Preservation", "Tissue Source")
+catvars <- c("BLCA", "COAD", "KIRC", "LUAD", "LUSC", "READ", "SARC", "SKCM", "Other", "Gender", "Preservation", "Tissue Source", "Tumor Stage")
 
 tab1 <- CreateTableOne(allvars, strata = c("Resource"), data = exotic, factorVars = catvars)
 tab1
@@ -147,6 +143,20 @@ tab1.flex
 
 ```{r}
 write.table (tab1 , "../tables/table1_revised.csv", col.names = T, row.names = F, append = T, sep=',')
+```
+
+# Supplement split by ffpe
+
+```{r}
+supvars <- c("Cancer", "Age at Collection", "Gender", "BMI at Collection", "Preservation", "Overall Survival (Days)", "Tissue Source")
+
+supcatvars <- c("Cancer", "Gender", "Preservation", "Tissue Source")
+
+tab1 <- CreateTableOne(supvars, strata = c("Resource", "Preservation"), data = exotic.tmp, factorVars = supcatvars)
+tab1
+
+tab1 <- print(tab1, printToggle = F)
+write.table (tab1 , "../tables/sup_tab1-ffpe-split.csv", col.names = T, row.names = F, append = T, sep=',')
 ```
 
 

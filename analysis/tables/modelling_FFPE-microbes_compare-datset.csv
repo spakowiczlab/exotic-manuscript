@@ -1,0 +1,2021 @@
+"microbe","PreNorm.sig","PreNorm.dir","Norm.sig","Norm.dir","consistentEffect"
+"d__Archaea","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"d__Bacteria","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"d__Eukaryota","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"d__Viruses","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"k__Fungi","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"k__Heunggongvirae","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"k__Metazoa","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"k__Pararnavirae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"k__unclassified-c__Candidatus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"k__unclassified-c__Cryptophyceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Acidobacteria","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"k__unclassified-p__Actinobacteria","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Apicomplexa","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Armatimonadetes","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Bacteroidetes","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Candidatus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Cercozoa","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Chlamydiae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Chloroflexi","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Crenarchaeota","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Cyanobacteria","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Deinococcus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"k__unclassified-p__Euglenozoa","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"k__unclassified-p__Euryarchaeota","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"k__unclassified-p__Firmicutes","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Fornicata","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Fusobacteria","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Gemmatimonadetes","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Ignavibacteriae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Kiritimatiellaeota","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Nitrospirae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"k__unclassified-p__Planctomycetes","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Proteobacteria","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"k__unclassified-p__Spirochaetes","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"k__unclassified-p__Synergistetes","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"k__unclassified-p__Tenericutes","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"k__unclassified-p__Thaumarchaeota","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"k__unclassified-p__Verrucomicrobia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__Acidobacteria","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"p__Actinobacteria","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"p__Apicomplexa","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__Armatimonadetes","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"p__Artverviricota","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__Ascomycota","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"p__Bacteroidetes","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__Basidiomycota","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"p__Candidatus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__Cercozoa","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"p__Chlamydiae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__Chloroflexi","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__Chordata","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"p__Crenarchaeota","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"p__Cyanobacteria","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__Deinococcus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"p__Euglenozoa","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"p__Euryarchaeota","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"p__Firmicutes","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"p__Fornicata","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__Fusobacteria","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__Gemmatimonadetes","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"p__Ignavibacteriae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__Kiritimatiellaeota","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__Microsporidia","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"p__Nitrospirae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"p__Planctomycetes","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__Proteobacteria","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"p__Spirochaetes","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"p__Synergistetes","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"p__Tenericutes","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"p__Thaumarchaeota","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"p__unclassified-c__Candidatus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__unclassified-c__Cryptophyceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"p__Uroviricota","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"p__Verrucomicrobia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Acidimicrobiia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Acidobacteriia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Aconoidasida","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"c__Actinomycetia","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Agaricomycetes","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Alphaproteobacteria","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Anaerolineae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Bacilli","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Bacteroidia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Betaproteobacteria","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Caldilineae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Candidatus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Caudoviricetes","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"c__Chitinophagia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Chlamydiia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Chlorarachniophyceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Chthonomonadetes","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Clostridia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Conexivisphaeria","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"c__Conoidasida","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"c__Coriobacteriia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Cryptophyceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Cytophagia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Deinococci","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Deltaproteobacteria","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Dothideomycetes","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Epsilonproteobacteria","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"c__Erysipelotrichia","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Eurotiomycetes","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Fimbriimonadia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Flavobacteriia","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Fusobacteriia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Gammaproteobacteria","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Gemmatimonadetes","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Halobacteria","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Ignavibacteria","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Kinetoplastea","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Kiritimatiellae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Ktedonobacteria","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Leotiomycetes","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Mammalia","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Methanobacteria","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Mollicutes","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Negativicutes","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Nitriliruptoria","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Nitrospira","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"c__Oligoflexia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Opitutae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Phycisphaerae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Planctomycetia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Revtraviricetes","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Rubrobacteria","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Saccharomycetes","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Saprospiria","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Schizosaccharomycetes","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Sordariomycetes","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Spartobacteria","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Sphingobacteriia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Spirochaetia","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Synergistia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Tepidiformia","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"c__Thermoleophilia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Thermoprotei","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__Tissierellia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__Tremellomycetes","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__unclassified-f__Unikaryonidae","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"c__unclassified-g__Candidatus","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__unclassified-g__Ndongobacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__unclassified-o__Bacteroidetes","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"c__unclassified-o__Chroococcales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__unclassified-o__Chroococcidiopsidales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__unclassified-o__Diplomonadida","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__unclassified-o__Gloeoemargaritales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__unclassified-o__Nostocales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"c__unclassified-o__Synechococcales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Ustilaginomycetes","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Verrucomicrobiae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"c__Vicinamibacteria","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Acidaminococcales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Acidimicrobiales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Acidobacteriales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Actinomycetales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Agaricales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Alteromonadales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Anaerolineales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Bacillales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Bacteriovoracales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Bacteroidales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Bacteroidetes","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Bifidobacteriales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Brachyspirales","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Bryobacterales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Burkholderiales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Caldilineales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Campylobacterales","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"o__Candidatus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Cantharellales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Caudovirales","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"o__Caulobacterales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Cellvibrionales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Chitinophagales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Chromatiales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Chroococcales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Chroococcidiopsidales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Chthonomonadales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Conexivisphaerales","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"o__Coriobacteriales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Corynebacteriales","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Cryptomonadales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Cytophagales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Desulfovibrionales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Diplomonadida","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Eggerthellales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Egibacterales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Enterobacterales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Erysipelotrichales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Eubacteriales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Eucoccidiorida","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"o__Eurotiales","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Fimbriimonadales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Flavobacteriales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Frankiales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Fusobacteriales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Gemmatales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Gemmatimonadales","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Geodermatophilales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Gloeoemargaritales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Glomerellales","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Glycomycetales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Haemosporida","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"o__Haloferacales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Helotiales","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Holosporales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Hyphomicrobiales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Hyphomonadales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Hypocreales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Ignavibacteriales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Isosphaerales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Jatrophihabitantales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Kiritimatiellales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Ktedonobacterales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Lactobacillales","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Legionellales","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"o__Leptospirales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Magnaporthales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Maricaulales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Methanobacteriales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Micrococcales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Micromonosporales","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Miltoncostaeales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Mycoplasmatales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Mycosphaerellales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Myxococcales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Nakamurellales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Natrialbales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Neisseriales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Nevskiales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Nitrosomonadales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Nitrospirales","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"o__Nostocales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Oceanospirillales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Opitutales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Ortervirales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Parachlamydiales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Pasteurellales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Pelagibacterales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Phycisphaerales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Pirellulales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Piroplasmida","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Planctomycetales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Primates","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Propionibacteriales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Pseudomonadales","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Pseudonocardiales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Pyrenomonadales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Rhodobacterales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Rhodocyclales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Rhodospirillales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Rickettsiales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Rubrobacterales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Saccharomycetales","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Saprospirales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Schizosaccharomycetales","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Selenomonadales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Silvanigrellales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Sordariales","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Sphingobacteriales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Sphingomonadales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Spirochaetales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Streptomycetales","TRUE","enrichedFF","TRUE","enrichedFF",TRUE
+"o__Streptosporangiales","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Synechococcales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Synergistales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Tepidiformales","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"o__Thermales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Thermoproteales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Tissierellales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Tremellales","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__Trueperales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Trypanosomatida","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__unclassified-f__Unikaryonidae","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"o__unclassified-f__Vicinamibacteraceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__unclassified-g__Bigelowiella","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__unclassified-g__Candidatus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"o__unclassified-g__Ndongobacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__unclassified-s__endosymbiont of unidentified scaly snail isolate Monju","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Ustilaginales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Veillonellales","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"o__Verrucomicrobiales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Vibrionales","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"o__Xanthomonadales","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"f__Acetobacteraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Acidaminococcaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Acidimicrobiaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Acidobacteriaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Actinomycetaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Actinopolymorphaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Aerococcaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Akkermansiaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Alcaligenaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Alteromonadaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Anaerolineaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Aphanizomenonaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Archangiaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Aspergillaceae","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Atopobiaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Azonexaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Babesiidae","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"f__Bacillaceae","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Bacteroidaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Barnesiellaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Bifidobacteriaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Borreliaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Brachyspiraceae","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Bradyrhizobiaceae","FALSE","enrichedFFPE","TRUE","enrichedFFPE",FALSE
+"f__Brucellaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Bruguierivoracaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Bryobacteraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Burkholderiaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Caldilineaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Campylobacteraceae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__Candidatus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Carnobacteriaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Caulobacteraceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Ceratobasidiaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Chaetomiaceae","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Chitinophagaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Christensenellaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Chromatiaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Chromobacteriaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Chroococcaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Chroococcidiopsidaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Chthonomonadaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Clavicipitaceae","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Clostridiaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Comamonadaceae","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Conexivisphaeraceae","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"f__Corynebacteriaceae","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Coxiellaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Cryptococcaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Cryptosporidiidae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Cytophagaceae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__Debaryomycetaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Dermacoccaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Dermatophilaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Desulfovibrionaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Dietziaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Dipodascaceae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__Dysgonomonadaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Eggerthellaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Egibacteraceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Enterobacteriaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Enterococcaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Erwiniaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Erysipelotrichaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Erythrobacteraceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Eubacteriaceae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__Fimbriimonadaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Flammeovirgaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Flavobacteriaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Fluviibacteraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Frankiaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Fulvivirgaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Fusobacteriaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Geminigeraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Gemmataceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Gemmatimonadaceae","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Geodermatophilaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Gloeomargaritaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Glomerellaceae","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Glycomycetaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Hafniaceae","FALSE","enrichedFFPE","TRUE","enrichedFFPE",FALSE
+"f__Halieaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Haliscomenobacteraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Halobacteriovoraceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Halomonadaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Halorubraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Halothiobacillaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Hemiselmidaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Hexamitidae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Hominidae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Hymenobacteraceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Hyphomicrobiaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Hyphomonadaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Iamiaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Isosphaeraceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Jatrophihabitantaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Kiritimatiellaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Ktedonosporobacteraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Labilitrichaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Lachnospiraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Lactobacillaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Legionellaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Leptospiraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Leptotrichiaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Listeriaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Marasmiaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Maricaulaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Melioribacteraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Methanobacteriaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Methylobacteriaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Methylophilaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Microbacteriaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Micrococcaceae","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Micromonosporaceae","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Miltoncostaeaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Moraxellaceae","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Morganellaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Mycobacteriaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Mycoplasmataceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Mycosphaerellaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Myoviridae","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"f__Nakamurellaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Natrialbaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Nectriaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Neisseriaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Nitrospiraceae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__Nocardiaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Nocardioidaceae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__Nostocaceae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__Odoribacteraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Opitutaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Ornithinimicrobiaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Oscillospiraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Oxalobacteraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Paludibacteraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Parachlamydiaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Pasteurellaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Pectobacteriaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Pelagibacteraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Peptoniphilaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Peptostreptococcaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Phreatobacteraceae","FALSE","enrichedFFPE","TRUE","enrichedFFPE",FALSE
+"f__Phycisphaeraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Pichiaceae","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Pirellulaceae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__Planctomycetaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Planococcaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Plasmodiidae","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"f__Podoviridae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Polyangiaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Porphyromonadaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Prevotellaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Prochloraceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Prochlorotrichaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Propionibacteriaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Pseudomonadaceae","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Pseudonocardiaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Pyriculariaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Retroviridae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Rhizobiaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Rhodanobacteraceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Rhodobacteraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Rhodocyclaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Rhodospirillaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Rhodothermaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Rickettsiaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Rikenellaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Rountreeviridae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Rubrobacteraceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Saccharomycetaceae","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Sandaracinaceae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__Saprospiraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Sarcocystidae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__Schizosaccharomycetaceae","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Schleiferiaceae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__Sclerotiniaceae","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Selenomonadaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Silvanigrellaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Sinobacteraceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Siphoviridae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Sordariaceae","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"f__Sphingobacteriaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Sphingomonadaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Sphingosinicellaceae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__Staphylococcaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Steroidobacteraceae","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"f__Streptococcaceae","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Streptomycetaceae","TRUE","enrichedFF","TRUE","enrichedFF",TRUE
+"f__Streptosporangiaceae","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Sutterellaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Symbiobacteriaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Synechococcaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Synergistaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Tannerellaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Tenuifilaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Tepidiformaceae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__Theileriidae","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Thermaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Thermoguttaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Thermomonosporaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Thermoproteaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__Thioalkalibacteraceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Thiovulaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Treponemataceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Trichomonascaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Trueperaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Trypanosomatidae","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Tsukamurellaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__unclassified-g__Bigelowiella","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__unclassified-g__Candidatus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__unclassified-g__Flintibacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__unclassified-g__Gemella","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__unclassified-g__Inhella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__unclassified-g__Intestinimonas","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__unclassified-g__Leptothrix","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__unclassified-g__Massilistercora","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__unclassified-g__Methylibium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__unclassified-g__Ndongobacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__unclassified-g__Nordella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__unclassified-g__Plesiomonas","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__unclassified-g__Pseudorhodoplanes","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"f__unclassified-g__Rubrivivax","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__unclassified-g__Sphaerotilus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__unclassified-g__Thiohalobacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__unclassified-s__endosymbiont of unidentified scaly snail isolate Monju","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Unikaryonidae","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"f__Ustilaginaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Vallitaleaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Veillonellaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Verrucomicrobiaceae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"f__Vibrionaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Vicinamibacteraceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Waddliaceae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"f__Weeksellaceae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"f__Xanthomonadaceae","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"f__Yersiniaceae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Abiotrophia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Acetomicrobium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Achromobacter","FALSE","enrichedFFPE","TRUE","enrichedFFPE",FALSE
+"g__Acidaminococcus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Acidimicrobium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Acinetobacter","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Actinoalloteichus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Actinocatenispora","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Actinomadura","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Actinomarinicola","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Actinomyces","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Actinoplanes","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Actinopolymorpha","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Actinosynnema","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Actinotignum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Adhaeribacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Aerosticca","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Afipia","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"g__Agrobacterium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Akkermansia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Alcaligenes","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Alistipes","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Alloactinosynnema","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Alloprevotella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Aminobacterium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Amycolatopsis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Anaerobutyricum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Anaerococcus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Anaerocolumna","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Anaerolinea","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Andhravirus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Aquaspirillum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Aquiluna","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Aquimarina","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Arachidicoccus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Arachnia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Archangium","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Arcticibacterium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Aromatoleum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Asaia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Aspergillus","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Atopobium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Aurantimicrobium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Aureliella","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Austwickia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Babesia","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"g__Bacillus","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Bacteroides","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Barnesiella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Besnoitia","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Bifidobacterium","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Bigelowiella","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Blastococcus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Blautia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Bordetella","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Borrelia","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Botrytis","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Brachyspira","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Brettanomyces","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Brevefilum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Brucella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Bulleidia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Burkholderia","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Butyricimonas","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Butyrivibrio","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Caldibacillus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Caldilinea","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Campylobacter","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Candida","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Candidatus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Capnocytophaga","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Caproicibacterium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Caproiciproducens","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Caulifigura","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Cedecea","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Cercospora","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Cereibacter","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Chivirus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Chondrocystis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Chondromyces","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Christensenella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Chroococcidiopsis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Chryseolinea","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Chthonomonas","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Citricoccus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Citrobacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Clavibacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Cloacibacillus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Cloacibacterium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Clostridioides","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Clostridium","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Colletotrichum","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Collimonas","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Comamonas","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Conexivisphaera","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"g__Coprococcus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Corynebacterium","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Coxiella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Croceimicrobium","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Cronobacter","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Cryptococcus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Cryptosporidium","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Cupriavidus","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Cutibacterium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Cyanobium","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Dactylococcopsis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Debaryomyces","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Dechloromonas","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Defluviicoccus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Defluviimonas","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Delftia","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"g__Denitrobacterium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Dermacoccus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Desulfovibrio","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Dialister","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Diaphorobacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Dickeya","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Dietzia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Dolosigranulum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Dysgonomonas","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Dysosmobacter","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Eggerthella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Egibacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Eikenella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Elizabethkingia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Empedobacter","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Encephalitozoon","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"g__Enterobacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Enterocloster","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Enterococcus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Ereboglobus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Eremothecium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Erwinia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Erysipelatoclostridium","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Erysipelothrix","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Erythrobacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Escherichia","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Ethanoligenens","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Eubacterium","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Faecalibacterium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Filimonas","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Filomicrobium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Fimbriimonas","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Flammeovirga","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Flavonifractor","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Flintibacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Fluviibacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Frankia","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Fretibacterium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Frigoriglobus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Fuerstia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Fulvivirga","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Fusarium","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Fusobacterium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Gammaretrovirus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Gardnerella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Gemella","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Gemmatimonas","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Gemmatirosa","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Gemmobacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Giardia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Glaesserella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Gloeomargarita","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Gorganvirus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Granulibacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Grimontia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Guillardia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Guyparkeria","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Haemophilus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Haliscomenobacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Halobacteriovorax","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Halomicronema","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Halopiger","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Halothiobacillus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Hemiselmis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Hirschia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Homo","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Hydrogenophaga","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Hymenobacter","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Hyphomicrobium","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Iamia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Inhella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Intestinimonas","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Jatrophihabitans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Jonquetella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Kazachstania","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Kineobactrum","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Kingella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Kiritimatiella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Kitasatospora","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Klebsiella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Kluyveromyces","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Kocuria","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Ktedonosporobacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Kutzneria","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Labilithrix","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Lachnoanaerobaculum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Lachnoclostridium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Lacibacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Lactobacillus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Lactococcus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Lancefieldella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Lawsonia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Legionella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Leifsonia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Leishmania","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Lelliottia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Leptospira","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Leptothrix","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Leptotrichia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Lichenicola","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Limnoglobus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Limnohabitans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Listeria","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Longicatena","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Luteimonas","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Luteitalea","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Luteolibacter","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Lysobacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Maioricimonas","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Mannheimia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Marasmius","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Maricaulis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Marinobacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Massilistercora","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Mediterraneibacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Megasphaera","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Meiothermus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Melioribacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Methanobrevibacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Methylibium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Methylobacterium","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Methylorubrum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Methylotenera","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Microbacterium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Micrococcus","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Micromonospora","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Microvirgula","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Miltoncostaea","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Mobiluncus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Moraxella","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Morganella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Mumia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Mycobacterium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Mycobacteroides","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Mycoplasma","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Myroides","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Nakamurella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Nakaseomyces","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Natrarchaeobaculum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Natronoglycomyces","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Naumovozyma","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Ndongobacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Neisseria","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Neochlamydia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Neospora","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Neurospora","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"g__Niabella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Nibricoccus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Nitrospira","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Nocardia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Nocardioides","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Nonomuraea","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Nordella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Nostoc","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Obesumbacterium","FALSE","enrichedFFPE","TRUE","enrichedFFPE",FALSE
+"g__Ochrobactrum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Odoribacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Ogataea","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Oleiharenicola","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Olsenella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Orientia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Ornithinimicrobium","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Oscillibacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Ottowia","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Oxalobacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Paenarthrobacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Paeniclostridium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Pajaroellobacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Paludibacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Paludibaculum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Panacibacter","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Pandoraea","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Parabacteroides","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Parachlamydia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Paraflavitalea","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Paraprevotella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Parvimonas","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Pasteurella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Pelolinea","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Peptacetobacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Peptoniphilus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Petrimonas","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Petrocella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Phenylobacterium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Phnomibacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Phocaeicola","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Phreatobacter","FALSE","enrichedFFPE","TRUE","enrichedFFPE",FALSE
+"g__Pichia","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"g__Planctomyces","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Planococcus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Plantactinospora","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Plasmodium","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"g__Plesiomonas","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Pochonia","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Polymorphobacter","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Polynucleobacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Polystyrenella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Pontibacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Pontimonas","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Poriferisphaera","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Porphyrobacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Porphyromonas","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Prevotella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Prochlorococcus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Propionibacterium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Proteus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Providencia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Pseudobutyrivibrio","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Pseudocnuella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Pseudolysobacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Pseudomonas","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Pseudonocardia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Pseudorhodobacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Pseudorhodoplanes","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Pulveribacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Pyricularia","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Pyrobaculum","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Rhizoctonia","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Rhodobacter","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Rhodocytophaga","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Rhodoferax","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Rhodoluna","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Rhodothermus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Rickettsiella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Romboutsia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Rosenblumvirus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Roseococcus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Roseomonas","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Rothia","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"g__Rubripirellula","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Rubrivivax","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Rubrobacter","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Rufibacter","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Ruminococcus","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Saccharomyces","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Saccharothrix","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Salinibacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Salinicola","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Salinigranum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Salmonella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Sandaracinus","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Saprospira","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Scardovia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Schaalia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Scheffersomyces","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Schizosaccharomyces","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Selenomonas","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Serpentinomonas","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Serratia","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Silvanigrella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Singulisphaera","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Sinimarinibacterium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Sodalis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Solibaculum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Solimonas","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Sorangium","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Sphaerospermopsis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Sphaerotilus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Sphingobacterium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Sphingomonas","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Sphingorhabdus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Sphingosinithalassobacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Sporisorium","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Staphylococcus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Stenotrophomonas","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"g__Steroidobacter","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"g__Stigmatella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Streptococcus","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"g__Streptomyces","TRUE","enrichedFF","TRUE","enrichedFF",TRUE
+"g__Streptosporangium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Sugiyamaella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Sulfuricurvum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Sutterella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Swingsia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Symbiobacterium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Symmachiella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Synechococcus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Tannerella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Tardiphaga","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Tatlockia","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Tenacibaculum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Tenuifilum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Tepidiforma","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Terricaulis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Terriglobus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Tessaracoccus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Tetrapisispora","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Thalassoglobus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Theileria","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Thermogutta","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Thermothelomyces","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Thermothielavioides","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Thiohalobacter","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Toxoplasma","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Treponema","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Truepera","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Trypanosoma","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Tsukamurella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Turneriella","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__unclassified-s__endosymbiont of unidentified scaly snail isolate Monju","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__unclassified-s__Mycobacterium phage Saguaro","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__unclassified-s__uncultured crAssphage","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__unclassified-s__Vibrio phage ValB1MD-2","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"g__Urechidicola","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Ustilaginoidea","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"g__Ustilago","TRUE","enrichedFF","TRUE","enrichedFF",TRUE
+"g__Veillonella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Vibrio","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Vitreoscilla","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Waddlia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Weissella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Weizmannia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Yarrowia","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"g__Yersinia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Yimella","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"g__Zygosaccharomyces","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"g__Zygotorulaspora","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__[Candida] glabrata","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__[Clostridium] hylemonae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__[Clostridium] scindens","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__[Eubacterium] cellulosolvens","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__[Ochrobactrum] quorumnocens","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__[Ruminococcus] gnavus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__[Ruminococcus] torques","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Abiotrophia defectiva","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Acetomicrobium mobile","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Achromobacter deleyi","FALSE","enrichedFFPE","TRUE","enrichedFFPE",FALSE
+"s__Achromobacter sp. AONIH1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Achromobacter xylosoxidans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Acidaminococcus intestini","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Acidimicrobium ferrooxidans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Acinetobacter baumannii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Acinetobacter calcoaceticus","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Acinetobacter cumulans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Acinetobacter dispersus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Acinetobacter guillouiae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Acinetobacter haemolyticus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Acinetobacter indicus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Acinetobacter johnsonii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Acinetobacter junii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Acinetobacter lanii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Acinetobacter lwoffii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Acinetobacter radioresistens","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Acinetobacter schindleri","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Acinetobacter sp. MYb10","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Acinetobacter sp. TTH0-4","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Acinetobacter sp. WCHA45","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Acinetobacter venetianus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Acinetobacter wanghuae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Actinoalloteichus hoggarensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Actinocatenispora thailandica","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Actinomadura sp. WMMB 499","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Actinomarinicola tropica","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Actinomyces sp. HMT 175","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Actinoplanes sp. OR16","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Actinopolymorpha singaporensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Actinosynnema pretiosum","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Actinotignum schaalii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Adhaeribacter swui","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Aerosticca soli","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Afipia carboxidovorans","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Agrobacterium rubi","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Agrobacterium tumefaciens","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Akkermansia glycaniphila","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Akkermansia muciniphila","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Alcaligenes faecalis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Alistipes communis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Alistipes dispar","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Alistipes finegoldii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Alistipes onderdonkii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Alistipes shahii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Alloactinosynnema sp. L-07","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Alloprevotella sp. E39","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Aminobacterium colombiense","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Amycolatopsis mediterranei","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Amycolatopsis sp. CA-230715","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"s__Amycolatopsis sp. YIM 10","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Anaerobutyricum hallii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Anaerococcus mediterraneensis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Anaerococcus prevotii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Anaerocolumna cellulosilytica","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Anaerocolumna sedimenticola","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Anaerolinea sp. 'rifampicinis'","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Anaerolinea thermophila","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Aquaspirillum sp. LM1","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Aquimarina sp. TRL1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Arachidicoccus ginsenosidivorans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Arachidicoccus sp. B3-10","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Arachidicoccus sp. BS20","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Arachnia rubra","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Archangium violaceum","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Arcticibacterium luteifluviistationis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Aromatoleum petrolei","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Asaia bogorensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Aspergillus fumigatus","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Aspergillus puulaauensis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Atopobium sp. oral taxon 416","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Aurantimicrobium sp. MWH-Mo1","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Aureliella helgolandensis","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Austwickia chelonae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Babesia bovis","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Bacillus altitudinis","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Bacillus amyloliquefaciens","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Bacillus anthracis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacillus atrophaeus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacillus beveridgei","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacillus cereus","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bacillus methanolicus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacillus mycoides","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacillus paranthracis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bacillus pseudomycoides","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bacillus siamensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bacillus sp. 1NLA3E","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bacillus sp. FJAT-42376","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bacillus sp. M4U3P1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bacillus sp. N1-1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bacillus sp. PAMC26568","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacillus sp. S3","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacillus subtilis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bacillus thuringiensis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Bacillus toyonensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacillus velezensis","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Bacteroides caccae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacteroides cellulosilyticus","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Bacteroides coprosuis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacteroides eggerthii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacteroides intestinalis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacteroides luhongzhouii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacteroides ovatus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacteroides salyersiae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bacteroides uniformis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Barnesiella viscericola","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Besnoitia besnoiti","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bifidobacterium adolescentis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bifidobacterium animalis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bifidobacterium asteroides","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bifidobacterium bifidum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bifidobacterium breve","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bifidobacterium dentium","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bifidobacterium longum","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Bifidobacterium pseudocatenulatum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bifidobacterium pseudolongum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bifidobacterium pullorum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bifidobacterium subtile","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bifidobacterium thermophilum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bigelowiella natans","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Blastococcus saxobsidens","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Blautia argi","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Blautia sp. SC05B48","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Bordetella holmesii","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Borrelia anserina","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Borrelia crocidurae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Borrelia sp. A-FGy1","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Borrelia sp. HM","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Botrytis cinerea","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Brachyspira murdochii","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Brettanomyces bruxellensis","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Brettanomyces nanus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Brevefilum fermentans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Bulleidia sp. zg-1006","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Burkholderia ambifaria","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Burkholderia cenocepacia","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"s__Burkholderia cepacia","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Burkholderia contaminans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Burkholderia glumae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Burkholderia mallei","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Burkholderia metallica","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Burkholderia oklahomensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Burkholderia pseudomallei","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Burkholderia sp. CCGE1003","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Burkholderia sp. DHOD12","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Burkholderia sp. LA-2-3-30-S1-D2","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Burkholderia sp. MS455","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Burkholderia sp. MSMB0266","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Burkholderia stabilis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Burkholderia territorii","FALSE","enrichedFFPE","TRUE","enrichedFFPE",FALSE
+"s__Burkholderia vietnamiensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Butyricimonas faecalis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Butyricimonas virosa","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Butyrivibrio fibrisolvens","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Butyrivibrio hungatei","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Caldibacillus thermoamylovorans","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Caldilinea aerophila","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Campylobacter gracilis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Campylobacter rectus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Campylobacter ureolyticus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Candida albicans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Candida dubliniensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Candida orthopsilosis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Candidatus Aquiluna sp. UB-MaderosW2red","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Babela massiliensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Coxiella mudrowiae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Endolissoclinum faulkneri","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Erwinia haradaeae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Candidatus Filomicrobium marinum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Candidatus Hodgkinia cicadicola","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Kuenenia stuttgartiensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Methylopumilus turicensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Mycoplasma haemolamae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Candidatus Nanosynbacter lyticus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Candidatus Nitrosoglobus terrae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Nitrosopelagicus brevis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Candidatus Nitrosotalea okcheonensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Candidatus Nitrospira inopinata","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Paracaedibacter acanthamoebae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Pelagibacter sp. FZCC0015","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Planktophila dulcis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Planktophila lacus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Planktophila sulfonica","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Planktophila versatilis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Profftella armatura","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Protochlamydia naegleriophila","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Rhodoluna planktonica","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Rickettsiella viridis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Candidatus Saccharimonas aalborgensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Sulcia muelleri","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Candidatus Symbiobacter mobilis","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Candidatus Xiphinematobacter sp. Idaho Grape","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Capnocytophaga sputigena","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Caproicibacterium amylolyticum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Caproiciproducens sp. 7D4C2","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Caproiciproducens sp. NJN-50","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Caulifigura coniformis","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Cedecea neteri","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Cercospora beticola","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Cereibacter sphaeroides","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Chondrocystis sp. NIES-4102","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Chondromyces crocatus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Christensenella minuta","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Chroococcidiopsis thermalis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Chryseolinea soli","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Chthonomonas calidirosea","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Citricoccus sp. SGAir0253","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Citrobacter braakii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Clavibacter zhangzhiyongii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Cloacibacillus porcorum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Cloacibacterium caeni","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Clostridioides difficile","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Clostridium acetobutylicum","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Clostridium argentinense","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium baratii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium beijerinckii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium bornimense","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium botulinum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Clostridium butyricum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Clostridium drakei","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium estertheticum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium gasigenes","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium intestinale","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Clostridium isatidis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium kluyveri","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Clostridium pasteurianum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium perfringens","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Clostridium saccharobutylicum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium scatologenes","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium septicum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium sp. 'deep sea'","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium sp. AWRP","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Clostridium sp. C1","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium sp. CT4","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium sp. DL-VIII","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Clostridium sp. JN-1","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium sp. JN-9","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium sp. MF28","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium sp. SY8519","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium taeniosporum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium tetani","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium thermarum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Clostridium tyrobutyricum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Colletotrichum higginsianum","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Collimonas arenae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Comamonas aquatica","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Comamonas kerstersii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Comamonas koreensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Comamonas piscis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Comamonas serinivorans","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Comamonas sp. CJ34","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Comamonas sp. NLF-7-7","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Comamonas sp. Y33R10-2","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Comamonas testosteroni","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Conexivisphaera calida","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Coprococcus catus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Corynebacterium amycolatum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Corynebacterium argentoratense","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium atypicum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium aurimucosum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium callunae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium casei","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium choanae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium coyleae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium diphtheriae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Corynebacterium efficiens","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Corynebacterium epidermidicanis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium frankenforstense","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium genitalium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium glaucum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium glucuronolyticum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium glyciniphilum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium imitans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium incognita","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium jeikeium","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Corynebacterium kefirresidentii","FALSE","enrichedFFPE","TRUE","enrichedFFPE",FALSE
+"s__Corynebacterium kroppenstedtii","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Corynebacterium kutscheri","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium liangguodongii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium lizhenjunii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium macginleyi","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Corynebacterium maris","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium matruchotii","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Corynebacterium nuruki","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium propinquum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium riegelii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium sanguinis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium segmentosum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium simulans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium singulare","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium sp. 1864","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium sp. 1959","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium sp. 2039","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Corynebacterium sp. FDAARGOS 1242","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Corynebacterium sp. NML98-0116","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium sp. zg-320","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium sp. zg-917","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium striatum","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Corynebacterium suranareeae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium tuberculostearicum","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium urealyticum","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium ureicelerivorans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium variabile","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Corynebacterium xerosis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Coxiella burnetii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Coxiella endosymbiont of Amblyomma sculptum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Croceimicrobium hydrocarbonivorans","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Cronobacter condimenti","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Cronobacter dublinensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Cryptococcus gattii VGI","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Cryptococcus neoformans","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Cryptosporidium parvum","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Cupriavidus basilensis","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Cupriavidus gilardii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Cupriavidus metallidurans","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Cupriavidus necator","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Cupriavidus oxalaticus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Cupriavidus pauculus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Cupriavidus sp. EM10","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Cutibacterium granulosum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Cutibacterium modestum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Cyanobium sp. NIES-981","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Dactylococcopsis salina","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Debaryomyces hansenii","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Dechloromonas sp. HYN0024","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Dechloromonas sp. TW-R-39-2","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Defluviicoccus vanus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Defluviimonas alba","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Delftia acidovorans","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Delftia lacustris","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Delftia sp. Cs1-4","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Delftia sp. HK171","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Delftia tsuruhatensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Denitrobacterium detoxificans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Dermacoccus nishinomiyaensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Desulfovibrio fairfieldensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Dialister pneumosintes","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Diaphorobacter sp. HDW4A","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Dickeya poaceiphila","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Dietzia sp. oral taxon 368","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Dietzia timorensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Dolosigranulum pigrum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Dysgonomonas sp. HDW5B","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Dysosmobacter sp. Marseille-Q4140","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Eggerthella lenta","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Egibacter rhizosphaerae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Eikenella corrodens","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Elizabethkingia sp. JS20170427COW","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Empedobacter falsenii","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Encephalitozoon cuniculi","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"s__Encephalitozoon intestinalis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__endosymbiont of unidentified scaly snail isolate Monju","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Enterobacter cloacae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Enterobacter hormaechei","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Enterobacter kobei","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Enterobacter sp. JUb54","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Enterocloster bolteae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Enterocloster clostridioformis","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"s__Enterococcus cecorum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Enterococcus faecalis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Enterococcus faecium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Ereboglobus luteus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Eremothecium cymbalariae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Eremothecium gossypii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Erysipelatoclostridium ramosum","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Erysipelothrix inopinata","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Erythrobacter sp. HKB08","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Erythrobacter sp. JK5","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Escherichia coli","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Ethanoligenens harbinense","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Faecalibacterium prausnitzii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Filimonas lacunae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Fimbriimonas ginsengisoli","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Flammeovirga sp. MY04","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Flavonifractor plautii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Flintibacter sp. KGMB00164","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Fluviibacter phosphoraccumulans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Frankia sp. QA3","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Fretibacterium fastidiosum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Frigoriglobus tundricola","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Fuerstia marisgermanicae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Fulvivirga sp. S481","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Fusarium graminearum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Fusarium venenatum","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Fusarium verticillioides","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Fusobacterium canifelinum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Fusobacterium gonidiaformans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Fusobacterium hwasookii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Fusobacterium mortiferum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Fusobacterium necrophorum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Fusobacterium nucleatum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Fusobacterium periodonticum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Fusobacterium pseudoperiodonticum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Fusobacterium sp. NSJ-57","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Fusobacterium sp. oral taxon 203","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Fusobacterium ulcerans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Fusobacterium varium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Gardnerella leopoldii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Gardnerella vaginalis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Gemella haemolysans","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Gemella morbillorum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Gemella sanguinis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Gemella sp. ND 6198","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Gemmatimonas phototrophica","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Gemmatimonas sp. TET16","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Gemmatirosa kalamazoonesis","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Gemmobacter sp. HYN0069","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Giardia intestinalis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Glaesserella sp. 15-184","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Gloeomargarita lithophora","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Granulibacter bethesdensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Grimontia hollisae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Guillardia theta","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Guyparkeria halophila","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Haemophilus haemolyticus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Haemophilus influenzae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Haliscomenobacter hydrossis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Halobacteriovorax sp. BALOs_7","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Halomicronema hongdechloris","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Halopiger xanaduensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Halothiobacillus sp. LS2","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Hemiselmis andersenii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Hirschia baltica","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Homo sapiens","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Hydrogenophaga sp. BA0156","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Hydrogenophaga sp. PAMC20947","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Hydrogenophaga sp. PBL-H3","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Hydrogenophaga sp. YM1","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Hymenobacter busanensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Hymenobacter sp. BRD128","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Hyphomicrobium denitrificans","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Hyphomicrobium nitrativorans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Hyphomicrobium sp. MC1","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Iamia sp. SCSIO 61187","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Inhella inkyongensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Intestinimonas butyriciproducens","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Jatrophihabitans sp. GAS493","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Jonquetella anthropi","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Kazachstania naganishii","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Kineobactrum salinum","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Kingella denitrificans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Kingella oralis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Kiritimatiella glycovorans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Kitasatospora albolonga","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Kitasatospora setae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Kitasatospora sp. MMS16-BH015","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Kitasatospora sp. NA04385","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"s__Klebsiella pneumoniae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Kluyveromyces marxianus","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Kocuria flava","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Kocuria indica","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Kocuria palustris","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Kocuria rhizophila","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Kocuria rosea","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Kocuria sp. KD4","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Kocuria turfanensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Kocuria varians","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Ktedonosporobacter rubrisoli","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Kutzneria sp. CA-103260","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Labilithrix luteola","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Lachnoanaerobaculum umeaense","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Lachnoclostridium phocaeense","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Lachnoclostridium phytofermentans","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Lachnoclostridium sp. YL32","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Lacibacter sp. S13-6-6","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Lactobacillus delbrueckii","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Lactobacillus johnsonii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Lactococcus cremoris","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Lactococcus lactis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Lactococcus raffinolactis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Lancefieldella parvula","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Lawsonia intracellularis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Legionella israelensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Legionella sp. TUM19329","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Leifsonia shinshuensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Leishmania braziliensis","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Leishmania donovani","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Leishmania major","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Leishmania mexicana","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Lelliottia amnigena","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Leptospira biflexa","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Leptothrix cholodnii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Leptotrichia buccalis","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Leptotrichia hofstadii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Leptotrichia hongkongensis","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Leptotrichia shahii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Leptotrichia sp. oral taxon 212","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Leptotrichia sp. oral taxon 218","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Leptotrichia sp. oral taxon 221","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Leptotrichia sp. oral taxon 498","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Leptotrichia sp. oral taxon 847","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Leptotrichia trevisanii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Leptotrichia wadei","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Lichenicola cladoniae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Limnoglobus roseus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Limnohabitans sp. 103DPR2","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Listeria monocytogenes","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Longicatena caecimuris","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Luteimonas yindakuii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Luteitalea pratensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Luteolibacter luteus","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Luteolibacter sp. 32A","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Lysobacter solisilvae (ex Kim et al. 2021)","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Maioricimonas rarisocia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Mannheimia sp. USDA-ARS-USMARC-1261","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Marasmius oreades","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Maricaulis maris","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Marinobacter sp. LV10R510-11A","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Massilistercora timonensis","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Megasphaera elsdenii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Megasphaera stantonii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Meiothermus ruber","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Meiothermus silvanus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Melioribacter roseus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Methanobrevibacter smithii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Methylibium sp. Pch-M","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Methylobacterium aquaticum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Methylobacterium brachiatum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Methylobacterium durans","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Methylobacterium indicum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Methylobacterium nodulans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Methylobacterium oryzae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Methylobacterium radiodurans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Methylobacterium radiotolerans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Methylobacterium sp. 17Sr1-1","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Methylobacterium sp. 4-46","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Methylobacterium sp. AMS5","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Methylobacterium sp. C1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Methylobacterium sp. WL1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Methylobacterium terrae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Methylorubrum extorquens","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Methylorubrum populi","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Methylotenera versatilis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Microbacterium aurum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Microbacterium caowuchunii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Microbacterium chengjingii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Microbacterium esteraromaticum","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Microbacterium foliorum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Microbacterium hominis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Microbacterium hydrocarbonoxydans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Microbacterium lushaniae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Microbacterium oxydans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Microbacterium paraoxydans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Microbacterium pygmaeum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Microbacterium sediminis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Microbacterium sp. A18JL200","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Microbacterium sp. A18JL241","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Microbacterium sp. ABRD_28","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Microbacterium sp. No. 7","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Microbacterium sp. PM5","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Microbacterium sp. WY121","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Microbacterium testaceum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Micrococcus luteus","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Micrococcus sp. KBS0714","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Micromonospora krabiensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Micromonospora maris","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Micromonospora zamorensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Microvirgula aerodenitrificans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Miltoncostaea marina","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Mobiluncus curtisii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Moraxella catarrhalis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Moraxella cuniculi","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Moraxella nonliquefaciens","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Moraxella osloensis","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Morganella morganii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Mumia sp. ZJ1417","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Mus musculus mobilized endogenous polytropic provirus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Mycobacterium branderi","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Mycobacterium conspicuum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Mycobacterium florentinum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Mycobacterium frederiksbergense","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Mycobacterium goodii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Mycobacterium gordonae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Mycobacterium grossiae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Mycobacterium haemophilum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Mycobacterium kansasii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Mycobacterium koreense","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Mycobacterium leprae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Mycobacterium marinum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Mycobacterium paragordonae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Mycobacterium paraintracellulare","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Mycobacterium phage Saguaro","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Mycobacterium riyadhense","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Mycobacterium simiae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Mycobacterium sp. DL592","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Mycobacterium sp. JS623","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Mycobacterium spongiae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Mycobacterium tuberculosis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Mycobacterium ulcerans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Mycobacterium xenopi","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Mycobacteroides chelonae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Myroides odoratus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Myroides profundi","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Nakamurella sp. s14-144","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Natrarchaeobaculum aegyptiacum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Natronoglycomyces albus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Naumovozyma castellii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Naumovozyma dairenensis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Ndongobacter massiliensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Neisseria sicca","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Neochlamydia sp. S13","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Neospora caninum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Neurospora crassa","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Niabella soli","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Nibricoccus aquaticus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Nitrospira moscoviensis","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Nitrospira sp. KM1","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Nocardia cyriacigeorgica","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Nocardioides aquaticus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Nocardioides baekrokdamisoli","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Nonomuraea nitratireducens","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Nonomuraea sp. ATCC 55076","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Nordella sp. HKS 07","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Nostoc sp. CENA543","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Nostoc sp. NIES-4103","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Obesumbacterium proteus","FALSE","enrichedFFPE","TRUE","enrichedFFPE",FALSE
+"s__Ochrobactrum sp. MT180101","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Odoribacter splanchnicus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Ogataea parapolymorpha","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Oleiharenicola sp. KSB-15","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Olsenella sp. oral taxon 807","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Orientia tsutsugamushi","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Ornithinimicrobium pratense","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Oscillibacter sp. MM35","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Oscillibacter sp. MM50","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Oscillibacter sp. MM59","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Oscillibacter sp. NSJ-62","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Oscillibacter sp. PEA192","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Oscillibacter valericigenes","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Ottowia oryzae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Ottowia sp. oral taxon 894","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Oxalobacter formigenes","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Paenarthrobacter sp. YJN-D","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Paeniclostridium sordellii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pajaroellobacter abortibovis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Paludibacter propionicigenes","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Paludibaculum fermentans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Panacibacter ginsenosidivorans","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Pandoraea oxalativorans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Parabacteroides distasonis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Parabacteroides goldsteinii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Parabacteroides merdae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Parachlamydia acanthamoebae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Paraflavitalea soli","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Paraprevotella xylaniphila","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Parvimonas micra","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Pasteurella multocida","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pelolinea submarina","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Peptacetobacter hiranonis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Peptoniphilus harei","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Petrimonas mucosa","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Petrocella atlantisensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Phenylobacterium parvum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Phnomibacter ginsenosidimutans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Phocaeicola vulgatus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Phreatobacter cathodiphilus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Phreatobacter sp. NMCR1094","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Phreatobacter stygius","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pichia kudriavzevii","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Planctomyces sp. SH-PL14","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Planococcus donghaensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Plantactinospora sp. KBS50","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Plasmodium chabaudi","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Plasmodium coatneyi","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Plasmodium falciparum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Plasmodium gaboni","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Plasmodium knowlesi","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Plasmodium malariae","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Plasmodium sp. gorilla clade G2","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Plasmodium vinckei","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Plasmodium vivax","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"s__Plasmodium yoelii","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Plesiomonas shigelloides","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pochonia chlamydosporia","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Polymorphobacter sp. PAMC 29334","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Polynucleobacter asymbioticus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Polynucleobacter necessarius","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Polynucleobacter sp. LimPoW16","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Polynucleobacter sp. MWH-CaK5","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Polystyrenella longa","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pontibacter pudoricolor","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pontimonas salivibrio","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Poriferisphaera corsica","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Porphyrobacter sp. CACIAM 03H1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Porphyromonas asaccharolytica","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Porphyromonas cangingivalis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Porphyromonas crevioricanis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Porphyromonas gingivalis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Porphyromonas sp. oral taxon 275","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Prevotella copri","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Prevotella dentalis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Prevotella intermedia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Prevotella jejuni","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Prevotella melaninogenica","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Prevotella multiformis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Prevotella oris","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Prevotella ruminicola","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Prevotella sp. oral taxon 299","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Prevotella sp. oral taxon 475","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Prochlorococcus marinus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Propionibacterium australiense","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Propionibacterium freudenreichii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Proteus mirabilis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Proteus virus Isfahan","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Providencia rettgeri","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Providencia sneebia","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudobutyrivibrio xylanivorans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudocnuella soli","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudolysobacter antarcticus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas aeruginosa","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas agarici","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas alcaligenes","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas alkylphenolica","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas amygdali","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas antarctica","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas bijieensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas campi","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas chlororaphis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas citronellolis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas entomophila","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas eucalypticola","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas fluorescens","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas fragi","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas glycinae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas lactis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas libanensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas litoralis","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"s__Pseudomonas lundensis","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas lurida","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas luteola","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas mendocina","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas monteilii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas mosselii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas multiresinivorans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas oryzihabitans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas parafulva","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas plecoglossicida","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas poae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas protegens","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas psychrotolerans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas putida","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Pseudomonas qingdaonensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sabulinigri","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas sediminis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. 02C 26","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. 14181154","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. 7SR1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. AN-B15","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. B11D7D","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas sp. BJP69","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas sp. C27(2019)","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas sp. CC6-YY-74","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Pseudomonas sp. CCOS 191","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. CMR5c","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas sp. COR54","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. COW39","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. COW40","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. DG56-2","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. FGI182","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. J380","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. Leaf58","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. MSPm1","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas sp. NC02","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas sp. OE 28.3","FALSE","enrichedFFPE","TRUE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. PDNC002","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. PONIH3","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. RC3H12","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. RD8MR3","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. RtIB026","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. RW10S1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. RW9S1A","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. S07E 245","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. SDM007","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas sp. SGAir0191","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Pseudomonas sp. SK","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. SK2","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. SNU WT1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. St316","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. SWI36","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. SWI6","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. TCU-HL1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas sp. TKP","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas sp. XWY-1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas stutzeri","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Pseudomonas syringae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudomonas syringae group genomosp. 3","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas taetrolens","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas taiwanensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas thivervalensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas tolaasii","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Pseudomonas umsongensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas vancouverensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas viridiflava","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudomonas yamanorum","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Pseudonocardia autotrophica","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Pseudonocardia dioxanivorans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pseudonocardia sp. CGMCC 4.1532","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Pseudorhodobacter turbinis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pseudorhodoplanes sinuspersici","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Pulveribacter suum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Pyricularia oryzae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Pyricularia pennisetigena","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Pyrobaculum neutrophilum","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Rhizoctonia solani","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Rhodobacter blasticus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Rhodobacter capsulatus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Rhodobacter sp. N10","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Rhodocytophaga rosea","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Rhodoferax antarcticus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Rhodoferax ferrireducens","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Rhodoferax sediminis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Rhodothermus marinus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Romboutsia ilealis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Roseococcus sp. NIBR12","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Roseomonas sp. 1318","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Roseomonas sp. 546","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Roseomonas sp. FDAARGOS_362","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Rothia dentocariosa","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Rothia kristinae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Rothia mucilaginosa","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Rothia terrae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Rubripirellula lacrimiformis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Rubrivivax gelatinosus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Rubrobacter sp. SCSIO 52909","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Rufibacter tibetensis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Ruminococcus albus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Ruminococcus bicirculans","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Ruminococcus champanellensis","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Ruminococcus sp. JE7A12","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Saccharomyces cerevisiae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Saccharomyces eubayanus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Saccharothrix sp. 6-C","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Salinibacter ruber","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Salinicola tamaricis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Salinigranum rubrum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Salmonella enterica","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Salmonella phage TS13","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sandaracinus amylolyticus","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Saprospira grandis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Scardovia inopinata","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Schaalia meyeri","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Scheffersomyces stipitis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Schizosaccharomyces pombe","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Selenomonas ruminantium","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Serpentinomonas raichei","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Serratia grimesii","TRUE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Silvanigrella aquatica","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Singulisphaera acidiphila","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sinimarinibacterium sp. NLF-5-8","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sodalis sp. dw_23","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Solibaculum mannosilyticum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Solimonas sp. K1W22B-7","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Sorangium cellulosum","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Sphaerospermopsis torques-reginae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphaerotilus natans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingobacterium lactis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingobacterium multivorum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingobacterium psychroaquaticum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingobacterium sp. CZ-2","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingobacterium sp. dk4302","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingobacterium spiritivorum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingobacterium thalpophilum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingomonas alpina","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas daechungensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas ginsengisoli An et al. 2013","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas hengshuiensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas insulae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas koreensis","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas lacunae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingomonas melonis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas panacis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas panacisoli","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas paucimobilis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas piscis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas sabuli","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingomonas sanguinis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingomonas sanxanigenens","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas sinipercae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingomonas sp. AAP5","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas sp. AP4-R1","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Sphingomonas sp. C33","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas sp. CL5.1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas sp. Cra20","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingomonas sp. DH-S5","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas sp. FARSPH","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas sp. HMP6","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas sp. KC8","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas sp. LK11","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas sp. LMO-1","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Sphingomonas sp. MK52","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Sphingomonas sp. MM-1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas sp. NBWT7","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas sp. NIC1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas sp. PAMC26645","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingomonas sp. XS-10","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas sp. YZ-8","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingomonas taxi","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingomonas wittichii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sphingomonas xanthus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingorhabdus lacus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingosinithalassobacter sp. CS137","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sphingosinithalassobacter sp. zrk23","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sporisorium graminicola","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Staphylococcus argenteus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Staphylococcus arlettae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus aureus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Staphylococcus auricularis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus capitis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus caprae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus cohnii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus epidermidis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Staphylococcus felis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Staphylococcus haemolyticus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus hominis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus lugdunensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus nepalensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus pasteuri","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus pettenkoferi","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus pseudintermedius","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus saccharolyticus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus saprophyticus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus sp. 11-B-312","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Staphylococcus virus Andhra","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Staphylococcus virus CSA13","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Staphylococcus warneri","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Stenotrophomonas maltophilia","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Stenotrophomonas rhizophila","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Stenotrophomonas sp. 364","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Stenotrophomonas sp. ASS1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Stenotrophomonas sp. DR822","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Stenotrophomonas sp. ESTM1D_MKCIP4_1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Stenotrophomonas sp. G4","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Stenotrophomonas sp. NA06056","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Stenotrophomonas sp. WZN-1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Stenotrophomonas sp. ZAC14A_NAIMI4_1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Stenotrophomonas sp. ZAC14D2_NAIMI4_6","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Steroidobacter denitrificans","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"s__Stigmatella aurantiaca","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus anginosus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus australis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Streptococcus canis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus chenjunshii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus constellatus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptococcus cristatus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus dysgalactiae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptococcus equi","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptococcus gordonii","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Streptococcus gwangjuense","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Streptococcus ilei","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus lactarius","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus lutetiensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptococcus mitis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Streptococcus mutans","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptococcus oralis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Streptococcus parasanguinis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus periodonticum","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptococcus pneumoniae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus porcinus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus pseudopneumoniae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus pyogenes","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus ratti","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus ruminantium","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptococcus salivarius","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Streptococcus sanguinis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus sobrinus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus sp. 116-D4","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus sp. A12","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus sp. HKU75","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptococcus sp. HSISM1","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus sp. KS 6","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Streptococcus sp. oral taxon 431","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptococcus thermophilus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptococcus urinalis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptomyces alboflavus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptomyces alfalfae","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Streptomyces cacaoi","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptomyces ferrugineus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptomyces galilaeus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Streptomyces griseorubiginosus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Streptomyces griseoviridis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptomyces hawaiiensis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Streptomyces incarnatus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Streptomyces lavendulae","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptomyces liangshanensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptomyces lydicus","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Streptomyces murinus","TRUE","enrichedFF","TRUE","enrichedFF",TRUE
+"s__Streptomyces nojiriensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptomyces olivoreticuli","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptomyces paludis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Streptomyces prasinus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptomyces rimosus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptomyces rutgersensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptomyces sp. CdTB01","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptomyces sp. jing01","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptomyces sp. Tu6071","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptomyces sp. ZYC-3","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptomyces tsukubensis","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Streptomyces tuirus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Streptomyces venezuelae","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Streptosporangium sp. 'caverna'","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sugiyamaella lignohabitans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Sulfuricurvum kujiense","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sutterella megalosphaeroides","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Sutterella wadsworthensis","FALSE","enrichedFFPE","FALSE","enrichedFF",FALSE
+"s__Swingsia sp. F3b2","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Symbiobacterium thermophilum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Symmachiella dynata","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Synechococcus sp. CBW1004","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Synechococcus sp. CC9902","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Synechococcus sp. JA-2-3B'a(2-13)","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Synechococcus sp. PCC 6312","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Synechococcus sp. PCC 7336","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Synechococcus sp. PCC 7502","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Synechococcus sp. RSCCF101","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Tannerella sp. oral taxon HOT-286","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Tardiphaga robiniae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Tatlockia micdadei","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Tenacibaculum dicentrarchi","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Tenacibaculum mesophilum","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Tenuifilum thalassicum","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Tepidiforma bonchosmolovskayae","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Terricaulis silvestris","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Terriglobus albidus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Tessaracoccus timonensis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Tetrapisispora blattae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Thalassoglobus polymorphus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Theileria equi","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Thermogutta terrifontis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Thermothelomyces thermophilus","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Thermothielavioides terrestris","TRUE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Thiohalobacter thiocyanaticus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Toxoplasma gondii","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Treponema denticola","FALSE","enrichedFF","TRUE","enrichedFF",FALSE
+"s__Treponema socranskii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Treponema sp. Marseille-Q4132","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Truepera radiovictrix","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Trypanosoma brucei","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Tsukamurella tyrosinosolvens","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Turneriella parva","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__uncultured crAssphage","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Urechidicola croceus","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Ustilaginoidea virens","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Ustilago maydis","TRUE","enrichedFF","TRUE","enrichedFF",TRUE
+"s__Veillonella atypica","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Veillonella parvula","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Vibrio anguillarum","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Vibrio phage ValB1MD-2","TRUE","enrichedFFPE","TRUE","enrichedFFPE",TRUE
+"s__Vibrio tritonius","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Vitreoscilla filiformis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Waddlia chondrophila","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Weissella ceti","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Weissella diestrammenae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Weissella hellenica","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Weissella jogaejeotgali","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Weissella paramesenteroides","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Weizmannia coagulans","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Yarrowia lipolytica","FALSE","enrichedFF","FALSE","enrichedFFPE",FALSE
+"s__Yersinia canariae","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Yersinia pestis","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Yimella sp. cx-51","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
+"s__Zygosaccharomyces rouxii","FALSE","enrichedFF","FALSE","enrichedFF",FALSE
+"s__Zygotorulaspora mrakii","FALSE","enrichedFFPE","FALSE","enrichedFFPE",FALSE
