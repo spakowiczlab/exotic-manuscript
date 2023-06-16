@@ -201,16 +201,19 @@ dist.res %>%
                           true = "Control",
                           false = specimen.type)) %>%
   filter(paired != "CONTROL") %>% # remove control for exotic fig
-  mutate(paired.char = as.character(paired.char)) %>%
-  ggplot(aes(x=paired, y=value)) +
+  mutate(paired.char = as.character(paired.char),
+         paired = ifelse(paired == TRUE, "Paired Samples", "Unpaired Samples")) %>%
+  ggplot(aes(x=paired.char, y=value)) +
+  facet_grid(. ~ paired) +
   geom_boxplot(aes(fill = paired.char)) +
   theme_bw(base_size = 7) +
   scale_fill_manual(values = c("salmon2", "cornflowerblue")) + 
   #scale_fill_viridis_d() +
-  labs(x = "Paired Samples",
+  labs(x = "",
        y = "Bray-Curtis Distance from 16S to RNAseq",
        fill = "Tissue Source") +
   theme(legend.position = "top")
+
 ggsave("../figures/16s_distance_boxplot.png", height=2.5, width=2.5)
 ```
 
