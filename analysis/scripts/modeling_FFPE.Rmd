@@ -1,0 +1,148 @@
+---
+title: "FFPE modeling"
+author: "Rebecca Hoyd"
+date: "6/13/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(glmm)
+library(broom)
+library(rlist)
+
+source("../../processing/drake-pipeline/R/assign_taxonomy.R")
+```
+
+# Load data
+
+```{r, eval = F}
+data.dir <- "/fs/ess/PAS1695/projects/exotic/data/drake-output/2022-03-08"
+tcc.counts <- readRDS(file.path(data.dir, "tcc.counts.RDS"))
+tcc.ra <- readRDS(file.path(data.dir, "tcc.exora.taxonomy.RDS"))
+
+tcc.linkage <- readRDS(file.path(data.dir, "tcc.meta.linkage.RDS"))
+tcc.cancer.labs <- read.csv("/fs/ess/PAS1695/exoticpipe/external-data/members-of-TCGA-groups.csv")
+
+krakenmet <- read.delim(
+  "/fs/ess/PAS1695/exoticpipe/external-data/kraken2-metaphlan-noplants.txt",
+  header = F,
+  stringsAsFactors = F
+) %>%
+  rename("Taxonomy" = "V1")
+```
+
+# Formatting
+```{r assign tax}
+tcc.tax <- assign_taxonomy(krakenmet, tcc.counts)
+```
+
+```{r to wide}
+exoRAtowide <- function(data, taxlev){
+  tmp <- data
+  tmp$Taxa <- tmp[[taxlev]]
+  tmp.wide<- tmp %>%
+    dplyr::filter(!is.na(Taxa)) %>%
+    group_by(sample, Taxa) %>%
+    summarise(ra = sum(exo.ra, na.rm = T)) %>%
+    spread(key = "Taxa", value = "ra")
+
+  tmp.wide[is.na(tmp.wide)] <- 0
+  return(tmp.wide)
+}
+
+exoToDF <- function(taxalevels = c("domain", "kingdom", "phylum", "class",
+                                    "order", "family", "genus", "species"),
+                     data){
+  w.ls <- lapply(taxalevels, function(x) exoRAtowide(data, x))
+  w.df <- reduce(w.ls, function(x,y) left_join(x,y))
+  return(w.df)
+}
+```
+
+```{r}
+prenorm.w <- exoToDF(data = tcc.tax)
+norm.w <- exoToDF(data = tcc.ra)
+```
+
+```{r}
+microbes <- intersect(colnames(prenorm.w), colnames(norm.w))[-1]
+
+names(tcc.linkage) <- make.names(names(tcc.linkage))
+
+prenorm.modin <- tcc.linkage %>%
+  left_join(tcc.cancer.labs) %>%
+  mutate(sample = LibraryID,
+         ffpe.status = ifelse(Tissue.Preservation.Method == "FormalinFixed", 1, 0)) %>%
+  select(sample, ffpe.status, TCGA.code) %>%
+  left_join(prenorm.w)
+
+norm.modin <- tcc.linkage %>%
+  left_join(tcc.cancer.labs) %>%
+  mutate(sample = LibraryID,
+         ffpe.status = ifelse(Tissue.Preservation.Method == "FormalinFixed", 1, 0)) %>%
+  select(sample, ffpe.status, TCGA.code) %>%
+  left_join(norm.w)
+```
+
+# Modelling
+
+```{r model function}
+capture.models.ffpe <- function(modin, d){
+  mods.list <- lapply(
+    microbes, function(y)
+      try({glm(as.formula(paste0("ffpe.status ~ `", y, "` + TCGA.code")), 
+               family = "binomial",
+               data = modin) %>%
+          tidy() %>%
+          mutate(microbe = y,
+                 datset = d)})
+  )
+  
+  mods.list.clean <- list.clean(mods.list, function(x) is.character(x))
+  mods.df <- bind_rows(mods.list.clean)
+  return(mods.df)
+}
+```
+
+```{r}
+prenorm.modres <- capture.models.ffpe(prenorm.modin, "PreNorm")
+norm.modres <- capture.models.ffpe(norm.modin, "Norm")
+
+modres <- bind_rows(prenorm.modres, norm.modres)
+write.csv(modres, "../tables/modelling_FFPE-microbes.csv", row.names = F)
+```
+
+```{r}
+sigsum <- modres %>%
+  filter(term != "(Intercept)" & !grepl("TCGA", term)) %>%
+  mutate(padj = p.adjust(p.value, method = "fdr"),
+         sig = padj < 0.05,
+         dir = ifelse(estimate >= 0 , "enrichedFFPE", "enrichedFF"),
+         sigdir = paste(sig, dir)) %>%
+  select(microbe, sigdir, datset) %>%
+  pivot_wider(names_from = datset, values_from = sigdir) %>%
+  separate(PreNorm, into = c("PreNorm.sig", "PreNorm.dir")) %>%
+  separate(Norm, into = c("Norm.sig", "Norm.dir")) %>%
+  mutate(consistentEffect = PreNorm.sig == T & Norm.sig == T & PreNorm.dir == Norm.dir)
+
+sigsum %>%
+  filter(consistentEffect == T) %>%
+  group_by(Norm.dir) %>%
+  tally()
+
+sigsum %>%
+  filter(PreNorm.sig == T) %>%
+  group_by(PreNorm.dir) %>%
+  tally()
+
+sigsum %>%
+  filter(Norm.sig == T) %>%
+  group_by(Norm.dir) %>%
+  tally()
+
+write.csv(sigsum, "../tables/modelling_FFPE-microbes_compare-datset.csv",  row.names = F)
+```
+
