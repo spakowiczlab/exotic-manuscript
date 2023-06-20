@@ -203,9 +203,9 @@ dist.res %>%
   filter(paired != "CONTROL") %>% # remove control for exotic fig
   mutate(paired.char = as.character(paired.char),
          paired = ifelse(paired == TRUE, "Paired Samples", "Unpaired Samples")) %>%
-  ggplot(aes(x=paired.char, y=value)) +
-  facet_grid(. ~ paired) +
-  geom_boxplot(aes(fill = paired.char)) +
+  ggplot(aes(x=paired, y=value)) +
+  facet_grid(. ~ paired.char) +
+  geom_boxplot(aes(fill = paired)) +
   theme_bw(base_size = 7) +
   scale_fill_manual(values = c("salmon2", "cornflowerblue")) + 
   #scale_fill_viridis_d() +
@@ -214,7 +214,7 @@ dist.res %>%
        fill = "Tissue Source") +
   theme(legend.position = "top")
 
-ggsave("../figures/16s_distance_boxplot.png", height=2.5, width=2.5)
+ggsave("../figures/16s_distance_boxplot.svg", height=2.5, width=2.5)
 ```
 
 ```{r}
