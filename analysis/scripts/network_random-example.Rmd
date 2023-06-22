@@ -1,0 +1,111 @@
+---
+title: "random network generation"
+author: "Rebecca Hoyd"
+date: "6/22/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(broom)
+```
+
+# Generate matrices
+
+```{r generate matrices}
+set.seed(112358)
+get.seeds <- runif(4, 1000, 10000)
+
+generateMatrix <- function(s){
+  set.seed(s)
+  
+  tmp <- list()
+  for(i in 1:100){
+    tmp[[i]] <- rnorm(1000)
+  }
+  
+  tmp1 <- matrix(unlist(tmp), nrow = 100, ncol = 1000)
+  return(tmp1)
+}
+
+x.genes <- generateMatrix(get.seeds[1])
+x.mics <- generateMatrix(get.seeds[2])
+
+y.genes <- generateMatrix(get.seeds[3])
+y.mics <- generateMatrix(get.seeds[4])
+```
+
+```{r add names}
+genes <- paste0("g", 1:1000)
+mics <- paste0("m", 1:1000)
+
+colnames(x.genes) <- genes
+colnames(y.genes) <- genes
+
+colnames(x.mics) <- mics
+colnames(y.mics) <- mics
+
+```
+
+# Correlations
+
+```{r}
+correlate_mics_genes <- function(genemat, micmat, datalab){
+  cor.res <- lapply(mics[1:100], function(m) lapply(genes, function(i)
+    try(cor.test(micmat[,m], genemat[,i],
+                 method = "spearman") %>%
+          tidy() %>%
+          mutate(Gene = i, microbe = m, datset = datalab))))
+  
+  
+  test <- lapply(cor.res, function(x) bind_rows(x))
+  cor.df <- bind_rows(test)
+  return(cor.df)
+}
+```
+
+```{r}
+x.res <- correlate_mics_genes(x.genes, x.mics, "setX")
+y.res <- correlate_mics_genes(y.genes,y.mics, "setY")
+
+save(x.res, y.res,file =  "../data/random-network.RDS")
+```
+
+# Network generation
+
+```{r filter to agreeing directions}
+direction.agree <- bind_rows(x.res,y.res) %>% 
+  mutate(sig = ifelse(is.na(p.value), F, ifelse(p.value < 0.05, T, F)),
+         direct = ifelse(estimate < 0, "negative", "positive"),
+         sigdir = paste(sig, direct)) %>%
+  select(sigdir, microbe, Gene, datset) %>%
+  pivot_wider(names_from = datset, values_from = sigdir) %>%
+  separate(col = setX, into = c("setX.sig", "setX.dir"), sep = " ") %>%
+  separate(col = setY, into = c("setY.sig", "setY.dir"), sep = " ") %>%
+  mutate(dir.agree = ifelse(setX.dir == setY.dir, "Agree", "Disagree")) %>%
+  as.data.frame()
+
+dirfilt <- direction.agree %>%
+  select(Gene, microbe, dir.agree) %>%
+  filter(dir.agree == "Agree") %>%
+  left_join(x.res)
+
+```
+
+```{r most extreme results}
+low.est <- quantile(dirfilt$estimate, 0.025, na.rm = T)
+high.est <- quantile(dirfilt$estimate, 0.975, na.rm = T)
+
+network.in <- dirfilt %>%
+  filter(estimate < low.est | estimate > high.est)
+```
+
+```{r}
+network.in %>%
+  add_count(microbe) %>%
+  ggplot(aes(x = n)) + 
+  geom_histogram()
+ggsave("../figures/histogram_random-network_degree-centrality.png")
+```
