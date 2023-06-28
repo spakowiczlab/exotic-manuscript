@@ -70,12 +70,13 @@ correlate_mics_genes <- function(genemat, micmat, datalab){
 x.res <- correlate_mics_genes(x.genes, x.mics, "setX")
 y.res <- correlate_mics_genes(y.genes,y.mics, "setY")
 
-save(x.res, y.res,file =  "../data/random-network.RDS")
+save(x.res, y.res,file =  "../data/random-network.RData")
 ```
 
 # Network generation
 
 ```{r filter to agreeing directions}
+load("../data/random-network.RData")
 direction.agree <- bind_rows(x.res,y.res) %>% 
   mutate(sig = ifelse(is.na(p.value), F, ifelse(p.value < 0.05, T, F)),
          direct = ifelse(estimate < 0, "negative", "positive"),
@@ -106,6 +107,8 @@ network.in <- dirfilt %>%
 network.in %>%
   add_count(microbe) %>%
   ggplot(aes(x = n)) + 
-  geom_histogram()
-ggsave("../figures/histogram_random-network_degree-centrality.png")
+  geom_histogram() +
+  labs(x = "Number of edges per node", y = "Node count") +
+  theme_bw()
+ggsave("../figures/histogram_random-network_degree-centrality.pdf")
 ```
