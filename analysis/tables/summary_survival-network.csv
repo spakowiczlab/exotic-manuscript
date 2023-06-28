@@ -1,0 +1,52 @@
+"","microbe","cancer","TCC.dir","TCC.sig","TCGA.dir","TCGA.sig","agree.code","taxalev","rank_degree.centrality","rank_closeness.centrality","rank_betweenness.centrality"
+"1","c__Flavobacteriia","COAD","neg",TRUE,"neg",TRUE,TRUE,"c",NA,NA,NA
+"2","c__Halobacteria","BLCA","neg",TRUE,"neg",TRUE,TRUE,"c",NA,NA,NA
+"3","c__Halobacteria","READ","neg",TRUE,"neg",TRUE,TRUE,"c",NA,NA,NA
+"4","c__Saprospiria","KIRC","neg",TRUE,"neg",TRUE,TRUE,"c",631,4755,1884
+"5","c__Spirochaetia","LUAD","neg",TRUE,"neg",TRUE,TRUE,"c",1695,13079,8389
+"6","f__Christensenellaceae","All","neg",TRUE,"neg",TRUE,TRUE,"f",535,11704,6451
+"7","f__Flavobacteriaceae","COAD","neg",TRUE,"neg",TRUE,TRUE,"f",NA,NA,NA
+"8","f__Lachnospiraceae","READ","neg",TRUE,"neg",TRUE,TRUE,"f",NA,NA,NA
+"9","f__Microbacteriaceae","COAD","neg",TRUE,"neg",TRUE,TRUE,"f",NA,NA,NA
+"10","f__Theileriidae","SARC","neg",TRUE,"neg",TRUE,TRUE,"f",1376,12805,5950
+"11","f__unclassified-g__Flintibacter","All","neg",TRUE,"neg",TRUE,TRUE,"f",653,2387,1453
+"12","g__Actinotignum","BLCA","neg",TRUE,"neg",TRUE,TRUE,"g",772,8569,2596
+"13","g__Bulleidia","COAD","neg",TRUE,"neg",TRUE,TRUE,"g",1125,8779,5529
+"14","g__Chivirus","READ","neg",TRUE,"neg",TRUE,TRUE,"g",961,9873,5118
+"15","g__Christensenella","All","neg",TRUE,"neg",TRUE,TRUE,"g",536,11705,6452
+"16","g__Cyanobium","COAD","neg",TRUE,"neg",TRUE,TRUE,"g",924,496,1398
+"17","g__Debaryomyces","SARC","neg",TRUE,"neg",TRUE,TRUE,"g",983,77,126
+"18","g__Dysosmobacter","COAD","neg",TRUE,"neg",TRUE,TRUE,"g",1192,10144,5257
+"19","g__Ethanoligenens","All","neg",TRUE,"neg",TRUE,TRUE,"g",1357,10527,6889
+"20","g__Flintibacter","All","neg",TRUE,"neg",TRUE,TRUE,"g",654,2388,1454
+"21","g__Microbacterium","COAD","neg",TRUE,"neg",TRUE,TRUE,"g",NA,NA,NA
+"22","g__Ruminococcus","READ","neg",TRUE,"neg",TRUE,TRUE,"g",1433,12828,6835
+"23","g__Theileria","SARC","neg",TRUE,"neg",TRUE,TRUE,"g",1377,12806,5951
+"24","g__Yersinia","COAD","neg",TRUE,"neg",TRUE,TRUE,"g",NA,NA,NA
+"25","k__unclassified-p__Spirochaetes","LUAD","neg",TRUE,"neg",TRUE,TRUE,"k",1709,13077,8387
+"26","o__Flavobacteriales","COAD","neg",TRUE,"neg",TRUE,TRUE,"o",NA,NA,NA
+"27","o__Saprospirales","KIRC","neg",TRUE,"neg",TRUE,TRUE,"o",632,4756,1885
+"28","p__Spirochaetes","LUAD","neg",TRUE,"neg",TRUE,TRUE,"p",1716,13078,8388
+"29","s__Acinetobacter calcoaceticus","All","neg",TRUE,"neg",TRUE,TRUE,"s",1746,12824,7242
+"30","s__Actinotignum schaalii","BLCA","neg",TRUE,"neg",TRUE,TRUE,"s",773,8570,2597
+"31","s__Bulleidia sp. zg-1006","COAD","neg",TRUE,"neg",TRUE,TRUE,"s",1126,8780,5530
+"32","s__Candidatus Endolissoclinum faulkneri","All","neg",TRUE,"neg",TRUE,TRUE,"s",381,145,20
+"33","s__Christensenella minuta","All","neg",TRUE,"neg",TRUE,TRUE,"s",537,11706,6453
+"34","s__Clostridium sp. C1","All","neg",TRUE,"neg",TRUE,TRUE,"s",724,4211,758
+"35","s__Cyanobium sp. NIES-981","COAD","neg",TRUE,"neg",TRUE,TRUE,"s",925,497,1399
+"36","s__Debaryomyces hansenii","SARC","neg",TRUE,"neg",TRUE,TRUE,"s",984,78,127
+"37","s__Dysosmobacter sp. Marseille-Q4140","COAD","neg",TRUE,"neg",TRUE,TRUE,"s",1193,10145,5258
+"38","s__Erysipelothrix inopinata","All","neg",TRUE,"neg",TRUE,TRUE,"s",1375,12999,6975
+"39","s__Ethanoligenens harbinense","All","neg",TRUE,"neg",TRUE,TRUE,"s",1358,10528,6890
+"40","s__Flintibacter sp. KGMB00164","All","neg",TRUE,"neg",TRUE,TRUE,"s",655,2389,1455
+"41","s__Leishmania donovani","All","neg",TRUE,"neg",TRUE,TRUE,"s",340,4255,359
+"42","s__Parabacteroides goldsteinii","All","neg",TRUE,"neg",TRUE,TRUE,"s",368,11095,5958
+"43","s__Prevotella intermedia","BLCA","neg",TRUE,"neg",TRUE,TRUE,"s",918,949,959
+"44","s__Prevotella ruminicola","All","neg",TRUE,"neg",TRUE,TRUE,"s",700,4269,1434
+"45","s__Ruminococcus sp. JE7A12","READ","neg",TRUE,"neg",TRUE,TRUE,"s",1102,2612,6053
+"46","s__Salmonella phage TS13","READ","neg",TRUE,"neg",TRUE,TRUE,"s",962,9874,5119
+"47","s__Sphingobacterium psychroaquaticum","LUAD","neg",TRUE,"neg",TRUE,TRUE,"s",147,2756,109
+"48","s__Staphylococcus caprae","COAD","neg",TRUE,"neg",TRUE,TRUE,"s",1533,13061,6716
+"49","s__Streptomyces liangshanensis","All","neg",TRUE,"neg",TRUE,TRUE,"s",530,445,81
+"50","s__Streptomyces sp. CdTB01","All","neg",TRUE,"neg",TRUE,TRUE,"s",1330,9057,2480
+"51","s__Theileria equi","SARC","neg",TRUE,"neg",TRUE,TRUE,"s",1378,12807,5952
