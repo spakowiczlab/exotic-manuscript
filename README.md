@@ -7,10 +7,10 @@ Hoyd, R., Wheeler, C., Liu, Y., Singh, M. S. J., Muniak, M., Denko, N., Carbone,
 For the {exotic} package installation and usage, see the [exotic package repository](https://github.com/spakowiczlab/exotic). 
 
 Supplemental figures:<br>
-S1. [S1_survival-results.csv](analysis/tables/S1_survival-results.csv)<br>
-S2. [summary_survival-network.csv](analysis/tables/summary_survival-network.csv)<br>
-S3. [sup_network_top-degcent-mics.gz](analysis/tables/sup_network_top-degcent-mics.csv.gz)<br>
-S4. [S5_degree-centrality_regression.csv](analysis/tables/S5_degree-centrality_regression.csv)<br>
-S5. [network_closeness-centrality_regression.csv](analysis/tables/network_betweenness-centrality_regression.csv)<br>
-S6. [network_betweenness-centrality_regression.csv](analysis/tables/network_betweenness-centrality_regression.csv)<br>
-S7. [S8_pathway-enrichment.csv](analysis/tables/S8_pathway-enrichment.csv)
+[TableS1_survival-results](analysis/tables/S1_survival-results.csv)<br>
+[TableS2_summary_survival-concordance-network](analysis/tables/summary_survival-network.csv)<br>
+[TableS3_network_correlations_top-degcent-mics](analysis/tables/sup_network_top-degcent-mics.csv.gz)<br>
+[TableS4_network_degree-centrality_regression](analysis/tables/S5_degree-centrality_regression.csv)<br>
+[TableS5_network_closeness-centrality_regression](analysis/tables/network_betweenness-centrality_regression.csv)<br>
+[TableS6_network_betweenness-centrality_regression.](analysis/tables/network_betweenness-centrality_regression.csv)<br>
+[TableS7_pathway-enrichment](analysis/tables/S8_pathway-enrichment.csv)
