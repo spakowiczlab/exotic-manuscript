@@ -12,5 +12,5 @@ Supplemental figures:<br>
 [TableS3_network_correlations_top-degcent-mics](analysis/tables/sup_network_top-degcent-mics.csv.gz)<br>
 [TableS4_network_degree-centrality_regression](analysis/tables/S5_degree-centrality_regression.csv)<br>
 [TableS5_network_closeness-centrality_regression](analysis/tables/network_betweenness-centrality_regression.csv)<br>
-[TableS6_network_betweenness-centrality_regression.](analysis/tables/network_betweenness-centrality_regression.csv)<br>
+[TableS6_network_betweenness-centrality_regression](analysis/tables/network_betweenness-centrality_regression.csv)<br>
 [TableS7_pathway-enrichment](analysis/tables/S8_pathway-enrichment.csv)
